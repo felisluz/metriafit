@@ -662,7 +662,9 @@ textarea.inp { min-height: 72px; resize: vertical; }
 // ===== SUPABASE =====
 const SUPA_URL = 'https://epnqoglrykftktukfhwr.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwbnFvZ2xyeWtmdGt0dWtmaHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5NDQ5NjYsImV4cCI6MjA5ODUyMDk2Nn0.PJ-cHiES80vtb14EWUxPpCvfXunWyvi2Ro4MBmcEau8';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth: { storageKey: 'metriafit-auth' }
+});
 
 let userAtual = null;
 let perfilData = null;
