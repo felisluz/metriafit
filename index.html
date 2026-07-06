@@ -407,6 +407,54 @@ body {
 .img-modal-hint { font-size: 0.75rem; margin-top: 8px; }
 .img-modal-box .btn-add { width: 100%; margin-top: 14px; }
 
+.grupo-pills { display: flex; gap: 6px; margin-bottom: 12px; }
+.grupo-pill {
+  flex: 1; padding: 9px 4px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--surface2); color: var(--muted);
+  font-size: 0.72rem; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+  font-family: inherit;
+}
+.grupo-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.grupo-pill[data-grupo="superior"].active { background: var(--ms); border-color: var(--ms); }
+.grupo-pill[data-grupo="inferior"].active { background: var(--mi); border-color: var(--mi); }
+.grupo-pill[data-grupo="abdomen"].active { background: var(--green); border-color: var(--green); }
+
+.ex-grupo-block {
+  margin-top: 14px; padding: 14px 14px 10px;
+  border-radius: var(--radius); border: 1.5px solid;
+}
+.ex-grupo-block .section-label { margin-bottom: 10px; }
+.ex-grupo-empty { font-size: 0.78rem; padding: 4px 2px 6px; }
+
+.grupo-superior {
+  background: #fff8ed; border-color: #fcd9a0;
+}
+.grupo-superior .section-label { color: #b45309; }
+.grupo-superior .exercicio-item {
+  background: #fff; border: 1.5px solid #fde68a;
+}
+.grupo-superior .ex-grupo-empty { color: #92400e; opacity: .7; }
+
+.grupo-inferior {
+  background: #eff6ff; border-color: #bfdbfe;
+}
+.grupo-inferior .section-label { color: #1d4ed8; }
+.grupo-inferior .exercicio-item {
+  background: #fff; border: 1.5px solid #93c5fd;
+}
+.grupo-inferior .ex-grupo-empty { color: #1e40af; opacity: .7; }
+
+.grupo-abdomen {
+  background: #ecfdf5; border-color: #a7f3d0;
+}
+.grupo-abdomen .section-label { color: #047857; }
+.grupo-abdomen .exercicio-item {
+  background: #fff; border: 1.5px solid #6ee7b7;
+}
+.grupo-abdomen .ex-grupo-empty { color: #065f46; opacity: .7; }
+
 .add-form { display: grid; gap: 8px; margin-top: 12px; }
 .add-form .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .btn-add {
@@ -667,8 +715,12 @@ textarea.inp { min-height: 72px; resize: vertical; }
         </div>
 
         <div class="section-card">
-          <div class="section-label">🏋️ Exercícios</div>
-          <div id="lista-exercicios"></div>
+          <div class="section-label">🏋️ Adicionar exercício</div>
+          <div class="grupo-pills" id="grupo-pills">
+            <button type="button" class="grupo-pill active" data-grupo="superior" onclick="setGrupo('superior')">💪 Superior</button>
+            <button type="button" class="grupo-pill" data-grupo="inferior" onclick="setGrupo('inferior')">🦵 Inferior</button>
+            <button type="button" class="grupo-pill" data-grupo="abdomen" onclick="setGrupo('abdomen')">🎯 Abdômen</button>
+          </div>
           <div class="add-form">
             <div class="ex-nome-row">
               <input class="inp" id="ex-nome" list="ex-nomes-list" placeholder="Nome do exercício (ex: Leg Press)" oninput="preencherExercicioAnterior(); atualizarBotaoImagem()" onchange="preencherExercicioAnterior(); atualizarBotaoImagem()">
@@ -686,6 +738,19 @@ textarea.inp { min-height: 72px; resize: vertical; }
               <button class="btn-add" id="btn-exercicio" onclick="salvarExercicio()">+ Adicionar exercício</button>
               <button class="btn-cancel-ex" id="btn-cancel-ex" style="display:none" onclick="cancelarEdicaoExercicio()">Cancelar</button>
             </div>
+          </div>
+
+          <div class="ex-grupo-block grupo-superior">
+            <div class="section-label">💪 Exercícios Superior</div>
+            <div id="lista-ex-superior" class="ex-grupo-list"></div>
+          </div>
+          <div class="ex-grupo-block grupo-inferior">
+            <div class="section-label">🦵 Exercícios Inferior</div>
+            <div id="lista-ex-inferior" class="ex-grupo-list"></div>
+          </div>
+          <div class="ex-grupo-block grupo-abdomen">
+            <div class="section-label">🎯 Exercícios Abdômen</div>
+            <div id="lista-ex-abdomen" class="ex-grupo-list"></div>
           </div>
         </div>
 
@@ -1203,11 +1268,28 @@ async function abrirDia(id, data, tabInicial) {
 function voltarHome() { navTo('home'); carregarDias(); }
 
 // ===== TREINO =====
+const GRUPOS_EX = ['superior', 'inferior', 'abdomen'];
 let historicoExercicios = {};
 let exerciciosDiaAtual = [];
 let exercicioEditandoId = null;
 let catalogoImagens = {};
 let modalImagemNome = '';
+let grupoAtual = 'superior';
+
+function histKey(grupo, nome) { return `${grupo || 'inferior'}:${nome.trim().toLowerCase()}`; }
+
+function setGrupo(grupo) {
+  grupoAtual = grupo;
+  document.querySelectorAll('.grupo-pill').forEach(p => p.classList.toggle('active', p.dataset.grupo === grupo));
+  atualizarListaNomesExercicios();
+  atualizarBotaoImagem();
+  if (!exercicioEditandoId) {
+    document.getElementById('ex-nome').placeholder =
+      grupo === 'superior' ? 'Ex: Supino, Rosca direta...' :
+      grupo === 'abdomen'  ? 'Ex: Abdominal, Prancha...' :
+      'Ex: Leg Press, Cadeira extensora...';
+  }
+}
 
 async function carregarTreino() {
   const [{ data: ativs }, { data: exs }, { data: dia }] = await Promise.all([
@@ -1248,12 +1330,12 @@ async function carregarHistoricoExercicios() {
 
     const ids = diasRecentes.map(d => d.id);
     const { data: exsHist } = await sb.from('exercicios')
-      .select('nome,peso_kg,series,repeticoes,obs,dia_id')
+      .select('nome,peso_kg,series,repeticoes,obs,dia_id,grupo')
       .in('dia_id', ids);
 
     historicoExercicios = {};
     (exsHist || []).forEach(e => {
-      const key = e.nome.toLowerCase();
+      const key = histKey(e.grupo || 'inferior', e.nome);
       if (!historicoExercicios[key]) historicoExercicios[key] = [];
       historicoExercicios[key].push(e);
     });
@@ -1267,7 +1349,7 @@ function mostrarPersonalBox(exs) {
 
   // Verificar exercícios que devem aumentar
   const paraAumentar = exs.filter(e => {
-    const hist = (historicoExercicios[e.nome.toLowerCase()] || []);
+    const hist = (historicoExercicios[histKey(e.grupo || 'inferior', e.nome)] || []);
     return hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
   });
 
@@ -1288,7 +1370,8 @@ async function consultarPersonal() {
     const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
     const { data: session } = await sb.auth.getSession();
 
-    const histResumo = Object.entries(historicoExercicios).map(([nome, hist]) => {
+    const histResumo = Object.entries(historicoExercicios).map(([key, hist]) => {
+      const nome = hist[0]?.nome || key.split(':').slice(1).join(':');
       const ultimos = hist.slice(-5);
       return `${nome}: ${ultimos.map(h => `${h.peso_kg||0}kg ${h.series||0}x${h.repeticoes||0}`).join(', ')}`;
     }).join(', ');
@@ -1371,11 +1454,13 @@ async function uploadImagemExercicio(input) {
 
   const { data: { publicUrl } } = sb.storage.from('exercicios').getPublicUrl(path);
   const { error: dbErr } = await sb.from('exercicios_catalogo').upsert({
-    user_id: userAtual.id, nome_key: key, nome, imagem_url: publicUrl, updated_at: new Date().toISOString()
+    user_id: userAtual.id, nome_key: key, nome, imagem_url: publicUrl,
+    grupo: catalogoImagens[key]?.grupo || grupoAtual,
+    updated_at: new Date().toISOString()
   }, { onConflict: 'user_id,nome_key' });
   if (dbErr) { console.error(dbErr); showToast('⚠️ Foto enviada, mas erro ao salvar — rode metriafit_imagens.sql'); return; }
 
-  catalogoImagens[key] = { nome_key: key, nome, imagem_url: publicUrl };
+  catalogoImagens[key] = { nome_key: key, nome, imagem_url: publicUrl, grupo: grupoAtual };
   atualizarBotaoImagem();
   abrirModalImagem(nome);
   showToast('✅ Foto salva! Aparece sempre que usar "' + nome + '"');
@@ -1383,15 +1468,26 @@ async function uploadImagemExercicio(input) {
 
 function atualizarListaNomesExercicios() {
   const nomes = new Map();
-  Object.values(historicoExercicios).flat().forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
-  exerciciosDiaAtual.forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
+  Object.entries(historicoExercicios).forEach(([key, arr]) => {
+    if (!key.startsWith(grupoAtual + ':')) return;
+    const e = arr[arr.length - 1];
+    if (e) nomes.set(e.nome.toLowerCase(), e.nome);
+  });
+  exerciciosDiaAtual
+    .filter(e => (e.grupo || 'inferior') === grupoAtual)
+    .forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
+  Object.values(catalogoImagens)
+    .filter(c => (c.grupo || 'inferior') === grupoAtual)
+    .forEach(c => nomes.set(c.nome_key, c.nome));
   document.getElementById('ex-nomes-list').innerHTML =
     [...nomes.values()].map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
 }
 
 function ultimoDadosExercicio(nome) {
-  const key = nome.toLowerCase();
-  const hoje = exerciciosDiaAtual.filter(e => e.nome.toLowerCase() === key);
+  const key = histKey(grupoAtual, nome);
+  const hoje = exerciciosDiaAtual.filter(e =>
+    e.nome.toLowerCase() === nome.toLowerCase() && (e.grupo || 'inferior') === grupoAtual
+  );
   if (hoje.length) return hoje[hoje.length - 1];
   const hist = historicoExercicios[key];
   if (hist?.length) return hist[hist.length - 1];
@@ -1426,6 +1522,7 @@ function cancelarEdicaoExercicio() {
 function editarExercicio(id) {
   const ex = exerciciosDiaAtual.find(e => e.id === id);
   if (!ex) return;
+  setGrupo(ex.grupo || 'inferior');
   exercicioEditandoId = id;
   document.getElementById('ex-nome').value    = ex.nome;
   document.getElementById('ex-peso').value    = ex.peso_kg    ?? '';
@@ -1439,30 +1536,37 @@ function editarExercicio(id) {
   atualizarBotaoImagem();
 }
 
+function htmlExercicioItem(e, historico) {
+  const g = e.grupo || 'inferior';
+  const hist = (historico || {})[histKey(g, e.nome)] || [];
+  const deveAumentar = hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
+  const badge = deveAumentar ? `<div class="prog-badge">⬆️ Hora de aumentar a carga!</div>` : '';
+  const temFoto = catalogoImagens[e.nome.toLowerCase()];
+  const nomeEsc = e.nome.replace(/'/g, "\\'");
+  return `
+  <div class="exercicio-item${deveAumentar ? ' deve-aumentar' : ''}">
+    <div class="exercicio-info">
+      <div class="exercicio-nome">${e.nome}</div>
+      <div class="exercicio-det">${[e.peso_kg?e.peso_kg+'kg':null, (e.series&&e.repeticoes)?e.series+'×'+e.repeticoes:null, e.obs].filter(Boolean).join(' · ')}</div>
+      ${badge}
+    </div>
+    <div class="ex-actions">
+      <button class="edit-btn" style="${temFoto ? '' : 'opacity:.45'}" onclick="abrirModalImagem('${nomeEsc}')" title="${temFoto ? 'Ver aparelho' : 'Adicionar foto'}">👁</button>
+      <button class="edit-btn" onclick="editarExercicio('${e.id}')" title="Editar">✏️</button>
+      <button class="del-btn" onclick="delExercicio('${e.id}')" title="Excluir">🗑</button>
+    </div>
+  </div>`;
+}
+
 function renderExercicios(exs, historico) {
   exerciciosDiaAtual = exs;
-  const el = document.getElementById('lista-exercicios');
-  if (!exs.length) { el.innerHTML = '<div class="empty" style="padding:14px 0"><p>Nenhum exercício ainda.</p></div>'; return; }
-  el.innerHTML = exs.map(e => {
-    const hist = (historico || {})[e.nome.toLowerCase()] || [];
-    const deveAumentar = hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
-    const badge = deveAumentar ? `<div class="prog-badge">⬆️ Hora de aumentar a carga!</div>` : '';
-    const temFoto = catalogoImagens[e.nome.toLowerCase()];
-    const nomeEsc = e.nome.replace(/'/g, "\\'");
-    return `
-    <div class="exercicio-item${deveAumentar ? ' deve-aumentar' : ''}">
-      <div class="exercicio-info">
-        <div class="exercicio-nome">${e.nome}</div>
-        <div class="exercicio-det">${[e.peso_kg?e.peso_kg+'kg':null, (e.series&&e.repeticoes)?e.series+'×'+e.repeticoes:null, e.obs].filter(Boolean).join(' · ')}</div>
-        ${badge}
-      </div>
-      <div class="ex-actions">
-        <button class="edit-btn${temFoto ? '' : ' sem-foto'}" style="${temFoto ? '' : 'opacity:.45'}" onclick="abrirModalImagem('${nomeEsc}')" title="${temFoto ? 'Ver aparelho' : 'Adicionar foto'}">👁</button>
-        <button class="edit-btn" onclick="editarExercicio('${e.id}')" title="Editar">✏️</button>
-        <button class="del-btn" onclick="delExercicio('${e.id}')" title="Excluir">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
+  GRUPOS_EX.forEach(grupo => {
+    const el = document.getElementById('lista-ex-' + grupo);
+    const doGrupo = (exs || []).filter(e => (e.grupo || 'inferior') === grupo);
+    el.innerHTML = doGrupo.length
+      ? doGrupo.map(e => htmlExercicioItem(e, historico)).join('')
+      : '<div class="ex-grupo-empty">Nenhum exercício ainda.</div>';
+  });
 }
 
 async function salvarExercicio() {
@@ -1472,6 +1576,7 @@ async function salvarExercicio() {
   btn.disabled = true;
   const payload = {
     nome,
+    grupo: grupoAtual,
     peso_kg:    parseFloat(document.getElementById('ex-peso').value)   || null,
     series:     parseInt(document.getElementById('ex-series').value)   || null,
     repeticoes: parseInt(document.getElementById('ex-reps').value)     || null,
