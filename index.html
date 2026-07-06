@@ -42,6 +42,55 @@ body {
   font-size: 15px;
 }
 
+/* ===== PROGRESSÃO ===== */
+.alerta-card {
+  background: linear-gradient(135deg, #fff8e1, #fffde7);
+  border: 1.5px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.alerta-card .alerta-icon { font-size: 1.4rem; flex-shrink: 0; }
+.alerta-card .alerta-title { font-size: 0.8rem; font-weight: 800; color: #92400e; }
+.alerta-card .alerta-desc { font-size: 0.75rem; color: #78350f; margin-top: 3px; line-height: 1.5; }
+.alerta-section { margin-bottom: 16px; }
+.alerta-section-title { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: var(--amber); margin-bottom: 8px; }
+
+.exercicio-item.deve-aumentar { border: 1.5px solid #f59e0b; background: #fffbeb; }
+.prog-badge {
+  font-size: 0.6rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 20px;
+  background: #fef3c7; color: #92400e;
+  border: 1px solid #f59e0b;
+  display: inline-flex; align-items: center; gap: 3px;
+  margin-top: 3px;
+}
+
+.personal-box {
+  background: linear-gradient(135deg, var(--accent-lt), #e8f4ff);
+  border: 1.5px solid #c4b8ff;
+  border-radius: var(--radius);
+  padding: 16px; margin-bottom: 14px;
+}
+.personal-box-label {
+  font-size: 0.68rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--accent); margin-bottom: 10px;
+}
+.personal-msg {
+  font-size: 0.83rem; line-height: 1.65; color: var(--text);
+}
+.btn-personal {
+  margin-top: 10px; padding: 8px 14px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 9px;
+  font-size: 0.8rem; font-weight: 700;
+  cursor: pointer; transition: opacity .15s;
+}
+.btn-personal:hover { opacity: .88; }
+.btn-personal:disabled { opacity: .4; }
+
 /* ===== AUTH SCREEN ===== */
 .auth-wrap {
   min-height: 100vh;
@@ -225,6 +274,21 @@ body {
 }
 .back-btn:hover { color: var(--accent); }
 .day-title { font-size: 1.35rem; font-weight: 900; margin-bottom: 3px; text-transform: capitalize; }
+.day-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 3px; flex-wrap: wrap; }
+.day-date-picker {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 6px 10px;
+  font-size: 0.75rem; font-weight: 700; color: var(--muted);
+  cursor: pointer; flex-shrink: 0;
+}
+.day-date-picker input {
+  border: none; background: transparent;
+  font-family: inherit; font-size: 0.8rem; font-weight: 700;
+  color: var(--accent); cursor: pointer; outline: none;
+  width: 118px;
+}
+.day-date-picker input::-webkit-calendar-picker-indicator { cursor: pointer; }
 .day-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 20px; }
 
 .tabs {
@@ -290,6 +354,58 @@ body {
   transition: color .1s, background .1s;
 }
 .del-btn:hover { color: var(--red); background: var(--red-lt); }
+.ex-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.edit-btn {
+  background: none; border: none;
+  color: var(--muted); cursor: pointer; font-size: 1rem;
+  padding: 5px; border-radius: 7px;
+  transition: color .1s, background .1s;
+}
+.edit-btn:hover { color: var(--accent); background: var(--accent-lt); }
+.btn-cancel-ex {
+  padding: 10px 16px;
+  background: var(--surface2); color: var(--muted);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: 0.83rem; font-weight: 700;
+  cursor: pointer;
+}
+.add-form-actions { display: flex; gap: 8px; }
+.add-form-actions .btn-add { flex: 1; }
+.ex-nome-row { display: flex; gap: 8px; align-items: stretch; }
+.ex-nome-row .inp { flex: 1; min-width: 0; }
+.btn-img-eye {
+  width: 44px; flex-shrink: 0;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 1.1rem;
+  cursor: pointer; transition: all .15s;
+}
+.btn-img-eye:hover { border-color: var(--accent); background: var(--accent-lt); }
+.btn-img-eye.sem-foto { opacity: .45; }
+.img-modal {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.img-modal.show { display: flex; }
+.img-modal-box {
+  background: var(--surface); border-radius: 18px;
+  padding: 20px; width: 100%; max-width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  position: relative;
+}
+.img-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--surface2); border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; font-size: 0.9rem;
+}
+.img-modal-title { font-size: 1rem; font-weight: 900; margin-bottom: 12px; padding-right: 28px; }
+.img-modal-box img {
+  width: 100%; border-radius: 12px; display: block;
+  max-height: 50vh; object-fit: contain; background: var(--surface2);
+}
+.img-modal-empty { text-align: center; padding: 24px 12px; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+.img-modal-hint { font-size: 0.75rem; margin-top: 8px; }
+.img-modal-box .btn-add { width: 100%; margin-top: 14px; }
 
 .add-form { display: grid; gap: 8px; margin-top: 12px; }
 .add-form .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -511,16 +627,26 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
     <!-- HOME -->
     <div class="screen active" id="screen-home">
-      <div class="screen-title">📅 Meu diário</div>
-      <button class="btn-new-day" onclick="abrirHoje()">+ Registrar treino de hoje</button>
+      <div class="screen-title">📅 Meu diário — hoje</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
+        <button onclick="abrirHojeTab('treino')" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💪<br>Treino</button>
+        <button onclick="abrirHojeTab('alimentacao')" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🥗<br>Alimentação</button>
+        <button onclick="abrirHojeTab('agua')" style="background:var(--blue);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💧<br>Água</button>
+      </div>
+      <div id="alertas-home"></div>
       <div id="lista-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
 
     <!-- DIA -->
     <div class="screen" id="screen-dia">
       <button class="back-btn" onclick="voltarHome()">← Voltar</button>
-      <div class="day-title" id="dia-titulo"></div>
-      <div class="day-subtitle" id="dia-subtitulo">Registre seu treino e alimentação</div>
+      <div class="day-header">
+        <div class="day-title" id="dia-titulo"></div>
+        <label class="day-date-picker" title="Alterar data">
+          📅 <input type="date" id="dia-data" onchange="mudarDataDia(this.value)">
+        </label>
+      </div>
+      <div class="day-subtitle">Registre seu treino e alimentação · toque na data para alterar</div>
 
       <div class="tabs">
         <button class="tab active" onclick="switchTab('treino')">💪 Treino</button>
@@ -544,14 +670,22 @@ textarea.inp { min-height: 72px; resize: vertical; }
           <div class="section-label">🏋️ Exercícios</div>
           <div id="lista-exercicios"></div>
           <div class="add-form">
-            <input class="inp" id="ex-nome" placeholder="Nome do exercício (ex: Leg Press)">
+            <div class="ex-nome-row">
+              <input class="inp" id="ex-nome" list="ex-nomes-list" placeholder="Nome do exercício (ex: Leg Press)" oninput="preencherExercicioAnterior(); atualizarBotaoImagem()" onchange="preencherExercicioAnterior(); atualizarBotaoImagem()">
+              <button type="button" class="btn-img-eye sem-foto" id="btn-ex-img" onclick="abrirModalImagem()" title="Ver foto do aparelho">👁</button>
+            </div>
+            <datalist id="ex-nomes-list"></datalist>
+            <input type="file" id="ex-imagem-input" accept="image/*" capture="environment" style="display:none" onchange="uploadImagemExercicio(this)">
             <div class="row">
               <input class="inp" id="ex-peso"   placeholder="Peso (kg)"  type="number" step="0.5">
               <input class="inp" id="ex-series" placeholder="Séries"     type="number">
               <input class="inp" id="ex-reps"   placeholder="Reps"       type="number">
             </div>
             <input class="inp" id="ex-obs" placeholder="Obs. (opcional)">
-            <button class="btn-add" onclick="addExercicio()">+ Adicionar exercício</button>
+            <div class="add-form-actions">
+              <button class="btn-add" id="btn-exercicio" onclick="salvarExercicio()">+ Adicionar exercício</button>
+              <button class="btn-cancel-ex" id="btn-cancel-ex" style="display:none" onclick="cancelarEdicaoExercicio()">Cancelar</button>
+            </div>
           </div>
         </div>
 
@@ -658,6 +792,20 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
 <div class="toast" id="toast"></div>
 
+<div class="img-modal" id="img-modal" onclick="fecharModalImagem(event)">
+  <div class="img-modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="img-modal-close" onclick="fecharModalImagem()">✕</button>
+    <div class="img-modal-title" id="img-modal-title">Aparelho</div>
+    <img id="img-modal-img" alt="Foto do aparelho" style="display:none">
+    <div class="img-modal-empty" id="img-modal-empty">
+      <div style="font-size:2rem;margin-bottom:8px">📷</div>
+      <p>Nenhuma foto deste aparelho ainda.</p>
+      <p class="img-modal-hint">Tire uma foto na academia — na próxima vez você reconhece o aparelho pelo nome!</p>
+    </div>
+    <button type="button" class="btn-add" onclick="document.getElementById('ex-imagem-input').click()">📷 Adicionar / trocar foto</button>
+  </div>
+</div>
+
 <script>
 // ===== SUPABASE =====
 const SUPA_URL = 'https://epnqoglrykftktukfhwr.supabase.co';
@@ -670,6 +818,7 @@ let userAtual = null;
 let perfilData = null;
 let diaAtual  = null;
 let authMode  = 'login';
+let appIniciado = false;
 
 // ===== AUTH =====
 function setAuthTab(mode) {
@@ -725,7 +874,7 @@ function showAuthError(msg) {
 
 async function logout() {
   await sb.auth.signOut();
-  userAtual = null; perfilData = null;
+  userAtual = null; perfilData = null; appIniciado = false;
   document.getElementById('app').style.display = 'none';
   document.getElementById('auth-wrap').style.display = 'flex';
   document.getElementById('auth-email').value = '';
@@ -733,16 +882,25 @@ async function logout() {
 }
 
 // ===== INIT =====
-sb.auth.onAuthStateChange(async (event, session) => {
+// Nunca usar await dentro de onAuthStateChange — causa deadlock com getSession
+// e trava todas as queries ao Supabase (sintoma: "Carregando..." infinito após F5).
+async function iniciarApp(user) {
+  if (!user) return;
+  if (appIniciado && userAtual?.id === user.id) return;
+  userAtual = user;
+  appIniciado = true;
+  document.getElementById('auth-wrap').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('user-chip').textContent = userAtual.email;
+  document.getElementById('perfil-email').textContent = userAtual.email;
+  await Promise.allSettled([carregarPerfil(), carregarDias()]);
+}
+
+sb.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
-    userAtual = session.user;
-    document.getElementById('auth-wrap').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('user-chip').textContent = userAtual.email;
-    document.getElementById('perfil-email').textContent = userAtual.email;
-    try { await carregarPerfil(); } catch(e) { console.error('Erro perfil:', e); }
-    try { await carregarDias(); } catch(e) { console.error('Erro dias:', e); }
+    setTimeout(() => iniciarApp(session.user), 0);
   } else if (event === 'SIGNED_OUT') {
+    userAtual = null; appIniciado = false;
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-wrap').style.display = 'flex';
   }
@@ -818,32 +976,88 @@ async function salvarPerfil() {
   showToast('✅ Perfil salvo!');
 }
 
+// ===== ALERTAS HOME =====
+async function verificarAlertasHome(dias) {
+  try {
+    const alertasEl = document.getElementById('alertas-home');
+    if (!alertasEl) return;
+
+    if (!dias || dias.length < 3) { alertasEl.innerHTML = ''; return; }
+
+    const ids = dias.slice(0, 10).map(d => d.id);
+    const { data: exsRecentes } = await sb.from('exercicios')
+      .select('nome,peso_kg,series,repeticoes,dia_id')
+      .in('dia_id', ids);
+
+    if (!exsRecentes || !exsRecentes.length) { alertasEl.innerHTML = ''; return; }
+
+    // Agrupar por exercício
+    const grupos = {};
+    exsRecentes.forEach(e => {
+      const key = e.nome.toLowerCase();
+      if (!grupos[key]) grupos[key] = [];
+      grupos[key].push(e);
+    });
+
+    // Encontrar os que devem aumentar (3+ vezes mesma carga)
+    const alertas = [];
+    Object.entries(grupos).forEach(([nome, hist]) => {
+      if (hist.length >= 3) {
+        const ultimos3 = hist.slice(-3);
+        const mesmaCarga = ultimos3.every(h => h.peso_kg == ultimos3[0].peso_kg && h.repeticoes == ultimos3[0].repeticoes);
+        if (mesmaCarga && ultimos3[0].peso_kg) {
+          alertas.push({ nome: hist[0].nome, peso: ultimos3[0].peso_kg, reps: ultimos3[0].repeticoes });
+        }
+      }
+    });
+
+    if (!alertas.length) { alertasEl.innerHTML = ''; return; }
+
+    alertasEl.innerHTML = `
+      <div class="alerta-section">
+        <div class="alerta-section-title">⬆️ Hora de progredir</div>
+        ${alertas.map(a => `
+          <div class="alerta-card">
+            <div class="alerta-icon">💪</div>
+            <div>
+              <div class="alerta-title">${a.nome}</div>
+              <div class="alerta-desc">Você fez ${a.peso}kg × ${a.reps} reps por 3 treinos seguidos. Tente aumentar o peso ou as repetições hoje!</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) { console.error('Erro alertas:', e); }
+}
+
 // ===== LISTA DE DIAS =====
 async function carregarDias() {
   const el = document.getElementById('lista-dias');
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
 
-  // Timeout de segurança — nunca fica travado
   const timeout = setTimeout(() => {
-    if (el.innerHTML.includes('Carregando')) {
-      el.innerHTML = `<div class="empty"><div class="emoji">⚠️</div><p>Tempo esgotado ao carregar.<br><button onclick="carregarDias()" style="margin-top:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Tentar novamente</button></p></div>`;
-    }
-  }, 8000);
+    el.innerHTML = `<div class="empty"><div class="emoji">⚠️</div><p>Não foi possível carregar.<br><button onclick="carregarDias()" style="margin-top:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Tentar novamente</button></p></div>`;
+  }, 6000);
 
   try {
-    const resDias = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(60);
+    // Buscar apenas dias, sem joins — mais simples e confiável
+    const resDias = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(30);
     const dias = resDias.data || [];
 
     if (!dias.length) {
       clearTimeout(timeout);
-      el.innerHTML = `<div class="empty"><div class="emoji">🏋️</div><p>Nenhum treino registrado ainda.<br>Clique em "Registrar treino de hoje" para começar!</p></div>`;
+      el.innerHTML = `<div class="empty"><div class="emoji">🏋️</div><p>Nenhum registro ainda.<br>Use os botões acima para começar!</p></div>`;
       return;
     }
 
+    // Buscar dados extras com Promise.allSettled — nunca rejeita
     const ids = dias.map(d => d.id);
-    const ativs = await sb.from('atividades').select('*').in('dia_id', ids).eq('feito', true).then(r => r.data || []).catch(() => []);
-    const refs  = await sb.from('refeicoes').select('dia_id,kcal,proteina_g').in('dia_id', ids).then(r => r.data || []).catch(() => []);
-    const aguas = await sb.from('agua').select('dia_id,quantidade_ml').in('dia_id', ids).then(r => r.data || []).catch(() => []);
+    const [r1, r2, r3] = await Promise.allSettled([
+      sb.from('atividades').select('dia_id,tipo,feito').in('dia_id', ids).eq('feito', true),
+      sb.from('refeicoes').select('dia_id,kcal,proteina_g').in('dia_id', ids),
+      sb.from('agua').select('dia_id,quantidade_ml').in('dia_id', ids),
+    ]);
+    const ativs = r1.status === 'fulfilled' ? (r1.value.data || []) : [];
+    const refs  = r2.status === 'fulfilled' ? (r2.value.data || []) : [];
+    const aguas = r3.status === 'fulfilled' ? (r3.value.data || []) : [];
   const mK = perfilData?.meta_kcal || 2000;
   const mP = perfilData?.meta_proteina_g || 120;
   const mA = perfilData ? perfilData.meta_agua_ml / 1000 : 2.5;
@@ -851,6 +1065,10 @@ async function carregarDias() {
   const lblMap  = { aerobica:'Aeróbica', alongamento:'Alongamento', musc_inferior:'Musc. Inf.', musc_superior:'Musc. Sup.' };
 
   clearTimeout(timeout);
+
+  // Alertas de progressão
+  verificarAlertasHome(dias).catch(() => {});
+
   el.innerHTML = dias.map(d => {
     const da = ativs.filter(a => a.dia_id === d.id);
     const dr = refs.filter(r => r.dia_id === d.id);
@@ -860,7 +1078,7 @@ async function carregarDias() {
     const aguaT = dw.reduce((s,w) => s+(w.quantidade_ml||0), 0) / 1000;
     const dt = new Date(d.data + 'T12:00:00');
     const badges = da.map(a => `<span class="badge ${tipoMap[a.tipo]}">${lblMap[a.tipo]}</span>`).join('');
-    return `<div class="day-card" onclick="abrirDia('${d.id}','${d.data}')">
+    return `<div class="day-card" onclick="abrirDia('${d.id}','${d.data}','treino')">
       <div class="day-card-header">
         <div>
           <div class="day-date">${dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>
@@ -883,33 +1101,114 @@ async function carregarDias() {
 }
 
 // ===== ABRIR DIA =====
-async function abrirHoje() {
+async function obterOuCriarDiaHoje() {
   const hoje = new Date().toISOString().slice(0,10);
   const { data: ex } = await sb.from('dias').select('*').eq('user_id', userAtual.id).eq('data', hoje).maybeSingle();
-  if (ex) { abrirDia(ex.id, ex.data); return; }
+  if (ex) return ex;
   const { data: novo } = await sb.from('dias').insert({ user_id: userAtual.id, data: hoje }).select().single();
-  await sb.from('atividades').insert([
-    { dia_id: novo.id, tipo: 'aerobica',      feito: false },
-    { dia_id: novo.id, tipo: 'alongamento',   feito: false },
-    { dia_id: novo.id, tipo: 'musc_inferior', feito: false },
-    { dia_id: novo.id, tipo: 'musc_superior', feito: false },
-  ]);
-  abrirDia(novo.id, novo.data);
+  return novo;
 }
 
-async function abrirDia(id, data) {
-  diaAtual = { id, data };
+async function abrirHojeTab(tab) {
+  const dia = await obterOuCriarDiaHoje();
+  await abrirDia(dia.id, dia.data, tab);
+}
+
+function atualizarTituloDia(data) {
   const dt = new Date(data + 'T12:00:00');
   document.getElementById('dia-titulo').textContent = dt.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('dia-data').value = data;
+}
+
+async function mesclarDias(deId, paraId) {
+  await Promise.all([
+    sb.from('exercicios').update({ dia_id: paraId }).eq('dia_id', deId),
+    sb.from('refeicoes').update({ dia_id: paraId }).eq('dia_id', deId),
+    sb.from('agua').update({ dia_id: paraId }).eq('dia_id', deId),
+  ]);
+  const [{ data: ativsOrigem }, { data: ativsDestino }, { data: diaOrigem }, { data: diaDestino }] = await Promise.all([
+    sb.from('atividades').select('*').eq('dia_id', deId),
+    sb.from('atividades').select('*').eq('dia_id', paraId),
+    sb.from('dias').select('obs_geral').eq('id', deId).single(),
+    sb.from('dias').select('obs_geral').eq('id', paraId).single(),
+  ]);
+  for (const a of (ativsOrigem || [])) {
+    const conflito = (ativsDestino || []).find(d => d.tipo === a.tipo);
+    if (conflito) {
+      if (a.feito && !conflito.feito) await sb.from('atividades').update({ feito: true }).eq('id', conflito.id);
+      await sb.from('atividades').delete().eq('id', a.id);
+    } else {
+      await sb.from('atividades').update({ dia_id: paraId }).eq('id', a.id);
+    }
+  }
+  if (diaOrigem?.obs_geral && !diaDestino?.obs_geral) {
+    await sb.from('dias').update({ obs_geral: diaOrigem.obs_geral }).eq('id', paraId);
+  }
+  await sb.from('dias').delete().eq('id', deId);
+}
+
+async function recarregarTabAtiva() {
+  const tabs = ['treino','alimentacao','agua'];
+  const idx = [...document.querySelectorAll('.tab')].findIndex(t => t.classList.contains('active'));
+  const tab = tabs[idx] || 'treino';
+  if (tab === 'treino') await carregarTreino();
+  else if (tab === 'alimentacao') await carregarRefeicoes();
+  else if (tab === 'agua') await carregarAgua();
+}
+
+async function mudarDataDia(novaData) {
+  if (!diaAtual || !novaData || novaData === diaAtual.data) return;
+  const input = document.getElementById('dia-data');
+  input.disabled = true;
+
+  try {
+    const { data: existente } = await sb.from('dias')
+      .select('id')
+      .eq('user_id', userAtual.id)
+      .eq('data', novaData)
+      .maybeSingle();
+
+    let mesclou = false;
+    if (existente && existente.id !== diaAtual.id) {
+      await mesclarDias(diaAtual.id, existente.id);
+      diaAtual = { id: existente.id, data: novaData };
+      mesclou = true;
+    } else {
+      const { error } = await sb.from('dias').update({ data: novaData }).eq('id', diaAtual.id);
+      if (error) throw error;
+      diaAtual.data = novaData;
+    }
+
+    atualizarTituloDia(novaData);
+    await recarregarTabAtiva();
+    showToast(mesclou ? '✅ Data alterada — registros unidos ao dia existente' : '✅ Data alterada!');
+  } catch(e) {
+    console.error('Erro ao mudar data:', e);
+    input.value = diaAtual.data;
+    showToast('⚠️ Não foi possível alterar a data');
+  }
+  input.disabled = false;
+}
+
+async function abrirDia(id, data, tabInicial) {
+  diaAtual = { id, data };
+  atualizarTituloDia(data);
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-dia').classList.add('active');
-  switchTab('treino');
-  await carregarTreino();
+  const tab = tabInicial || 'treino';
+  switchTab(tab);
+  if (tab === 'treino') await carregarTreino();
 }
 
 function voltarHome() { navTo('home'); carregarDias(); }
 
 // ===== TREINO =====
+let historicoExercicios = {};
+let exerciciosDiaAtual = [];
+let exercicioEditandoId = null;
+let catalogoImagens = {};
+let modalImagemNome = '';
+
 async function carregarTreino() {
   const [{ data: ativs }, { data: exs }, { data: dia }] = await Promise.all([
     sb.from('atividades').select('*').eq('dia_id', diaAtual.id),
@@ -920,21 +1219,276 @@ async function carregarTreino() {
     const a = (ativs||[]).find(a => a.tipo === btn.dataset.tipo);
     btn.classList.toggle('on', a?.feito || false);
   });
-  renderExercicios(exs || []);
+
+  // Carregar histórico dos últimos 30 dias para comparação
+  await Promise.all([carregarHistoricoExercicios(), carregarCatalogoImagens()]);
+  exerciciosDiaAtual = exs || [];
+  atualizarListaNomesExercicios();
+  renderExercicios(exerciciosDiaAtual, historicoExercicios);
+  cancelarEdicaoExercicio();
   document.getElementById('obs-geral').value = dia?.obs_geral || '';
+
+  // Mostrar personal trainer box
+  mostrarPersonalBox(exs || []);
 }
 
-function renderExercicios(exs) {
+async function carregarHistoricoExercicios() {
+  try {
+    const trintaDiasAtras = new Date();
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+    const dataInicio = trintaDiasAtras.toISOString().slice(0,10);
+
+    const { data: diasRecentes } = await sb.from('dias')
+      .select('id')
+      .eq('user_id', userAtual.id)
+      .gte('data', dataInicio)
+      .neq('id', diaAtual.id);
+
+    if (!diasRecentes || !diasRecentes.length) return;
+
+    const ids = diasRecentes.map(d => d.id);
+    const { data: exsHist } = await sb.from('exercicios')
+      .select('nome,peso_kg,series,repeticoes,obs,dia_id')
+      .in('dia_id', ids);
+
+    historicoExercicios = {};
+    (exsHist || []).forEach(e => {
+      const key = e.nome.toLowerCase();
+      if (!historicoExercicios[key]) historicoExercicios[key] = [];
+      historicoExercicios[key].push(e);
+    });
+  } catch(e) { console.error('Erro histórico:', e); }
+}
+
+function mostrarPersonalBox(exs) {
+  const box = document.getElementById('personal-box');
+  const msg = document.getElementById('personal-msg');
+  if (!exs.length) { box.style.display = 'none'; return; }
+
+  // Verificar exercícios que devem aumentar
+  const paraAumentar = exs.filter(e => {
+    const hist = (historicoExercicios[e.nome.toLowerCase()] || []);
+    return hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
+  });
+
+  if (paraAumentar.length > 0) {
+    msg.innerHTML = `💪 <strong>Hora de evoluir!</strong> Você fez ${paraAumentar.map(e => `<em>${e.nome}</em>`).join(', ')} com a mesma carga por 3+ treinos. Aumente o peso ou as repetições!`;
+  } else {
+    msg.innerHTML = `✅ Continue assim! Mantenha a consistência e em breve verei oportunidades de progressão para você.`;
+  }
+  box.style.display = '';
+}
+
+async function consultarPersonal() {
+  const btn = document.getElementById('btn-personal');
+  const msg = document.getElementById('personal-msg');
+  btn.disabled = true; btn.textContent = '...';
+
+  try {
+    const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
+    const { data: session } = await sb.auth.getSession();
+
+    const histResumo = Object.entries(historicoExercicios).map(([nome, hist]) => {
+      const ultimos = hist.slice(-5);
+      return `${nome}: ${ultimos.map(h => `${h.peso_kg||0}kg ${h.series||0}x${h.repeticoes||0}`).join(', ')}`;
+    }).join(', ');
+
+    const treinoHoje = exs.map(e => `${e.nome}: ${e.peso_kg||0}kg ${e.series||0}x${e.repeticoes||0}`).join(', ');
+
+    const res = await fetch(`${SUPA_URL}/functions/v1/analisar-refeicao`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.session.access_token}`, 'apikey': SUPA_KEY },
+      body: JSON.stringify({
+        texto: `PERSONAL_TRAINER. Perfil: peso 68.5kg, meta 65kg, 15 anos de academia, voltou após 1 mês parada, treina 4x/semana, misto máquinas e peso livre, objetivo recomposição corporal. Treino hoje: ${treinoHoje}. Histórico últimas sessões: ${histResumo}. Dê uma dica personalizada curta e motivadora sobre progressão de carga e o que focar.`,
+        mK: 0, mP: 0, kcalJ: 0, protJ: 0
+      }),
+    });
+    const data = await res.json();
+    msg.innerHTML = `🤖 <strong>Personal Trainer:</strong> ${data.sugestao || 'Continue com consistência e progressão gradual!'}`;
+  } catch(e) {
+    msg.innerHTML = '⚠️ Não foi possível consultar agora. Tente novamente.';
+  }
+  btn.disabled = false; btn.textContent = '💬 Pedir dica personalizada';
+}
+
+function nomeKey(nome) { return nome.trim().toLowerCase(); }
+
+async function carregarCatalogoImagens() {
+  try {
+    const { data } = await sb.from('exercicios_catalogo').select('*').eq('user_id', userAtual.id);
+    catalogoImagens = {};
+    (data || []).forEach(c => { catalogoImagens[c.nome_key] = c; });
+  } catch(e) { console.error('Erro catálogo imagens:', e); }
+}
+
+function atualizarBotaoImagem() {
+  const nome = document.getElementById('ex-nome').value.trim();
+  const btn = document.getElementById('btn-ex-img');
+  const tem = nome && catalogoImagens[nomeKey(nome)];
+  btn.classList.toggle('sem-foto', !tem);
+  btn.title = tem ? 'Ver foto do aparelho' : 'Adicionar / ver foto do aparelho';
+}
+
+function abrirModalImagem(nome) {
+  modalImagemNome = (nome || document.getElementById('ex-nome').value).trim();
+  if (!modalImagemNome) { showToast('⚠️ Digite o nome do exercício primeiro'); return; }
+  document.getElementById('img-modal-title').textContent = modalImagemNome;
+  const cat = catalogoImagens[nomeKey(modalImagemNome)];
+  const img = document.getElementById('img-modal-img');
+  const vazio = document.getElementById('img-modal-empty');
+  if (cat?.imagem_url) {
+    img.src = cat.imagem_url;
+    img.style.display = '';
+    vazio.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    vazio.style.display = '';
+  }
+  document.getElementById('img-modal').classList.add('show');
+}
+
+function fecharModalImagem(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('img-modal').classList.remove('show');
+}
+
+async function uploadImagemExercicio(input) {
+  const file = input.files?.[0];
+  input.value = '';
+  if (!file) return;
+
+  const nome = modalImagemNome || document.getElementById('ex-nome').value.trim();
+  if (!nome) { showToast('⚠️ Digite o nome do exercício primeiro'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ Imagem muito grande (máx. 5 MB)'); return; }
+
+  const key = nomeKey(nome);
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const path = `${userAtual.id}/${key}.${ext}`;
+
+  showToast('📤 Enviando foto...');
+  const { error: upErr } = await sb.storage.from('exercicios').upload(path, file, { upsert: true, contentType: file.type });
+  if (upErr) { console.error(upErr); showToast('⚠️ Erro ao enviar — rode o SQL metriafit_imagens.sql no Supabase'); return; }
+
+  const { data: { publicUrl } } = sb.storage.from('exercicios').getPublicUrl(path);
+  const { error: dbErr } = await sb.from('exercicios_catalogo').upsert({
+    user_id: userAtual.id, nome_key: key, nome, imagem_url: publicUrl, updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id,nome_key' });
+  if (dbErr) { console.error(dbErr); showToast('⚠️ Foto enviada, mas erro ao salvar — rode metriafit_imagens.sql'); return; }
+
+  catalogoImagens[key] = { nome_key: key, nome, imagem_url: publicUrl };
+  atualizarBotaoImagem();
+  abrirModalImagem(nome);
+  showToast('✅ Foto salva! Aparece sempre que usar "' + nome + '"');
+}
+
+function atualizarListaNomesExercicios() {
+  const nomes = new Map();
+  Object.values(historicoExercicios).flat().forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
+  exerciciosDiaAtual.forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
+  document.getElementById('ex-nomes-list').innerHTML =
+    [...nomes.values()].map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
+}
+
+function ultimoDadosExercicio(nome) {
+  const key = nome.toLowerCase();
+  const hoje = exerciciosDiaAtual.filter(e => e.nome.toLowerCase() === key);
+  if (hoje.length) return hoje[hoje.length - 1];
+  const hist = historicoExercicios[key];
+  if (hist?.length) return hist[hist.length - 1];
+  return null;
+}
+
+function preencherExercicioAnterior() {
+  if (exercicioEditandoId) return;
+  const nome = document.getElementById('ex-nome').value.trim();
+  if (!nome) return;
+  const ultimo = ultimoDadosExercicio(nome);
+  if (!ultimo) return;
+  if (ultimo.peso_kg != null)    document.getElementById('ex-peso').value   = ultimo.peso_kg;
+  if (ultimo.series != null)     document.getElementById('ex-series').value = ultimo.series;
+  if (ultimo.repeticoes != null) document.getElementById('ex-reps').value   = ultimo.repeticoes;
+  if (ultimo.obs)                document.getElementById('ex-obs').value    = ultimo.obs;
+  atualizarBotaoImagem();
+}
+
+function limparFormExercicio() {
+  ['ex-nome','ex-peso','ex-series','ex-reps','ex-obs'].forEach(id => document.getElementById(id).value = '');
+}
+
+function cancelarEdicaoExercicio() {
+  exercicioEditandoId = null;
+  limparFormExercicio();
+  document.getElementById('btn-exercicio').textContent = '+ Adicionar exercício';
+  document.getElementById('btn-cancel-ex').style.display = 'none';
+  atualizarBotaoImagem();
+}
+
+function editarExercicio(id) {
+  const ex = exerciciosDiaAtual.find(e => e.id === id);
+  if (!ex) return;
+  exercicioEditandoId = id;
+  document.getElementById('ex-nome').value    = ex.nome;
+  document.getElementById('ex-peso').value    = ex.peso_kg    ?? '';
+  document.getElementById('ex-series').value  = ex.series     ?? '';
+  document.getElementById('ex-reps').value    = ex.repeticoes ?? '';
+  document.getElementById('ex-obs').value     = ex.obs        ?? '';
+  document.getElementById('btn-exercicio').textContent = '✓ Salvar alteração';
+  document.getElementById('btn-cancel-ex').style.display = '';
+  document.getElementById('ex-nome').focus();
+  document.getElementById('ex-nome').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  atualizarBotaoImagem();
+}
+
+function renderExercicios(exs, historico) {
+  exerciciosDiaAtual = exs;
   const el = document.getElementById('lista-exercicios');
   if (!exs.length) { el.innerHTML = '<div class="empty" style="padding:14px 0"><p>Nenhum exercício ainda.</p></div>'; return; }
-  el.innerHTML = exs.map(e => `
-    <div class="exercicio-item">
+  el.innerHTML = exs.map(e => {
+    const hist = (historico || {})[e.nome.toLowerCase()] || [];
+    const deveAumentar = hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
+    const badge = deveAumentar ? `<div class="prog-badge">⬆️ Hora de aumentar a carga!</div>` : '';
+    const temFoto = catalogoImagens[e.nome.toLowerCase()];
+    const nomeEsc = e.nome.replace(/'/g, "\\'");
+    return `
+    <div class="exercicio-item${deveAumentar ? ' deve-aumentar' : ''}">
       <div class="exercicio-info">
         <div class="exercicio-nome">${e.nome}</div>
         <div class="exercicio-det">${[e.peso_kg?e.peso_kg+'kg':null, (e.series&&e.repeticoes)?e.series+'×'+e.repeticoes:null, e.obs].filter(Boolean).join(' · ')}</div>
+        ${badge}
       </div>
-      <button class="del-btn" onclick="delExercicio('${e.id}')">🗑</button>
-    </div>`).join('');
+      <div class="ex-actions">
+        <button class="edit-btn${temFoto ? '' : ' sem-foto'}" style="${temFoto ? '' : 'opacity:.45'}" onclick="abrirModalImagem('${nomeEsc}')" title="${temFoto ? 'Ver aparelho' : 'Adicionar foto'}">👁</button>
+        <button class="edit-btn" onclick="editarExercicio('${e.id}')" title="Editar">✏️</button>
+        <button class="del-btn" onclick="delExercicio('${e.id}')" title="Excluir">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function salvarExercicio() {
+  const nome = document.getElementById('ex-nome').value.trim();
+  if (!nome) { showToast('⚠️ Digite o nome do exercício'); return; }
+  const btn = document.getElementById('btn-exercicio');
+  btn.disabled = true;
+  const payload = {
+    nome,
+    peso_kg:    parseFloat(document.getElementById('ex-peso').value)   || null,
+    series:     parseInt(document.getElementById('ex-series').value)   || null,
+    repeticoes: parseInt(document.getElementById('ex-reps').value)     || null,
+    obs:        document.getElementById('ex-obs').value.trim()         || null,
+  };
+  if (exercicioEditandoId) {
+    await sb.from('exercicios').update(payload).eq('id', exercicioEditandoId);
+  } else {
+    await sb.from('exercicios').insert({ ...payload, dia_id: diaAtual.id, ordem: Date.now() });
+  }
+  const eraEdicao = !!exercicioEditandoId;
+  cancelarEdicaoExercicio();
+  const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
+  atualizarListaNomesExercicios();
+  renderExercicios(exs || [], historicoExercicios);
+  btn.disabled = false;
+  showToast(eraEdicao ? '✅ Exercício atualizado!' : '✅ Exercício adicionado!');
 }
 
 async function toggleAtividade(tipo) {
@@ -946,30 +1500,12 @@ async function toggleAtividade(tipo) {
   btn.classList.toggle('on');
 }
 
-async function addExercicio() {
-  const nome = document.getElementById('ex-nome').value.trim();
-  if (!nome) { showToast('⚠️ Digite o nome do exercício'); return; }
-  const btn = document.querySelector('.btn-add');
-  btn.disabled = true;
-  await sb.from('exercicios').insert({
-    dia_id: diaAtual.id, nome,
-    peso_kg:    parseFloat(document.getElementById('ex-peso').value)   || null,
-    series:     parseInt(document.getElementById('ex-series').value)   || null,
-    repeticoes: parseInt(document.getElementById('ex-reps').value)     || null,
-    obs:        document.getElementById('ex-obs').value.trim()         || null,
-    ordem:      Date.now(),
-  });
-  ['ex-nome','ex-peso','ex-series','ex-reps','ex-obs'].forEach(id => document.getElementById(id).value = '');
-  const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
-  renderExercicios(exs || []);
-  btn.disabled = false;
-  showToast('✅ Exercício adicionado!');
-}
-
 async function delExercicio(id) {
+  if (exercicioEditandoId === id) cancelarEdicaoExercicio();
   await sb.from('exercicios').delete().eq('id', id);
   const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
-  renderExercicios(exs || []);
+  atualizarListaNomesExercicios();
+  renderExercicios(exs || [], historicoExercicios);
 }
 
 async function salvarObs() {
