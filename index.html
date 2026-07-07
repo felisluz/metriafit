@@ -90,6 +90,14 @@ body {
 }
 .btn-personal:hover { opacity: .88; }
 .btn-personal:disabled { opacity: .4; }
+.btn-recalc-ref {
+  padding: 5px 10px; background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.68rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.btn-recalc-ref:hover { opacity: .88; }
+.btn-recalc-ref:disabled { opacity: .4; cursor: default; }
+.section-label-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 /* ===== AUTH SCREEN ===== */
 .auth-wrap {
@@ -264,6 +272,46 @@ body {
 .prog-fill.agua { background: var(--blue); }
 .prog-val { font-size: 0.67rem; color: var(--muted); min-width: 58px; text-align: right; }
 
+.ali-dia-card {
+  background: var(--surface); border: 1.5px solid #a7f3d0;
+  border-radius: var(--radius); padding: 14px 16px;
+  margin-bottom: 12px; cursor: pointer;
+  transition: box-shadow .15s, transform .1s;
+}
+.ali-dia-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.ali-dia-card:active { transform: scale(.99); }
+.ali-dia-header { margin-bottom: 12px; }
+.ali-dia-header .day-date { font-size: 1.1rem; font-weight: 900; }
+.ali-dia-header .day-date-sub { font-size: 0.72rem; color: var(--muted); text-transform: capitalize; margin-top: 2px; }
+.ali-dia-card .meta-pills { margin-bottom: 0; }
+.ali-refeicoes-qtd { font-size: 0.7rem; color: var(--muted); margin-top: 10px; }
+
+.agua-dia-card {
+  background: var(--surface); border: 1.5px solid #93c5fd;
+  border-radius: var(--radius); padding: 14px 16px;
+  margin-bottom: 12px; cursor: pointer;
+  transition: box-shadow .15s, transform .1s;
+}
+.agua-dia-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.agua-dia-card:active { transform: scale(.99); }
+.agua-dia-card.ativo { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,130,246,.2); }
+.agua-dia-card .agua-hero { margin-bottom: 10px; }
+.agua-dia-card .agua-num { font-size: 1.6rem; }
+.agua-card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 10px; margin-bottom: 12px;
+}
+.agua-card-top .ali-dia-header,
+.agua-card-top .section-label { margin-bottom: 0; flex: 1; min-width: 0; }
+.agua-card-ind { flex-shrink: 0; padding-top: 2px; }
+.agua-resumo-hoje { margin-bottom: 18px; }
+.agua-resumo-hoje .agua-num { font-size: 2.4rem; }
+.agua-resumo-list { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+.agua-resumo-list .agua-item { padding: 8px 0; }
+.agua-entradas-dia { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+.agua-entradas-dia .agua-item { padding: 8px 0; }
+.agua-outros-titulo { font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 4px 0 10px; }
+
 /* ===== TELA DO DIA ===== */
 .back-btn {
   display: flex; align-items: center; gap: 6px;
@@ -371,16 +419,51 @@ body {
 }
 .add-form-actions { display: flex; gap: 8px; }
 .add-form-actions .btn-add { flex: 1; }
-.ex-nome-row { display: flex; gap: 8px; align-items: stretch; }
+.ex-nome-row { display: flex; gap: 6px; align-items: stretch; }
 .ex-nome-row .inp { flex: 1; min-width: 0; }
+.ex-nome-wrap { position: relative; }
+.btn-ex-icon {
+  width: 40px; flex-shrink: 0;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 1rem;
+  cursor: pointer; transition: all .15s;
+}
 .btn-img-eye {
-  width: 44px; flex-shrink: 0;
+  width: 40px; flex-shrink: 0;
   background: var(--surface2); border: 1.5px solid var(--border);
   border-radius: 10px; font-size: 1.1rem;
   cursor: pointer; transition: all .15s;
 }
 .btn-img-eye:hover { border-color: var(--accent); background: var(--accent-lt); }
 .btn-img-eye.sem-foto { opacity: .45; }
+.btn-ex-clear:hover { border-color: var(--red); color: var(--red); background: var(--red-lt); }
+.ex-sugestoes {
+  display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px);
+  z-index: 60; background: #fff;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  max-height: 240px; overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+.ex-sugestoes.show { display: block; }
+.ex-sug-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; cursor: pointer;
+  border-bottom: 1px solid var(--surface2);
+}
+.ex-sug-item:last-child { border-bottom: none; }
+.ex-sug-item:hover, .ex-sug-item:active { background: var(--accent-lt); }
+.ex-sug-thumb {
+  width: 38px; height: 38px; border-radius: 8px;
+  object-fit: cover; background: var(--surface2);
+  flex-shrink: 0; border: 1px solid var(--border);
+}
+.ex-sug-thumb-vazio {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0; opacity: .5;
+}
+.ex-sug-nome { font-size: 0.82rem; font-weight: 700; line-height: 1.3; }
 .img-modal {
   display: none; position: fixed; inset: 0; z-index: 1000;
   background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
@@ -469,18 +552,78 @@ body {
 textarea.inp { min-height: 72px; resize: vertical; }
 
 /* Macros */
-.meta-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.meta-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.meta-pill.resumo { grid-column: 1 / -1; }
 .meta-pill {
   flex: 1; min-width: 85px;
   background: var(--surface2);
   border: 1.5px solid var(--border);
-  border-radius: 11px; padding: 10px 12px; text-align: center;
+  border-radius: 11px; padding: 10px 10px 9px; text-align: center;
+}
+.meta-pill-top {
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 6px; min-height: 34px;
 }
 .meta-pill .val { font-size: 1.2rem; font-weight: 900; line-height: 1; }
 .meta-pill .val.kcal { color: var(--amber); }
 .meta-pill .val.prot { color: var(--accent); }
-.meta-pill .lbl { font-size: 0.62rem; color: var(--muted); margin-top: 3px; }
-.meta-pill .sub { font-size: 0.65rem; color: var(--muted); }
+.meta-pill .val.fibra { color: #16a34a; }
+.meta-ind {
+  display: flex; flex-direction: column; align-items: center;
+  line-height: 1; padding-top: 1px;
+}
+.meta-arrow {
+  font-size: 0.95rem; font-weight: 900; line-height: 1;
+}
+.meta-diff {
+  font-size: 0.58rem; font-weight: 800; margin-top: 2px; white-space: nowrap;
+}
+.meta-ind.bad .meta-arrow { color: var(--red); }
+.meta-ind.bad .meta-diff { color: var(--red); }
+.meta-ind.good .meta-arrow { color: var(--green); }
+.meta-ind.good .meta-diff { color: var(--green); }
+.meta-ind.warn .meta-arrow { color: #d97706; }
+.meta-ind.warn .meta-diff { color: #d97706; }
+.meta-pill.resumo {
+  text-align: left; padding: 9px 10px 8px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.meta-pill.resumo.status-ok { border-color: #a7f3d0; background: linear-gradient(160deg, #f0fdf6, #fff); }
+.meta-pill.resumo.status-warn { border-color: #fcd34d; background: linear-gradient(160deg, #fffbeb, #fff); }
+.meta-pill.resumo.status-bad { border-color: #f9c0c0; background: linear-gradient(160deg, #fef2f2, #fff); }
+.meta-resumo-title {
+  font-size: 0.56rem; font-weight: 900; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.9px;
+  text-align: center; margin-bottom: 7px;
+}
+.meta-resumo-rows { display: flex; flex-direction: column; gap: 5px; }
+.meta-resumo-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.62rem; font-weight: 800; line-height: 1.2;
+}
+.meta-resumo-ico {
+  width: 14px; height: 14px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.52rem; flex-shrink: 0; font-weight: 900;
+}
+.meta-resumo-ico.ok { background: var(--green-lt); color: var(--green); }
+.meta-resumo-ico.bad { background: var(--red-lt); color: var(--red); }
+.meta-resumo-ico.warn { background: #fef3c7; color: #d97706; }
+.meta-resumo-row .txt { flex: 1; color: var(--text); }
+.meta-resumo-row .tag {
+  font-size: 0.54rem; font-weight: 800; padding: 1px 5px;
+  border-radius: 6px; white-space: nowrap;
+}
+.meta-resumo-row .tag.ok { background: var(--green-lt); color: var(--green); }
+.meta-resumo-row .tag.bad { background: var(--red-lt); color: var(--red); }
+.meta-resumo-row .tag.warn { background: #fef3c7; color: #d97706; }
+.meta-resumo-dica {
+  font-size: 0.56rem; color: var(--muted); margin-top: 7px;
+  line-height: 1.4; text-align: center;
+  padding-top: 6px; border-top: 1px dashed var(--border);
+}
+.meta-pill .lbl { font-size: 0.62rem; color: var(--muted); margin-top: 4px; }
+.meta-pill .sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
 
 /* IA */
 .ai-box {
@@ -521,6 +664,22 @@ textarea.inp { min-height: 72px; resize: vertical; }
 .refeicao-info { flex: 1; }
 .refeicao-desc { font-size: 0.83rem; font-weight: 700; }
 .refeicao-macros { font-size: 0.7rem; color: var(--muted); margin-top: 3px; display: flex; gap: 10px; }
+.refeicao-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+
+.ref-tipo-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.ref-tipo-pill {
+  padding: 8px 6px;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--surface2); color: var(--muted);
+  font-size: 0.68rem; font-weight: 800;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+  text-align: center; line-height: 1.25;
+}
+.ref-tipo-pill.active { background: var(--green); color: #fff; border-color: var(--green); }
+.ref-grupo-block { margin-top: 14px; padding-top: 14px; border-top: 1.5px solid var(--border); }
+.ref-grupo-block:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.ref-grupo-block .section-label { margin-bottom: 8px; }
+.ref-grupo-empty { font-size: 0.75rem; color: var(--muted); padding: 4px 2px 6px; }
 
 /* Água */
 .agua-hero {
@@ -542,6 +701,24 @@ textarea.inp { min-height: 72px; resize: vertical; }
 .btn-agua.rem:hover { border-color: var(--red); color: var(--red); }
 .agua-prog { height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
 .agua-prog-fill { height: 100%; background: var(--blue); border-radius: 6px; transition: width .4s; }
+.agua-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.agua-quick .btn-agua { width: 100%; margin: 0; padding: 12px 8px; font-size: 0.82rem; }
+.agua-custom-row { display: flex; gap: 8px; margin-top: 10px; align-items: stretch; }
+.agua-custom-row .inp { flex: 1; min-width: 0; }
+.agua-custom-row .btn-add { margin: 0; white-space: nowrap; padding: 0 14px; }
+.agua-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.agua-pill {
+  padding: 10px 6px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text); font-size: 0.78rem; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.agua-pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.agua-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.agua-item:last-child { border-bottom: none; }
+.agua-item-info { flex: 1; min-width: 0; }
+.agua-item-qtd { font-size: 0.88rem; font-weight: 800; color: var(--blue); }
+.agua-item-hora { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+.agua-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
 /* Perfil */
 .perfil-form { display: flex; flex-direction: column; gap: 12px; }
@@ -554,10 +731,64 @@ textarea.inp { min-height: 72px; resize: vertical; }
 }
 .metas-preview.show { display: block; }
 .metas-preview-title { font-size: 0.7rem; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.metas-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.metas-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .meta-box { text-align: center; }
 .meta-box .n { font-size: 1.3rem; font-weight: 900; }
 .meta-box .u { font-size: 0.65rem; color: var(--muted); }
+.perfil-sexo-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.perfil-sexo-pill {
+  padding: 10px 8px; border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--surface2); color: var(--muted);
+  font-size: 0.78rem; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+.perfil-sexo-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.perfil-idade {
+  padding: 12px 14px; background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 0.9rem; font-weight: 800; color: var(--text);
+}
+.imc-preview {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 14px; display: none;
+}
+.imc-preview.show { display: block; }
+.imc-preview-title { font-size: 0.7rem; font-weight: 900; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.imc-valor { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
+.imc-classificacao { font-size: 0.78rem; font-weight: 800; margin-top: 4px; }
+.imc-detalhe { font-size: 0.68rem; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+.metas-formula { font-size: 0.65rem; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+.meta-progress {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 14px; display: none;
+}
+.meta-progress.show { display: block; }
+.meta-progress-title { font-size: 0.7rem; font-weight: 900; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.meta-progress-bar { height: 8px; background: var(--border); border-radius: 6px; overflow: hidden; margin: 8px 0; }
+.meta-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 6px; transition: width .4s; }
+.meta-progress-txt { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+.plano-ia-box {
+  background: linear-gradient(135deg, #f0ebff, #e8f8f0);
+  border: 1.5px solid #c9baff; border-radius: var(--radius);
+  padding: 14px; display: none;
+}
+.plano-ia-box.show { display: block; }
+.plano-ia-box .plano-titulo { font-size: 0.7rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.plano-ia-sec { margin-bottom: 10px; }
+.plano-ia-sec .lbl { font-size: 0.68rem; font-weight: 800; color: var(--muted); margin-bottom: 3px; }
+.plano-ia-sec .txt { font-size: 0.8rem; line-height: 1.5; }
+.coach-home-card {
+  background: linear-gradient(135deg, var(--accent-lt), #e8f8f0);
+  border: 1.5px solid #c4b8ff; border-radius: var(--radius);
+  padding: 14px; margin-bottom: 14px;
+}
+.coach-home-title { font-size: 0.7rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.coach-home-meta { font-size: 0.78rem; line-height: 1.5; margin-bottom: 8px; }
+.coach-home-alerta { font-size: 0.8rem; line-height: 1.55; }
+.coach-alerta-box {
+  background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 12px; font-size: 0.8rem; line-height: 1.5;
+  display: none;
+}
+.coach-alerta-box.show { display: block; }
 .btn-logout {
   padding: 12px; background: var(--red-lt); color: var(--red);
   border: 1.5px solid #f9c0c0; border-radius: var(--radius);
@@ -678,11 +909,27 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <div class="screen-title">📅 Meu diário — hoje</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
         <button onclick="abrirHojeTab('treino')" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💪<br>Treino</button>
-        <button onclick="abrirHojeTab('alimentacao')" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🥗<br>Alimentação</button>
+        <button onclick="abrirAlimentacao()" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🥗<br>Alimentação</button>
         <button onclick="abrirHojeTab('agua')" style="background:var(--blue);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💧<br>Água</button>
+      </div>
+      <div id="coach-home" class="coach-home-card" style="display:none">
+        <div class="coach-home-title">🎯 Sua meta</div>
+        <div class="coach-home-meta" id="coach-home-meta"></div>
+        <div class="meta-progress-bar"><div class="meta-progress-fill" id="coach-home-bar" style="width:0%"></div></div>
+        <div class="coach-home-alerta" id="coach-home-alertas"></div>
+        <button type="button" class="btn-personal" id="btn-coach-dia" onclick="atualizarCoachDia(true)">🤖 Atualizar orientação de hoje</button>
       </div>
       <div id="alertas-home"></div>
       <div id="lista-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+    </div>
+
+    <!-- ALIMENTAÇÃO — resumo por dia -->
+    <div class="screen" id="screen-alimentacao">
+      <button class="back-btn" onclick="voltarHome()">← Voltar</button>
+      <div class="screen-title">🥗 Alimentação</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin:-12px 0 16px">Resumo de cada dia com refeições registradas</p>
+      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--green)" onclick="abrirHojeTab('alimentacao')">+ Registrar refeição hoje</button>
+      <div id="lista-alimentacao-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
 
     <!-- DIA -->
@@ -704,6 +951,12 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
       <!-- TREINO -->
       <div id="tab-treino">
+        <div class="personal-box" id="personal-box" style="display:none">
+          <div class="personal-box-label">🤖 Coach de treino</div>
+          <div class="personal-msg" id="personal-msg">Carregando orientação...</div>
+          <button type="button" class="btn-personal" id="btn-personal" onclick="consultarPersonal()">💬 Pedir dica personalizada</button>
+        </div>
+
         <div class="section-card">
           <div class="section-label">🏃 Atividades</div>
           <div class="act-grid">
@@ -722,11 +975,14 @@ textarea.inp { min-height: 72px; resize: vertical; }
             <button type="button" class="grupo-pill" data-grupo="abdomen" onclick="setGrupo('abdomen')">🎯 Abdômen</button>
           </div>
           <div class="add-form">
-            <div class="ex-nome-row">
-              <input class="inp" id="ex-nome" list="ex-nomes-list" placeholder="Nome do exercício (ex: Leg Press)" oninput="preencherExercicioAnterior(); atualizarBotaoImagem()" onchange="preencherExercicioAnterior(); atualizarBotaoImagem()">
-              <button type="button" class="btn-img-eye sem-foto" id="btn-ex-img" onclick="abrirModalImagem()" title="Ver foto do aparelho">👁</button>
+            <div class="ex-nome-wrap">
+              <div class="ex-nome-row">
+                <input class="inp" id="ex-nome" autocomplete="off" placeholder="Nome do exercício (ex: Leg Press)" oninput="onExNomeInput()" onfocus="renderSugestoes()" onchange="preencherExercicioAnterior(); atualizarBotaoImagem()">
+                <button type="button" class="btn-ex-icon btn-img-eye sem-foto" id="btn-ex-img" onclick="abrirModalImagem()" title="Ver foto do aparelho">👁</button>
+                <button type="button" class="btn-ex-icon btn-ex-clear" onclick="limparFormExercicioCompleto()" title="Limpar tudo e escolher de novo">✕</button>
+              </div>
+              <div class="ex-sugestoes" id="ex-sugestoes"></div>
             </div>
-            <datalist id="ex-nomes-list"></datalist>
             <input type="file" id="ex-imagem-input" accept="image/*" capture="environment" style="display:none" onchange="uploadImagemExercicio(this)">
             <div class="row">
               <input class="inp" id="ex-peso"   placeholder="Peso (kg)"  type="number" step="0.5">
@@ -763,19 +1019,33 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
       <!-- ALIMENTAÇÃO -->
       <div id="tab-alimentacao" style="display:none">
+        <div class="coach-alerta-box" id="coach-alimentacao-box"></div>
         <div class="meta-pills" id="macros-hoje"></div>
 
         <div class="ai-box">
           <div class="ai-box-label">✨ Registrar com IA</div>
+          <div class="ref-tipo-pills" id="ref-tipo-pills">
+            <button type="button" class="ref-tipo-pill active" data-tipo="cafe_manha" onclick="setTipoRefeicao('cafe_manha')">☕ Café da manhã</button>
+            <button type="button" class="ref-tipo-pill" data-tipo="lanche_manha" onclick="setTipoRefeicao('lanche_manha')">🍎 Lanche da manhã</button>
+            <button type="button" class="ref-tipo-pill" data-tipo="almoco" onclick="setTipoRefeicao('almoco')">🍽️ Almoço</button>
+            <button type="button" class="ref-tipo-pill" data-tipo="lanche_tarde" onclick="setTipoRefeicao('lanche_tarde')">🥪 Lanche da tarde</button>
+            <button type="button" class="ref-tipo-pill" data-tipo="jantar" onclick="setTipoRefeicao('jantar')">🌙 Jantar</button>
+            <button type="button" class="ref-tipo-pill" data-tipo="lanche_noite" onclick="setTipoRefeicao('lanche_noite')">🍪 Lanche após jantar</button>
+          </div>
           <div class="ai-input-row">
-            <input class="inp" id="ai-input" placeholder="Ex: comi 2 ovos mexidos com queijo e café com leite...">
+            <input class="inp" id="ai-input" placeholder="Ex: Café da manhã: shake com whey e mel..." oninput="detectarTipoNoTexto()">
             <button class="btn-ai" id="btn-ai" onclick="processarRefeicao()">Analisar</button>
           </div>
+          <p style="font-size:0.68rem;color:var(--muted);margin-top:8px;line-height:1.4">Selecione a refeição acima ou comece o texto com o nome dela (ex: <em>Almoço: arroz e frango</em>).</p>
           <div class="ai-result" id="ai-result"></div>
         </div>
 
         <div class="section-card">
-          <div class="section-label">🍽️ Refeições do dia</div>
+          <div class="section-label-row">
+            <div class="section-label" style="margin:0">🍽️ Refeições do dia</div>
+            <button type="button" class="btn-recalc-ref" id="btn-recalc-ref" onclick="recalcularRefeicoesDia()" title="IA recalcula kcal, proteína e fibra de todas as refeições">🔄 Recalcular tudo</button>
+          </div>
+          <p style="font-size:0.65rem;color:var(--muted);margin:6px 0 10px;line-height:1.4">Use <strong>Recalcular tudo</strong> para atualizar fibras de refeições antigas.</p>
           <div id="lista-refeicoes"></div>
         </div>
       </div>
@@ -783,25 +1053,34 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <!-- ÁGUA -->
       <div id="tab-agua" style="display:none">
         <div class="section-card">
-          <div class="section-label">💧 Hidratação</div>
+          <div class="agua-card-top">
+            <div class="section-label" style="margin:0">💧 Hidratação</div>
+            <div id="agua-dia-ind"></div>
+          </div>
           <div class="agua-hero">
             <div class="agua-num" id="agua-total">0L</div>
             <div class="agua-info">
               <div class="meta" id="agua-pct">0%</div>
               <div class="lbl" id="agua-meta-txt">da meta diária</div>
             </div>
-            <div class="agua-btns">
-              <button class="btn-agua rem" onclick="removerAgua()">− 1L</button>
-              <button class="btn-agua add" onclick="adicionarAgua()">+ 1L</button>
-            </div>
           </div>
           <div class="agua-prog">
             <div class="agua-prog-fill" id="agua-bar" style="width:0%"></div>
           </div>
+          <div class="agua-quick">
+            <button type="button" class="btn-agua add" onclick="adicionarAguaMl(250)">+ 250 ml</button>
+            <button type="button" class="btn-agua add" onclick="adicionarAguaMl(500)">+ 500 ml</button>
+            <button type="button" class="btn-agua add" onclick="adicionarAguaMl(1000)">+ 1 L</button>
+          </div>
+          <div class="agua-custom-row">
+            <input class="inp" id="agua-custom-ml" type="number" min="1" step="50" placeholder="Outra quantidade (ml)">
+            <button type="button" class="btn-add" onclick="adicionarAguaCustom()">Adicionar</button>
+          </div>
+          <div class="agua-entradas-dia" id="lista-agua-entradas"></div>
         </div>
         <div class="section-card">
-          <div class="section-label">📋 Registros</div>
-          <div id="lista-agua"></div>
+          <div class="section-label">📋 Registros do dia</div>
+          <div id="lista-agua"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -825,14 +1104,74 @@ textarea.inp { min-height: 72px; resize: vertical; }
               <input class="inp" id="p-altura" placeholder="Ex: 165" type="number" oninput="calcularMetas()">
             </div>
           </div>
+          <div class="two-col">
+            <div class="inp-group">
+              <div class="inp-label">Data de nascimento</div>
+              <input class="inp" id="p-nascimento" type="date" oninput="calcularMetas()">
+            </div>
+            <div class="inp-group">
+              <div class="inp-label">Idade</div>
+              <div class="perfil-idade" id="p-idade">—</div>
+            </div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Sexo</div>
+            <div class="perfil-sexo-pills" id="p-sexo-pills">
+              <button type="button" class="perfil-sexo-pill active" data-sexo="feminino" onclick="setSexoPerfil('feminino')">Feminino</button>
+              <button type="button" class="perfil-sexo-pill" data-sexo="masculino" onclick="setSexoPerfil('masculino')">Masculino</button>
+            </div>
+          </div>
+          <div class="inp-group">
+            <div class="inp-label">Nível de atividade</div>
+            <select class="inp" id="p-atividade" onchange="calcularMetas()">
+              <option value="sedentario">Sedentário — pouco ou nenhum exercício</option>
+              <option value="leve">Leve — 1 a 3 dias/semana</option>
+              <option value="moderado" selected>Moderado — 3 a 5 dias/semana</option>
+              <option value="intenso">Intenso — 6 a 7 dias/semana</option>
+              <option value="muito_intenso">Muito intenso — atleta ou trabalho físico</option>
+            </select>
+          </div>
+          <div class="two-col">
+            <div class="inp-group">
+              <div class="inp-label">Peso meta (kg)</div>
+              <input class="inp" id="p-peso-meta" placeholder="Ex: 65" type="number" step="0.1" oninput="calcularMetas()">
+            </div>
+            <div class="inp-group">
+              <div class="inp-label">Objetivo</div>
+              <select class="inp" id="p-objetivo" onchange="calcularMetas()">
+                <option value="recomposicao" selected>Emagrecer e definir (manter músculos)</option>
+                <option value="emagrecer">Emagrecer</option>
+                <option value="ganhar_massa">Ganhar massa muscular</option>
+                <option value="manter">Manter peso</option>
+              </select>
+            </div>
+          </div>
+          <div class="meta-progress" id="meta-progress">
+            <div class="meta-progress-title">🎯 Progresso até a meta</div>
+            <div class="meta-progress-txt" id="meta-progress-txt">—</div>
+            <div class="meta-progress-bar"><div class="meta-progress-fill" id="meta-progress-fill" style="width:0%"></div></div>
+          </div>
+          <div class="imc-preview" id="imc-preview">
+            <div class="imc-preview-title">📏 IMC — Índice de Massa Corporal</div>
+            <div class="imc-valor" id="mc-imc">—</div>
+            <div class="imc-classificacao" id="mc-imc-class">—</div>
+            <div class="imc-detalhe" id="mc-imc-detalhe">Peso ÷ altura² (kg/m²)</div>
+          </div>
           <div class="metas-preview" id="metas-preview">
             <div class="metas-preview-title">📊 Suas metas calculadas</div>
             <div class="metas-grid">
               <div class="meta-box"><div class="n" id="mc-kcal">-</div><div class="u">kcal/dia</div></div>
               <div class="meta-box"><div class="n" id="mc-prot">-</div><div class="u">g proteína</div></div>
+              <div class="meta-box"><div class="n" id="mc-fibra">-</div><div class="u">g fibra</div></div>
               <div class="meta-box"><div class="n" id="mc-agua">-</div><div class="u">L água</div></div>
             </div>
+            <div class="metas-formula" id="mc-formula"></div>
           </div>
+          <div class="plano-ia-box" id="plano-ia-box">
+            <div class="plano-titulo">🤖 Plano personalizado (IA)</div>
+            <div id="plano-ia-conteudo"></div>
+          </div>
+          <button type="button" class="btn-add" style="width:100%;background:var(--accent);margin-bottom:8px" id="btn-gerar-plano" onclick="gerarPlanoIA()">✨ Gerar plano com IA</button>
           <button class="btn-primary" onclick="salvarPerfil()">Salvar perfil</button>
         </div>
       </div>
@@ -868,6 +1207,61 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <p class="img-modal-hint">Tire uma foto na academia — na próxima vez você reconhece o aparelho pelo nome!</p>
     </div>
     <button type="button" class="btn-add" onclick="document.getElementById('ex-imagem-input').click()">📷 Adicionar / trocar foto</button>
+  </div>
+</div>
+
+<div class="img-modal" id="ref-modal" onclick="fecharModalRefeicao(event)">
+  <div class="img-modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="img-modal-close" onclick="fecharModalRefeicao()">✕</button>
+    <div class="img-modal-title">Editar refeição</div>
+    <div class="ref-tipo-pills" id="ref-tipo-pills-modal" style="margin-bottom:12px">
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="cafe_manha" onclick="setTipoRefeicaoModal('cafe_manha')">☕ Café da manhã</button>
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="lanche_manha" onclick="setTipoRefeicaoModal('lanche_manha')">🍎 Lanche da manhã</button>
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="almoco" onclick="setTipoRefeicaoModal('almoco')">🍽️ Almoço</button>
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="lanche_tarde" onclick="setTipoRefeicaoModal('lanche_tarde')">🥪 Lanche da tarde</button>
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="jantar" onclick="setTipoRefeicaoModal('jantar')">🌙 Jantar</button>
+      <button type="button" class="ref-tipo-pill ref-tipo-pill-modal" data-tipo="lanche_noite" onclick="setTipoRefeicaoModal('lanche_noite')">🍪 Lanche após jantar</button>
+    </div>
+    <div class="inp-group" style="margin-bottom:10px">
+      <div class="inp-label">Descrição</div>
+      <input class="inp" id="ref-edit-desc" placeholder="Ex: Shake com whey e mel">
+    </div>
+    <div class="two-col">
+      <div class="inp-group">
+        <div class="inp-label">Calorias (kcal)</div>
+        <input class="inp" id="ref-edit-kcal" type="text" readonly placeholder="—" style="opacity:.9;background:var(--surface2)">
+      </div>
+      <div class="inp-group">
+        <div class="inp-label">Proteína (g)</div>
+        <input class="inp" id="ref-edit-prot" type="text" readonly placeholder="—" style="opacity:.9;background:var(--surface2)">
+      </div>
+    </div>
+    <div class="inp-group" style="margin-bottom:8px">
+      <div class="inp-label">Fibra (g)</div>
+      <input class="inp" id="ref-edit-fibra" type="text" readonly placeholder="—" style="opacity:.9;background:var(--surface2)">
+    </div>
+    <p style="font-size:0.65rem;color:var(--muted);margin:-4px 0 10px;line-height:1.4">Ao salvar, a IA recalcula kcal, proteína e fibra se você mudar a descrição.</p>
+    <button type="button" class="btn-add" id="btn-ref-salvar" onclick="salvarEdicaoRefeicao()">✓ Salvar alteração</button>
+  </div>
+</div>
+
+<div class="img-modal" id="agua-modal" onclick="fecharModalAgua(event)">
+  <div class="img-modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="img-modal-close" onclick="fecharModalAgua()">✕</button>
+    <div class="img-modal-title">Editar registro de água</div>
+    <div class="agua-pills" id="agua-pills-modal">
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="250" onclick="setAguaModalMl(250)">250 ml</button>
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="500" onclick="setAguaModalMl(500)">500 ml</button>
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="750" onclick="setAguaModalMl(750)">750 ml</button>
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="1000" onclick="setAguaModalMl(1000)">1 L</button>
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="1500" onclick="setAguaModalMl(1500)">1,5 L</button>
+      <button type="button" class="agua-pill agua-pill-modal" data-ml="2000" onclick="setAguaModalMl(2000)">2 L</button>
+    </div>
+    <div class="inp-group" style="margin-bottom:10px">
+      <div class="inp-label">Quantidade (ml)</div>
+      <input class="inp" id="agua-edit-ml" type="number" min="1" step="50" placeholder="Ex: 500">
+    </div>
+    <button type="button" class="btn-add" id="btn-agua-salvar" onclick="salvarEdicaoAgua()">✓ Salvar alteração</button>
   </div>
 </div>
 
@@ -959,6 +1353,7 @@ async function iniciarApp(user) {
   document.getElementById('user-chip').textContent = userAtual.email;
   document.getElementById('perfil-email').textContent = userAtual.email;
   await Promise.allSettled([carregarPerfil(), carregarDias()]);
+  atualizarCoachDia().catch(() => {});
 }
 
 sb.auth.onAuthStateChange((event, session) => {
@@ -993,51 +1388,389 @@ function switchTab(tab) {
 }
 
 // ===== PERFIL =====
+const FATORES_ATIVIDADE = {
+  sedentario: 1.2,
+  leve: 1.375,
+  moderado: 1.55,
+  intenso: 1.725,
+  muito_intenso: 1.9,
+};
+const OBJETIVOS_PERFIL = {
+  recomposicao: { label: 'Emagrecer e definir', ajuste: -250, protMult: 1.8, formula: 'déficit de 250 kcal + proteína 1,8 g/kg (adequada mesmo sem treinar todo dia)' },
+  emagrecer: { label: 'Emagrecer', ajuste: -300, protMult: 1.6, formula: 'déficit de 300 kcal + proteína 1,6 g/kg' },
+  ganhar_massa: { label: 'Ganhar massa', ajuste: 250, protMult: 2.0, formula: 'superávit de 250 kcal' },
+  manter: { label: 'Manter peso', ajuste: 0, protMult: 1.4, formula: 'manutenção calórica + proteína 1,4 g/kg' },
+};
+
+function calcularMetaFibra(sexo, kcal) {
+  const min = sexo === 'masculino' ? 30 : 25;
+  const porKcal = Math.round((kcal || 2000) / 1000 * 14);
+  return Math.max(min, porKcal);
+}
+let sexoPerfil = 'feminino';
+
 async function carregarPerfil() {
   const { data } = await sb.from('perfil').select('*').eq('user_id', userAtual.id).maybeSingle();
   perfilData = data;
+  renderMetaHome();
+  renderCoachAlimentacao();
+}
+
+function setSexoPerfil(sexo) {
+  sexoPerfil = sexo;
+  document.querySelectorAll('.perfil-sexo-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.sexo === sexo);
+  });
+  calcularMetas();
+}
+
+function calcularIdade(dataStr) {
+  if (!dataStr) return null;
+  const nasc = new Date(dataStr + 'T12:00:00');
+  if (Number.isNaN(nasc.getTime())) return null;
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - nasc.getFullYear();
+  const m = hoje.getMonth() - nasc.getMonth();
+  if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+  return idade >= 0 && idade < 120 ? idade : null;
+}
+
+function calcularIMC(peso, alturaCm) {
+  const alturaM = alturaCm / 100;
+  return peso / (alturaM * alturaM);
+}
+
+function classificarIMC(imc) {
+  if (imc < 18.5) return { label: 'Baixo peso', cor: 'var(--blue)' };
+  if (imc < 25) return { label: 'Peso normal', cor: 'var(--green)' };
+  if (imc < 30) return { label: 'Sobrepeso', cor: '#d97706' };
+  if (imc < 35) return { label: 'Obesidade grau I', cor: 'var(--red)' };
+  if (imc < 40) return { label: 'Obesidade grau II', cor: 'var(--red)' };
+  return { label: 'Obesidade grau III', cor: 'var(--red)' };
+}
+
+function lerDadosPerfilForm() {
+  const peso = parseFloat(document.getElementById('p-peso').value);
+  const altura = parseFloat(document.getElementById('p-altura').value);
+  const pesoMeta = parseFloat(document.getElementById('p-peso-meta').value);
+  const dataNasc = document.getElementById('p-nascimento').value;
+  const idade = calcularIdade(dataNasc);
+  const sexo = sexoPerfil;
+  const atividade = document.getElementById('p-atividade').value || 'moderado';
+  const objetivo = document.getElementById('p-objetivo').value || 'recomposicao';
+  return { peso, altura, pesoMeta, dataNasc, idade, sexo, atividade, objetivo };
+}
+
+function montarContextoPerfil() {
+  const form = lerDadosPerfilForm();
+  const p = perfilData || {};
+  return {
+    nome: document.getElementById('p-nome')?.value?.trim() || p.nome,
+    peso_kg: form.peso || p.peso_kg,
+    peso_meta_kg: form.pesoMeta || p.peso_meta_kg,
+    altura_cm: form.altura || p.altura_cm,
+    idade: form.idade ?? (p.data_nascimento ? calcularIdade(p.data_nascimento) : null),
+    sexo: form.sexo || p.sexo,
+    nivel_atividade: form.atividade || p.nivel_atividade,
+    objetivo: form.objetivo || p.objetivo || 'recomposicao',
+    meta_kcal: p.meta_kcal,
+    meta_proteina_g: p.meta_proteina_g,
+    meta_fibra_g: p.meta_fibra_g,
+  };
+}
+
+async function chamarIA(acao, extras = {}) {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session?.access_token) throw new Error('Sessão expirada — faça login novamente');
+  const res = await fetch(`${SUPA_URL}/functions/v1/analisar-refeicao`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': SUPA_KEY,
+    },
+    body: JSON.stringify({ acao, perfil: montarContextoPerfil(), ...extras }),
+  });
+  let parsed;
+  try {
+    parsed = await res.json();
+  } catch {
+    throw new Error('Resposta inválida do servidor — atualize a edge function no Supabase');
+  }
+  if (!res.ok || parsed.error) {
+    const msg = parsed.error || `Erro ${res.status}`;
+    if (msg.includes('JSON válido') || msg.includes('GEMINI')) throw new Error(msg);
+    throw new Error(msg);
+  }
+  return parsed;
+}
+
+function calcularMetasPerfil({ peso, altura, idade, sexo, atividade, objetivo }) {
+  const cfg = OBJETIVOS_PERFIL[objetivo] || OBJETIVOS_PERFIL.recomposicao;
+  const sexoAdj = sexo === 'masculino' ? 5 : -161;
+  const tmb = 10 * peso + 6.25 * altura - 5 * idade + sexoAdj;
+  const fator = FATORES_ATIVIDADE[atividade] || 1.55;
+  const tdee = tmb * fator;
+  const kcal = Math.round(Math.max(1200, tdee + cfg.ajuste));
+  const prot = Math.round(peso * cfg.protMult);
+  const aguaMl = Math.round(peso * 35);
+  const fibra = calcularMetaFibra(sexo, kcal);
+  const imc = calcularIMC(peso, altura);
+  return { tmb: Math.round(tmb), tdee: Math.round(tdee), kcal, prot, aguaMl, fibra, imc, cfg };
+}
+
+function atualizarBarraMeta(peso, pesoMeta, pesoInicial) {
+  const el = document.getElementById('meta-progress');
+  const txt = document.getElementById('meta-progress-txt');
+  const fill = document.getElementById('meta-progress-fill');
+  if (!peso || !pesoMeta || pesoMeta >= peso) {
+    el?.classList.remove('show');
+    return;
+  }
+  const falta = peso - pesoMeta;
+  const inicio = pesoInicial && pesoInicial > pesoMeta ? pesoInicial : peso;
+  const total = inicio - pesoMeta;
+  const feito = Math.max(0, inicio - peso);
+  const pct = total > 0 ? Math.min(100, Math.round(feito / total * 100)) : 0;
+  txt.textContent = `${peso} kg → meta ${pesoMeta} kg · faltam ${falta.toFixed(1).replace('.', ',')} kg (${pct}% do caminho)`;
+  fill.style.width = pct + '%';
+  el.classList.add('show');
+}
+
+function renderPlanoPerfil(plano) {
+  const box = document.getElementById('plano-ia-box');
+  const el = document.getElementById('plano-ia-conteudo');
+  if (!plano || !box || !el) return;
+  const sec = (lbl, txt) => txt ? `<div class="plano-ia-sec"><div class="lbl">${lbl}</div><div class="txt">${txt}</div></div>` : '';
+  el.innerHTML =
+    sec('📋 Resumo', plano.resumo) +
+    sec('⏱️ Prazo estimado', plano.prazo) +
+    sec('💪 Treino', plano.treino) +
+    sec('🥗 Alimentação', plano.alimentacao) +
+    sec('⚠️ Foco no treino', plano.alerta_treino) +
+    sec('⚠️ Foco na alimentação', plano.alerta_alimentacao);
+  box.classList.add('show');
+}
+
+function renderMetaHome() {
+  const card = document.getElementById('coach-home');
+  const metaEl = document.getElementById('coach-home-meta');
+  const alertasEl = document.getElementById('coach-home-alertas');
+  const bar = document.getElementById('coach-home-bar');
+  if (!card || !perfilData?.peso_kg) { card && (card.style.display = 'none'); return; }
+
+  const peso = Number(perfilData.peso_kg);
+  const meta = Number(perfilData.peso_meta_kg);
+  const plano = typeof perfilData.plano_ia === 'object' ? perfilData.plano_ia : null;
+
+  if (meta && meta < peso) {
+    const falta = (peso - meta).toFixed(1).replace('.', ',');
+    const obj = OBJETIVOS_PERFIL[perfilData.objetivo || 'recomposicao']?.label || 'Sua meta';
+    metaEl.innerHTML = `<strong>${peso} kg</strong> → <strong>${meta} kg</strong> · faltam <strong>${falta} kg</strong><br><span style="color:var(--muted)">${obj}</span>`;
+    const pct = Math.min(100, Math.max(0, Math.round((1 - (peso - meta) / Math.max(peso - meta, 3.5)) * 100)));
+    if (bar) bar.style.width = Math.max(5, 100 - Math.round((peso - meta) / 3.5 * 100)) + '%';
+
+    let alertas = '';
+    if (plano?.alerta_treino) alertas += `<div>💪 <strong>Treino:</strong> ${plano.alerta_treino}</div>`;
+    if (plano?.alerta_alimentacao) alertas += `<div style="margin-top:6px">🥗 <strong>Alimentação:</strong> ${plano.alerta_alimentacao}</div>`;
+    if (!alertas && plano?.resumo) alertas = plano.resumo;
+    alertasEl.innerHTML = alertas || 'Gere seu plano com IA no perfil para receber orientações diárias.';
+    card.style.display = '';
+  } else {
+    card.style.display = 'none';
+  }
+}
+
+function renderCoachAlimentacao() {
+  const box = document.getElementById('coach-alimentacao-box');
+  if (!box) return;
+  const plano = typeof perfilData?.plano_ia === 'object' ? perfilData.plano_ia : null;
+  if (plano?.alerta_alimentacao) {
+    box.innerHTML = `🥗 <strong>Coach:</strong> ${plano.alerta_alimentacao}`;
+    box.classList.add('show');
+  } else {
+    box.classList.remove('show');
+    box.innerHTML = '';
+  }
+}
+
+async function gerarPlanoIA() {
+  const { peso, pesoMeta } = lerDadosPerfilForm();
+  if (!peso) { showToast('⚠️ Preencha o peso atual'); return; }
+  if (!pesoMeta) { showToast('⚠️ Informe o peso meta'); return; }
+  const btn = document.getElementById('btn-gerar-plano');
+  btn.disabled = true;
+  btn.textContent = 'Gerando plano...';
+  try {
+    const plano = await chamarIA('plano');
+    if (!perfilData?.id) {
+      showToast('⚠️ Salve o perfil primeiro');
+      return;
+    }
+    const { error } = await sb.from('perfil').update({ plano_ia: plano, updated_at: new Date().toISOString() }).eq('id', perfilData.id);
+    if (error) throw error;
+    await carregarPerfil();
+    renderPlanoPerfil(plano);
+    renderMetaHome();
+    showToast('✅ Plano gerado pela IA!');
+  } catch (e) {
+    console.error(e);
+    showToast('⚠️ ' + (e.message || 'Erro ao gerar plano').slice(0, 80));
+  }
+  btn.disabled = false;
+  btn.textContent = '✨ Gerar plano com IA';
+}
+
+async function atualizarCoachDia(forcar = false) {
+  const hoje = new Date().toISOString().slice(0, 10);
+  const cacheKey = 'metriafit-coach-' + hoje;
+  if (!forcar) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const c = JSON.parse(cached);
+        document.getElementById('coach-home-alertas').innerHTML =
+          `<div>💪 ${c.alerta_treino || ''}</div><div style="margin-top:6px">🥗 ${c.alerta_alimentacao || ''}</div>`;
+        return;
+      } catch { /* gera de novo */ }
+    }
+  }
+  const btn = document.getElementById('btn-coach-dia');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  try {
+    let kcalJ = 0, protJ = 0;
+    if (diaAtual?.id) {
+      const { data: refs } = await sb.from('refeicoes').select('kcal,proteina_g').eq('dia_id', diaAtual.id);
+      kcalJ = (refs || []).reduce((s, r) => s + (r.kcal || 0), 0);
+      protJ = (refs || []).reduce((s, r) => s + (r.proteina_g || 0), 0);
+    }
+    const plano = typeof perfilData?.plano_ia === 'object' ? perfilData.plano_ia : undefined;
+    const data = await chamarIA('coach_dia', { plano, kcalJ, protJ });
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    document.getElementById('coach-home-alertas').innerHTML =
+      `<div>💪 <strong>Treino:</strong> ${data.alerta_treino || data.resumo_dia || '—'}</div>` +
+      `<div style="margin-top:6px">🥗 <strong>Alimentação:</strong> ${data.alerta_alimentacao || '—'}</div>`;
+  } catch (e) {
+    showToast('⚠️ Não foi possível atualizar o coach');
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '🤖 Atualizar orientação de hoje'; }
 }
 
 function carregarPerfilForm() {
-  if (!perfilData) return;
-  document.getElementById('p-nome').value   = perfilData.nome || '';
-  document.getElementById('p-peso').value   = perfilData.peso_kg || '';
-  document.getElementById('p-altura').value = perfilData.altura_cm || '';
+  if (perfilData) {
+    document.getElementById('p-nome').value = perfilData.nome || '';
+    document.getElementById('p-peso').value = perfilData.peso_kg || '';
+    document.getElementById('p-altura').value = perfilData.altura_cm || '';
+    document.getElementById('p-nascimento').value = perfilData.data_nascimento || '';
+    sexoPerfil = perfilData.sexo || 'feminino';
+    document.querySelectorAll('.perfil-sexo-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.sexo === sexoPerfil);
+    });
+    document.getElementById('p-atividade').value = perfilData.nivel_atividade || 'moderado';
+    document.getElementById('p-peso-meta').value = perfilData.peso_meta_kg || '';
+    document.getElementById('p-objetivo').value = perfilData.objetivo || 'recomposicao';
+    if (perfilData.plano_ia) renderPlanoPerfil(perfilData.plano_ia);
+  }
   calcularMetas();
 }
 
 function calcularMetas() {
-  const peso   = parseFloat(document.getElementById('p-peso').value);
-  const altura = parseFloat(document.getElementById('p-altura').value);
-  if (!peso || !altura) { document.getElementById('metas-preview').classList.remove('show'); return; }
-  const tmb  = 10 * peso + 6.25 * altura - 5 * 25 - 161;
-  const tdee = tmb * 1.55;
-  const kcal = Math.round(tdee - 300);
-  const prot = Math.round(peso * 2.0);
-  const agua = (peso * 35 / 1000).toFixed(1);
-  document.getElementById('mc-kcal').textContent = kcal;
-  document.getElementById('mc-prot').textContent = prot + 'g';
-  document.getElementById('mc-agua').textContent = agua + 'L';
-  document.getElementById('metas-preview').classList.add('show');
+  const { peso, altura, pesoMeta, dataNasc, idade, sexo, atividade, objetivo } = lerDadosPerfilForm();
+  const idadeEl = document.getElementById('p-idade');
+  const imcBox = document.getElementById('imc-preview');
+  const metasBox = document.getElementById('metas-preview');
+
+  if (!dataNasc) {
+    idadeEl.textContent = '—';
+  } else if (idade == null) {
+    idadeEl.textContent = 'Data inválida';
+  } else {
+    idadeEl.textContent = idade + ' anos';
+  }
+
+  if (!peso || !altura) {
+    imcBox.classList.remove('show');
+    metasBox.classList.remove('show');
+    document.getElementById('meta-progress')?.classList.remove('show');
+    return;
+  }
+
+  const imc = calcularIMC(peso, altura);
+  const cls = classificarIMC(imc);
+  document.getElementById('mc-imc').textContent = imc.toFixed(1).replace('.', ',');
+  document.getElementById('mc-imc-class').textContent = cls.label;
+  document.getElementById('mc-imc-class').style.color = cls.cor;
+  document.getElementById('mc-imc-detalhe').textContent =
+    `${peso} kg ÷ (${(altura / 100).toFixed(2).replace('.', ',')} m)² = ${imc.toFixed(1).replace('.', ',')} kg/m²`;
+  imcBox.classList.add('show');
+  atualizarBarraMeta(peso, pesoMeta, perfilData?.peso_kg);
+
+  if (idade == null) {
+    metasBox.classList.remove('show');
+    return;
+  }
+
+  const metas = calcularMetasPerfil({ peso, altura, idade, sexo, atividade, objetivo });
+  document.getElementById('mc-kcal').textContent = metas.kcal;
+  document.getElementById('mc-prot').textContent = metas.prot;
+  document.getElementById('mc-fibra').textContent = metas.fibra;
+  document.getElementById('mc-agua').textContent = (metas.aguaMl / 1000).toFixed(1).replace('.', ',');
+  document.getElementById('mc-formula').textContent =
+    `TMB ${metas.tmb} kcal (Mifflin-St Jeor, ${idade} anos) × atividade ${fatorAtividadeLabel(atividade)} → ${metas.tdee} kcal/dia, com ${metas.cfg.formula}. Fibra: mín. ${sexo === 'masculino' ? 30 : 25}g ou 14g/1000 kcal.`;
+  metasBox.classList.add('show');
+}
+
+function fatorAtividadeLabel(atividade) {
+  const labels = {
+    sedentario: '1,2',
+    leve: '1,375',
+    moderado: '1,55',
+    intenso: '1,725',
+    muito_intenso: '1,9',
+  };
+  return labels[atividade] || '1,55';
 }
 
 async function salvarPerfil() {
-  const nome   = document.getElementById('p-nome').value.trim();
-  const peso   = parseFloat(document.getElementById('p-peso').value);
-  const altura = parseFloat(document.getElementById('p-altura').value);
+  const nome = document.getElementById('p-nome').value.trim();
+  const { peso, altura, pesoMeta, dataNasc, idade, sexo, atividade, objetivo } = lerDadosPerfilForm();
   if (!peso || !altura) { showToast('⚠️ Preencha peso e altura'); return; }
-  const tmb  = 10 * peso + 6.25 * altura - 5 * 25 - 161;
-  const tdee = tmb * 1.55;
-  const kcal = Math.round(tdee - 300);
-  const prot = Math.round(peso * 2.0);
-  const agua = Math.round(peso * 35);
-  const payload = { user_id: userAtual.id, nome, peso_kg: peso, altura_cm: altura, meta_kcal: kcal, meta_proteina_g: prot, meta_agua_ml: agua, updated_at: new Date().toISOString() };
+  if (!dataNasc || idade == null) { showToast('⚠️ Informe a data de nascimento'); return; }
+  const metas = calcularMetasPerfil({ peso, altura, idade, sexo, atividade, objetivo });
+  const payload = {
+    user_id: userAtual.id,
+    nome,
+    peso_kg: peso,
+    altura_cm: altura,
+    peso_meta_kg: pesoMeta || null,
+    objetivo,
+    data_nascimento: dataNasc,
+    sexo,
+    nivel_atividade: atividade,
+    meta_kcal: metas.kcal,
+    meta_proteina_g: metas.prot,
+    meta_fibra_g: metas.fibra,
+    meta_agua_ml: metas.aguaMl,
+    updated_at: new Date().toISOString(),
+  };
+  let error;
   if (perfilData?.id) {
-    await sb.from('perfil').update(payload).eq('id', perfilData.id);
+    ({ error } = await sb.from('perfil').update(payload).eq('id', perfilData.id));
   } else {
-    await sb.from('perfil').insert(payload);
+    ({ error } = await sb.from('perfil').insert(payload));
+  }
+  if (error) {
+    console.error(error);
+    const msg = error.message || '';
+    if (msg.includes('data_nascimento') || msg.includes('sexo') || msg.includes('nivel_atividade') || msg.includes('peso_meta') || msg.includes('objetivo') || msg.includes('meta_fibra') || msg.includes('fibra_g') || error.code === 'PGRST204') {
+      showToast('⚠️ Rode os scripts SQL no Supabase (perfil + fibra)');
+    } else {
+      showToast('⚠️ Erro ao salvar perfil');
+    }
+    return;
   }
   await carregarPerfil();
+  renderMetaHome();
   showToast('✅ Perfil salvo!');
 }
 
@@ -1115,14 +1848,31 @@ async function carregarDias() {
 
     // Buscar dados extras com Promise.allSettled — nunca rejeita
     const ids = dias.map(d => d.id);
-    const [r1, r2, r3] = await Promise.allSettled([
+    const [r1, r2, r3, r4] = await Promise.allSettled([
       sb.from('atividades').select('dia_id,tipo,feito').in('dia_id', ids).eq('feito', true),
       sb.from('refeicoes').select('dia_id,kcal,proteina_g').in('dia_id', ids),
       sb.from('agua').select('dia_id,quantidade_ml').in('dia_id', ids),
+      sb.from('exercicios').select('dia_id').in('dia_id', ids),
     ]);
     const ativs = r1.status === 'fulfilled' ? (r1.value.data || []) : [];
     const refs  = r2.status === 'fulfilled' ? (r2.value.data || []) : [];
     const aguas = r3.status === 'fulfilled' ? (r3.value.data || []) : [];
+    const exs   = r4.status === 'fulfilled' ? (r4.value.data || []) : [];
+
+    const diasComConteudo = dias.filter(d => {
+      if (d.obs_geral?.trim()) return true;
+      if (ativs.some(a => a.dia_id === d.id)) return true;
+      if (refs.some(r => r.dia_id === d.id)) return true;
+      if (aguas.some(w => w.dia_id === d.id)) return true;
+      if (exs.some(e => e.dia_id === d.id)) return true;
+      return false;
+    });
+
+    if (!diasComConteudo.length) {
+      clearTimeout(timeout);
+      el.innerHTML = `<div class="empty"><div class="emoji">🏋️</div><p>Nenhum registro ainda.<br>Use os botões acima para começar!</p></div>`;
+      return;
+    }
   const mK = perfilData?.meta_kcal || 2000;
   const mP = perfilData?.meta_proteina_g || 120;
   const mA = perfilData ? perfilData.meta_agua_ml / 1000 : 2.5;
@@ -1132,9 +1882,9 @@ async function carregarDias() {
   clearTimeout(timeout);
 
   // Alertas de progressão
-  verificarAlertasHome(dias).catch(() => {});
+  verificarAlertasHome(diasComConteudo).catch(() => {});
 
-  el.innerHTML = dias.map(d => {
+  el.innerHTML = diasComConteudo.map(d => {
     const da = ativs.filter(a => a.dia_id === d.id);
     const dr = refs.filter(r => r.dia_id === d.id);
     const dw = aguas.filter(w => w.dia_id === d.id);
@@ -1166,17 +1916,58 @@ async function carregarDias() {
 }
 
 // ===== ABRIR DIA =====
-async function obterOuCriarDiaHoje() {
-  const hoje = new Date().toISOString().slice(0,10);
-  const { data: ex } = await sb.from('dias').select('*').eq('user_id', userAtual.id).eq('data', hoje).maybeSingle();
-  if (ex) return ex;
-  const { data: novo } = await sb.from('dias').insert({ user_id: userAtual.id, data: hoje }).select().single();
-  return novo;
+function hojeISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+async function garantirDiaCriado() {
+  if (!diaAtual?.data) throw new Error('Data do dia não definida');
+
+  const input = document.getElementById('dia-data');
+  if (input?.value && input.value !== diaAtual.data) {
+    await mudarDataDia(input.value);
+  }
+
+  const { data: existente } = await sb.from('dias')
+    .select('id')
+    .eq('user_id', userAtual.id)
+    .eq('data', diaAtual.data)
+    .maybeSingle();
+
+  if (existente) {
+    diaAtual.id = existente.id;
+    return existente.id;
+  }
+
+  const { data: novo, error } = await sb.from('dias').insert({
+    user_id: userAtual.id, data: diaAtual.data
+  }).select().single();
+
+  if (error) {
+    if (error.code === '23505') {
+      const { data: ex2 } = await sb.from('dias')
+        .select('id')
+        .eq('user_id', userAtual.id)
+        .eq('data', diaAtual.data)
+        .maybeSingle();
+      if (ex2) { diaAtual.id = ex2.id; return ex2.id; }
+    }
+    throw error;
+  }
+
+  diaAtual.id = novo.id;
+  return novo.id;
 }
 
 async function abrirHojeTab(tab) {
-  const dia = await obterOuCriarDiaHoje();
-  await abrirDia(dia.id, dia.data, tab);
+  const hoje = hojeISO();
+  const { data: ex } = await sb.from('dias').select('*').eq('user_id', userAtual.id).eq('data', hoje).maybeSingle();
+  if (ex) {
+    await abrirDia(ex.id, ex.data, tab);
+  } else {
+    await abrirDia(null, hoje, tab);
+  }
 }
 
 function atualizarTituloDia(data) {
@@ -1227,6 +2018,22 @@ async function mudarDataDia(novaData) {
   input.disabled = true;
 
   try {
+    // Rascunho: muda data; se já existe dia nessa data, usa o existente
+    if (!diaAtual.id) {
+      const { data: ex } = await sb.from('dias')
+        .select('id')
+        .eq('user_id', userAtual.id)
+        .eq('data', novaData)
+        .maybeSingle();
+      diaAtual.data = novaData;
+      diaAtual.id = ex?.id || null;
+      atualizarTituloDia(novaData);
+      await recarregarTabAtiva();
+      showToast('✅ Data alterada!');
+      input.disabled = false;
+      return;
+    }
+
     const { data: existente } = await sb.from('dias')
       .select('id')
       .eq('user_id', userAtual.id)
@@ -1263,6 +2070,8 @@ async function abrirDia(id, data, tabInicial) {
   const tab = tabInicial || 'treino';
   switchTab(tab);
   if (tab === 'treino') await carregarTreino();
+  else if (tab === 'alimentacao') await carregarRefeicoes();
+  else if (tab === 'agua') await carregarAgua();
 }
 
 function voltarHome() { navTo('home'); carregarDias(); }
@@ -1275,6 +2084,8 @@ let exercicioEditandoId = null;
 let catalogoImagens = {};
 let modalImagemNome = '';
 let grupoAtual = 'superior';
+let sugestoesNomes = [];
+let sugestoesFiltradas = [];
 
 function histKey(grupo, nome) { return `${grupo || 'inferior'}:${nome.trim().toLowerCase()}`; }
 
@@ -1283,6 +2094,7 @@ function setGrupo(grupo) {
   document.querySelectorAll('.grupo-pill').forEach(p => p.classList.toggle('active', p.dataset.grupo === grupo));
   atualizarListaNomesExercicios();
   atualizarBotaoImagem();
+  fecharSugestoes();
   if (!exercicioEditandoId) {
     document.getElementById('ex-nome').placeholder =
       grupo === 'superior' ? 'Ex: Supino, Rosca direta...' :
@@ -1292,6 +2104,17 @@ function setGrupo(grupo) {
 }
 
 async function carregarTreino() {
+  if (!diaAtual?.id) {
+    document.querySelectorAll('.act-btn').forEach(btn => btn.classList.remove('on'));
+    document.getElementById('obs-geral').value = '';
+    await Promise.all([carregarHistoricoExercicios(), carregarCatalogoImagens()]);
+    exerciciosDiaAtual = [];
+    atualizarListaNomesExercicios();
+    renderExercicios([], historicoExercicios);
+    cancelarEdicaoExercicio();
+    mostrarPersonalBox([]);
+    return;
+  }
   const [{ data: ativs }, { data: exs }, { data: dia }] = await Promise.all([
     sb.from('atividades').select('*').eq('dia_id', diaAtual.id),
     sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem'),
@@ -1320,11 +2143,9 @@ async function carregarHistoricoExercicios() {
     trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
     const dataInicio = trintaDiasAtras.toISOString().slice(0,10);
 
-    const { data: diasRecentes } = await sb.from('dias')
-      .select('id')
-      .eq('user_id', userAtual.id)
-      .gte('data', dataInicio)
-      .neq('id', diaAtual.id);
+    let q = sb.from('dias').select('id').eq('user_id', userAtual.id).gte('data', dataInicio);
+    if (diaAtual?.id) q = q.neq('id', diaAtual.id);
+    const { data: diasRecentes } = await q;
 
     if (!diasRecentes || !diasRecentes.length) return;
 
@@ -1345,62 +2166,86 @@ async function carregarHistoricoExercicios() {
 function mostrarPersonalBox(exs) {
   const box = document.getElementById('personal-box');
   const msg = document.getElementById('personal-msg');
-  if (!exs.length) { box.style.display = 'none'; return; }
+  if (!box || !msg) return;
 
-  // Verificar exercícios que devem aumentar
-  const paraAumentar = exs.filter(e => {
+  const plano = typeof perfilData?.plano_ia === 'object' ? perfilData.plano_ia : null;
+  const paraAumentar = (exs || []).filter(e => {
     const hist = (historicoExercicios[histKey(e.grupo || 'inferior', e.nome)] || []);
     return hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
   });
 
-  if (paraAumentar.length > 0) {
-    msg.innerHTML = `💪 <strong>Hora de evoluir!</strong> Você fez ${paraAumentar.map(e => `<em>${e.nome}</em>`).join(', ')} com a mesma carga por 3+ treinos. Aumente o peso ou as repetições!`;
-  } else {
-    msg.innerHTML = `✅ Continue assim! Mantenha a consistência e em breve verei oportunidades de progressão para você.`;
+  let html = '';
+  if (plano?.alerta_treino) {
+    html += `🎯 <strong>Seu plano:</strong> ${plano.alerta_treino}<br><br>`;
   }
+  if (paraAumentar.length > 0) {
+    html += `💪 <strong>Hora de evoluir!</strong> ${paraAumentar.map(e => `<em>${e.nome}</em>`).join(', ')} — mesma carga por 3+ treinos. Aumente peso ou reps!`;
+  } else if (plano?.treino) {
+    html += `💪 <strong>Foco:</strong> ${plano.treino.slice(0, 180)}${plano.treino.length > 180 ? '...' : ''}`;
+  } else {
+    html += `✅ Continue assim! Peça uma dica personalizada abaixo.`;
+  }
+  msg.innerHTML = html;
   box.style.display = '';
 }
 
 async function consultarPersonal() {
   const btn = document.getElementById('btn-personal');
   const msg = document.getElementById('personal-msg');
+  if (!btn || !msg) return;
   btn.disabled = true; btn.textContent = '...';
 
   try {
+    if (!diaAtual?.id) {
+      showToast('⚠️ Registre um exercício primeiro');
+      return;
+    }
     const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
-    const { data: session } = await sb.auth.getSession();
 
     const histResumo = Object.entries(historicoExercicios).map(([key, hist]) => {
       const nome = hist[0]?.nome || key.split(':').slice(1).join(':');
       const ultimos = hist.slice(-5);
       return `${nome}: ${ultimos.map(h => `${h.peso_kg||0}kg ${h.series||0}x${h.repeticoes||0}`).join(', ')}`;
-    }).join(', ');
+    }).join('; ');
 
-    const treinoHoje = exs.map(e => `${e.nome}: ${e.peso_kg||0}kg ${e.series||0}x${e.repeticoes||0}`).join(', ');
+    const treinoHoje = (exs || []).map(e => `${e.nome}: ${e.peso_kg||0}kg ${e.series||0}x${e.repeticoes||0}`).join(', ');
+    const plano = typeof perfilData?.plano_ia === 'object' ? perfilData.plano_ia : undefined;
 
-    const res = await fetch(`${SUPA_URL}/functions/v1/analisar-refeicao`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.session.access_token}`, 'apikey': SUPA_KEY },
-      body: JSON.stringify({
-        texto: `PERSONAL_TRAINER. Perfil: peso 68.5kg, meta 65kg, 15 anos de academia, voltou após 1 mês parada, treina 4x/semana, misto máquinas e peso livre, objetivo recomposição corporal. Treino hoje: ${treinoHoje}. Histórico últimas sessões: ${histResumo}. Dê uma dica personalizada curta e motivadora sobre progressão de carga e o que focar.`,
-        mK: 0, mP: 0, kcalJ: 0, protJ: 0
-      }),
-    });
-    const data = await res.json();
-    msg.innerHTML = `🤖 <strong>Personal Trainer:</strong> ${data.sugestao || 'Continue com consistência e progressão gradual!'}`;
+    const data = await chamarIA('coach_treino', { treinoHoje, historico: histResumo, plano });
+    msg.innerHTML = `🤖 <strong>Coach:</strong> ${data.sugestao || data.alerta_treino || 'Continue com consistência!'}`;
   } catch(e) {
     msg.innerHTML = '⚠️ Não foi possível consultar agora. Tente novamente.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💬 Pedir dica personalizada';
   }
-  btn.disabled = false; btn.textContent = '💬 Pedir dica personalizada';
 }
 
-function nomeKey(nome) { return nome.trim().toLowerCase(); }
+function nomeKey(nome) {
+  return nome.trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function imgUrlComVersao(url, versao) {
+  if (!url) return '';
+  const base = url.split('?')[0];
+  const ts = versao ? new Date(versao).getTime() : Date.now();
+  return `${base}?v=${ts}`;
+}
 
 async function carregarCatalogoImagens() {
   try {
     const { data } = await sb.from('exercicios_catalogo').select('*').eq('user_id', userAtual.id);
     catalogoImagens = {};
-    (data || []).forEach(c => { catalogoImagens[c.nome_key] = c; });
+    (data || []).forEach(c => {
+      const k = nomeKey(c.nome) || nomeKey(c.nome_key) || c.nome_key;
+      const atual = catalogoImagens[k];
+      if (!atual || new Date(c.updated_at) > new Date(atual.updated_at || 0)) {
+        catalogoImagens[k] = { ...c, nome_key: k };
+      }
+    });
   } catch(e) { console.error('Erro catálogo imagens:', e); }
 }
 
@@ -1420,7 +2265,8 @@ function abrirModalImagem(nome) {
   const img = document.getElementById('img-modal-img');
   const vazio = document.getElementById('img-modal-empty');
   if (cat?.imagem_url) {
-    img.src = cat.imagem_url;
+    img.src = '';
+    img.src = imgUrlComVersao(cat.imagem_url, cat.updated_at);
     img.style.display = '';
     vazio.style.display = 'none';
   } else {
@@ -1448,39 +2294,107 @@ async function uploadImagemExercicio(input) {
   const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
   const path = `${userAtual.id}/${key}.${ext}`;
 
+  // Remove versões antigas (outra extensão ou cache) antes de enviar a nova
+  try {
+    const { data: arquivos } = await sb.storage.from('exercicios').list(userAtual.id);
+    const antigos = (arquivos || [])
+      .filter(f => f.name.startsWith(key + '.') || f.name === key)
+      .map(f => `${userAtual.id}/${f.name}`);
+    if (antigos.length) await sb.storage.from('exercicios').remove(antigos);
+  } catch(e) { console.warn('Limpeza fotos antigas:', e); }
+
   showToast('📤 Enviando foto...');
   const { error: upErr } = await sb.storage.from('exercicios').upload(path, file, { upsert: true, contentType: file.type });
-  if (upErr) { console.error(upErr); showToast('⚠️ Erro ao enviar — rode o SQL metriafit_imagens.sql no Supabase'); return; }
+  if (upErr) {
+    console.error('Erro storage:', upErr);
+    const msg = upErr.message || '';
+    if (msg.includes('Bucket not found') || msg.includes('not found')) {
+      showToast('⚠️ Foto: rode metriafit_atualizacao.sql no Supabase');
+    } else if (msg.includes('policy') || msg.includes('JWT') || upErr.statusCode === '403') {
+      showToast('⚠️ Foto: sem permissão — rode metriafit_atualizacao.sql');
+    } else {
+      showToast('⚠️ Erro ao enviar foto (opcional — exercício salva sem ela)');
+    }
+    return;
+  }
 
   const { data: { publicUrl } } = sb.storage.from('exercicios').getPublicUrl(path);
+  const agora = new Date().toISOString();
   const { error: dbErr } = await sb.from('exercicios_catalogo').upsert({
     user_id: userAtual.id, nome_key: key, nome, imagem_url: publicUrl,
     grupo: catalogoImagens[key]?.grupo || grupoAtual,
-    updated_at: new Date().toISOString()
+    updated_at: agora
   }, { onConflict: 'user_id,nome_key' });
-  if (dbErr) { console.error(dbErr); showToast('⚠️ Foto enviada, mas erro ao salvar — rode metriafit_imagens.sql'); return; }
+  if (dbErr) { console.error(dbErr); showToast('⚠️ Foto enviada, mas erro ao salvar catálogo — rode metriafit_atualizacao.sql'); return; }
 
-  catalogoImagens[key] = { nome_key: key, nome, imagem_url: publicUrl, grupo: grupoAtual };
+  // Limpar cadastros antigos com nome_key desatualizado (ex: com espaços)
+  await sb.from('exercicios_catalogo').delete()
+    .eq('user_id', userAtual.id).eq('nome', nome).neq('nome_key', key);
+
+  catalogoImagens[key] = { nome_key: key, nome, imagem_url: publicUrl, grupo: grupoAtual, updated_at: agora };
+  atualizarListaNomesExercicios();
   atualizarBotaoImagem();
   abrirModalImagem(nome);
   showToast('✅ Foto salva! Aparece sempre que usar "' + nome + '"');
 }
 
-function atualizarListaNomesExercicios() {
+function coletarNomesDoGrupo() {
   const nomes = new Map();
   Object.entries(historicoExercicios).forEach(([key, arr]) => {
     if (!key.startsWith(grupoAtual + ':')) return;
     const e = arr[arr.length - 1];
-    if (e) nomes.set(e.nome.toLowerCase(), e.nome);
+    if (e) nomes.set(nomeKey(e.nome), e.nome);
   });
   exerciciosDiaAtual
     .filter(e => (e.grupo || 'inferior') === grupoAtual)
-    .forEach(e => nomes.set(e.nome.toLowerCase(), e.nome));
+    .forEach(e => nomes.set(nomeKey(e.nome), e.nome));
   Object.values(catalogoImagens)
     .filter(c => (c.grupo || 'inferior') === grupoAtual)
     .forEach(c => nomes.set(c.nome_key, c.nome));
-  document.getElementById('ex-nomes-list').innerHTML =
-    [...nomes.values()].map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
+  return [...nomes.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+}
+
+function atualizarListaNomesExercicios() {
+  sugestoesNomes = coletarNomesDoGrupo();
+}
+
+function fecharSugestoes() {
+  document.getElementById('ex-sugestoes')?.classList.remove('show');
+}
+
+function onExNomeInput() {
+  atualizarBotaoImagem();
+  renderSugestoes();
+}
+
+function renderSugestoes() {
+  const el = document.getElementById('ex-sugestoes');
+  const q = document.getElementById('ex-nome').value.trim().toLowerCase();
+  sugestoesFiltradas = sugestoesNomes.filter(n => !q || n.toLowerCase().includes(q));
+  if (!sugestoesFiltradas.length) { fecharSugestoes(); el.innerHTML = ''; return; }
+  el.innerHTML = sugestoesFiltradas.map((n, i) => {
+    const cat = catalogoImagens[nomeKey(n)];
+    const thumb = cat?.imagem_url
+      ? `<img class="ex-sug-thumb" src="${imgUrlComVersao(cat.imagem_url, cat.updated_at)}" alt="">`
+      : `<div class="ex-sug-thumb-vazio">🏋️</div>`;
+    return `<div class="ex-sug-item" onmousedown="event.preventDefault(); selecionarExercicioSugestao(${i})">${thumb}<span class="ex-sug-nome">${n}</span></div>`;
+  }).join('');
+  el.classList.add('show');
+}
+
+function selecionarExercicioSugestao(idx) {
+  const nome = sugestoesFiltradas[idx];
+  if (!nome) return;
+  document.getElementById('ex-nome').value = nome;
+  fecharSugestoes();
+  preencherExercicioAnterior();
+  atualizarBotaoImagem();
+}
+
+function limparFormExercicioCompleto() {
+  cancelarEdicaoExercicio();
+  fecharSugestoes();
+  document.getElementById('ex-nome').focus();
 }
 
 function ultimoDadosExercicio(nome) {
@@ -1541,7 +2455,7 @@ function htmlExercicioItem(e, historico) {
   const hist = (historico || {})[histKey(g, e.nome)] || [];
   const deveAumentar = hist.length >= 3 && hist.slice(-3).every(h => h.peso_kg == e.peso_kg && h.repeticoes == e.repeticoes);
   const badge = deveAumentar ? `<div class="prog-badge">⬆️ Hora de aumentar a carga!</div>` : '';
-  const temFoto = catalogoImagens[e.nome.toLowerCase()];
+    const temFoto = catalogoImagens[nomeKey(e.nome)];
   const nomeEsc = e.nome.replace(/'/g, "\\'");
   return `
   <div class="exercicio-item${deveAumentar ? ' deve-aumentar' : ''}">
@@ -1582,10 +2496,25 @@ async function salvarExercicio() {
     repeticoes: parseInt(document.getElementById('ex-reps').value)     || null,
     obs:        document.getElementById('ex-obs').value.trim()         || null,
   };
-  if (exercicioEditandoId) {
-    await sb.from('exercicios').update(payload).eq('id', exercicioEditandoId);
-  } else {
-    await sb.from('exercicios').insert({ ...payload, dia_id: diaAtual.id, ordem: Date.now() });
+  try {
+    if (!exercicioEditandoId) await garantirDiaCriado();
+    let error;
+    if (exercicioEditandoId) {
+      ({ error } = await sb.from('exercicios').update(payload).eq('id', exercicioEditandoId));
+    } else {
+      ({ error } = await sb.from('exercicios').insert({ ...payload, dia_id: diaAtual.id, ordem: Date.now() }));
+    }
+    if (error) throw error;
+  } catch(error) {
+    console.error('Erro salvar exercício:', error);
+    btn.disabled = false;
+    const msg = error.message || '';
+    if (msg.includes('grupo') || error.code === 'PGRST204') {
+      showToast('⚠️ Rode metriafit_atualizacao.sql no Supabase (SQL Editor)');
+    } else {
+      showToast('⚠️ Erro ao salvar exercício — veja o console (F12)');
+    }
+    return;
   }
   const eraEdicao = !!exercicioEditandoId;
   cancelarEdicaoExercicio();
@@ -1597,6 +2526,9 @@ async function salvarExercicio() {
 }
 
 async function toggleAtividade(tipo) {
+  try {
+    await garantirDiaCriado();
+  } catch(e) { showToast('⚠️ Erro ao salvar atividade'); return; }
   const btn = document.querySelector(`.act-btn[data-tipo="${tipo}"]`);
   const atual = btn.classList.contains('on');
   const { data: ex } = await sb.from('atividades').select('*').eq('dia_id', diaAtual.id).eq('tipo', tipo).maybeSingle();
@@ -1614,110 +2546,858 @@ async function delExercicio(id) {
 }
 
 async function salvarObs() {
-  await sb.from('dias').update({ obs_geral: document.getElementById('obs-geral').value.trim() }).eq('id', diaAtual.id);
+  const obs = document.getElementById('obs-geral').value.trim();
+  if (!obs) { showToast('⚠️ Digite uma observação'); return; }
+  try { await garantirDiaCriado(); } catch(e) { showToast('⚠️ Erro ao salvar'); return; }
+  await sb.from('dias').update({ obs_geral: obs }).eq('id', diaAtual.id);
   showToast('✅ Observação salva!');
 }
 
 // ===== ALIMENTAÇÃO =====
-async function carregarRefeicoes() {
-  const { data: refs } = await sb.from('refeicoes').select('*').eq('dia_id', diaAtual.id).order('created_at');
-  const kcalT = (refs||[]).reduce((s,r) => s+(r.kcal||0), 0);
-  const protT = (refs||[]).reduce((s,r) => s+(r.proteina_g||0), 0);
-  const mK = perfilData?.meta_kcal || 2000;
-  const mP = perfilData?.meta_proteina_g || 120;
-  document.getElementById('macros-hoje').innerHTML = `
-    <div class="meta-pill"><div class="val kcal">${kcalT}</div><div class="lbl">kcal consumidas</div><div class="sub">meta: ${mK}</div></div>
-    <div class="meta-pill"><div class="val prot">${Math.round(protT)}g</div><div class="lbl">proteína</div><div class="sub">meta: ${mP}g</div></div>
-    <div class="meta-pill"><div class="val kcal" style="color:${mK-kcalT<0?'var(--red)':'var(--green)'}">${Math.abs(mK-kcalT)}</div><div class="lbl">${mK-kcalT<0?'⚠️ acima da meta':'kcal restantes'}</div></div>`;
-  if (!refs||refs.length===0) {
-    document.getElementById('lista-refeicoes').innerHTML = '<div class="empty"><p>Nenhuma refeição registrada.</p></div>';
-    return;
+const TIPOS_REF = [
+  { id: 'cafe_manha', label: '☕ Café da manhã', nome: 'Café da manhã' },
+  { id: 'lanche_manha', label: '🍎 Lanche da manhã', nome: 'Lanche da manhã' },
+  { id: 'almoco', label: '🍽️ Almoço', nome: 'Almoço' },
+  { id: 'lanche_tarde', label: '🥪 Lanche da tarde', nome: 'Lanche da tarde' },
+  { id: 'jantar', label: '🌙 Jantar', nome: 'Jantar' },
+  { id: 'lanche_noite', label: '🍪 Lanche após jantar', nome: 'Lanche após jantar' },
+];
+const REF_TIPO_PATTERNS = [
+  { tipo: 'lanche_noite', re: /lanche\s*(ap[oó]s|depois)\s*(o\s*)?jantar|ceia/i },
+  { tipo: 'lanche_tarde', re: /lanche\s*da\s*tarde/i },
+  { tipo: 'lanche_manha', re: /lanche\s*da\s*manh[aã]/i },
+  { tipo: 'cafe_manha', re: /caf[eé]\s*da\s*manh[aã]|^caf[eé]\b/i },
+  { tipo: 'almoco', re: /almo[cç]o/i },
+  { tipo: 'jantar', re: /jantar/i },
+];
+let refeicoesDiaAtual = [];
+let refeicaoTipoAtual = 'cafe_manha';
+let refeicaoTipoModal = 'cafe_manha';
+
+function nomeTipoRef(tipo) {
+  return TIPOS_REF.find(t => t.id === tipo)?.nome || 'Refeição';
+}
+
+function atualizarPillsTipoRef() {
+  document.querySelectorAll('#ref-tipo-pills .ref-tipo-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.tipo === refeicaoTipoAtual);
+  });
+}
+
+function atualizarPillsTipoModal() {
+  document.querySelectorAll('#ref-tipo-pills-modal .ref-tipo-pill-modal').forEach(p => {
+    p.classList.toggle('active', p.dataset.tipo === refeicaoTipoModal);
+  });
+}
+
+function setTipoRefeicao(tipo) {
+  refeicaoTipoAtual = tipo;
+  atualizarPillsTipoRef();
+  const inp = document.getElementById('ai-input');
+  if (inp && document.activeElement !== inp) {
+    inp.placeholder = `Ex: ${nomeTipoRef(tipo)}: descreva o que comeu...`;
   }
-  document.getElementById('lista-refeicoes').innerHTML = refs.map(r => `
+}
+
+function setTipoRefeicaoModal(tipo) {
+  refeicaoTipoModal = tipo;
+  atualizarPillsTipoModal();
+}
+
+function detectarTipoNoTexto() {
+  const texto = document.getElementById('ai-input').value.trim();
+  if (!texto) return;
+  const prefixo = texto.split(':')[0].trim();
+  const alvo = prefixo.length < 40 ? prefixo : texto;
+  for (const { tipo, re } of REF_TIPO_PATTERNS) {
+    if (re.test(alvo)) {
+      if (refeicaoTipoAtual !== tipo) setTipoRefeicao(tipo);
+      return;
+    }
+  }
+}
+
+function limparPrefixoRefeicao(texto) {
+  let t = texto.trim();
+  for (const item of TIPOS_REF) {
+    const nomeEsc = item.nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`^${nomeEsc}\\s*:\\s*`, 'i');
+    if (re.test(t)) return t.replace(re, '').trim();
+  }
+  return t;
+}
+
+function htmlRefeicaoItem(r) {
+  const fibraVal = r.fibra_g != null ? r.fibra_g : 0;
+  const fibra = `<span>🌾 ${fibraVal}g fibra</span>`;
+  return `
     <div class="refeicao-item">
       <div class="refeicao-info">
         <div class="refeicao-desc">${r.descricao}</div>
-        <div class="refeicao-macros"><span>🔥 ${r.kcal||0} kcal</span><span>💪 ${r.proteina_g||0}g prot.</span></div>
+        <div class="refeicao-macros"><span>🔥 ${r.kcal||0} kcal</span><span>💪 ${r.proteina_g||0}g prot.</span>${fibra}</div>
       </div>
-      <button class="del-btn" onclick="delRefeicao('${r.id}')">🗑</button>
-    </div>`).join('');
+      <div class="refeicao-actions">
+        <button class="edit-btn" onclick="editarRefeicao('${r.id}')" title="Editar">✏️</button>
+        <button class="del-btn" onclick="delRefeicao('${r.id}')" title="Excluir">🗑</button>
+      </div>
+    </div>`;
+}
+
+function htmlResumoDia(kcalT, protT, fibraT, mK, mP, mF) {
+  const kcalDiff = kcalT - mK;
+  const protDiff = Math.round(protT) - mP;
+  const fibraDiff = Math.round((fibraT || 0) * 10) / 10 - mF;
+  const kcalOk = kcalDiff <= 0;
+  const protOk = protDiff >= 0;
+  const fibraOk = fibraDiff >= 0;
+
+  const row = (ok, label, tag, tagCls) =>
+    `<div class="meta-resumo-row">
+      <span class="meta-resumo-ico ${ok ? 'ok' : (tagCls || 'bad')}">${ok ? '✓' : '!'}</span>
+      <span class="txt">${label}</span>
+      <span class="tag ${tagCls || (ok ? 'ok' : 'bad')}">${tag}</span>
+    </div>`;
+
+  let kcalTag, kcalTagCls, kcalLabel;
+  if (kcalDiff > 0) {
+    kcalLabel = 'Calorias'; kcalTag = `+${kcalDiff}`; kcalTagCls = 'bad';
+  } else if (kcalDiff < 0) {
+    kcalLabel = 'Calorias'; kcalTag = `${Math.abs(kcalDiff)} rest.`; kcalTagCls = 'warn';
+  } else {
+    kcalLabel = 'Calorias'; kcalTag = 'na meta'; kcalTagCls = 'ok';
+  }
+
+  let protTag, protTagCls, protLabel;
+  if (protDiff > 0) {
+    protLabel = 'Proteína'; protTag = `+${protDiff}g`; protTagCls = 'ok';
+  } else if (protDiff < 0) {
+    protLabel = 'Proteína'; protTag = `-${Math.abs(protDiff)}g`; protTagCls = 'warn';
+  } else {
+    protLabel = 'Proteína'; protTag = 'na meta'; protTagCls = 'ok';
+  }
+
+  let fibraTag, fibraTagCls, fibraLabel;
+  if (fibraDiff >= 0) {
+    fibraLabel = 'Fibra'; fibraTag = fibraDiff > 0 ? `+${fibraDiff.toFixed(1).replace('.', ',')}g` : 'na meta'; fibraTagCls = 'ok';
+  } else {
+    fibraLabel = 'Fibra'; fibraTag = `${Math.abs(fibraDiff).toFixed(1).replace('.', ',')}g`; fibraTagCls = 'warn';
+  }
+
+  let status = 'ok';
+  let dica = 'Dia equilibrado — continue assim!';
+  if (kcalDiff > 0 && protOk && fibraOk) {
+    status = 'warn'; dica = 'Proteína e fibra ok! Amanhã corte um pouco nas calorias.';
+  } else if (kcalDiff > 0 && protOk) {
+    status = 'warn'; dica = 'Proteína ok! Amanhã corte calorias e inclua mais fibra.';
+  } else if (!fibraOk) {
+    status = 'warn'; dica = 'Inclua mais fibras: frutas, legumes, aveia, feijão.';
+  } else if (kcalDiff > 0) {
+    status = 'bad'; dica = 'Priorize proteína, fibra e reduza calorias amanhã.';
+  } else if (kcalDiff <= 0 && protOk) {
+    status = 'ok'; dica = 'Ótimo dia! No caminho da sua meta.';
+  }
+
+  return `
+    <div class="meta-pill resumo status-${status}">
+      <div class="meta-resumo-title">Resumo</div>
+      <div class="meta-resumo-rows">
+        ${row(protOk, protLabel, protTag, protTagCls)}
+        ${row(fibraOk, fibraLabel, fibraTag, fibraTagCls)}
+        ${row(kcalOk, kcalLabel, kcalTag, kcalTagCls)}
+      </div>
+      <div class="meta-resumo-dica">${dica}</div>
+    </div>`;
+}
+
+function metaFibraPerfil() {
+  if (perfilData?.meta_fibra_g) return perfilData.meta_fibra_g;
+  return calcularMetaFibra(perfilData?.sexo || 'feminino', perfilData?.meta_kcal || 2000);
+}
+
+function htmlMacrosPills(kcalT, protT, fibraT, mK, mP, mF) {
+  const kcalDiff = kcalT - mK;
+  const protDiff = Math.round(protT) - mP;
+  const fibraDiff = Math.round((fibraT || 0) * 10) / 10 - mF;
+
+  let kcalInd = '';
+  if (kcalDiff > 0) {
+    kcalInd = `<div class="meta-ind bad" title="Acima da meta"><span class="meta-arrow">↑</span><span class="meta-diff">+${kcalDiff}</span></div>`;
+  } else if (kcalDiff < 0) {
+    kcalInd = `<div class="meta-ind warn" title="Ainda faltam calorias"><span class="meta-arrow">↓</span><span class="meta-diff">${Math.abs(kcalDiff)}</span></div>`;
+  }
+
+  let protInd = '';
+  if (protDiff >= 0) {
+    protInd = `<div class="meta-ind good" title="Meta de proteína atingida"><span class="meta-arrow">↓</span><span class="meta-diff">${protDiff > 0 ? '+' + protDiff + 'g' : 'ok'}</span></div>`;
+  } else {
+    protInd = `<div class="meta-ind warn" title="Proteína abaixo da meta"><span class="meta-arrow">↑</span><span class="meta-diff">${Math.abs(protDiff)}g</span></div>`;
+  }
+
+  let fibraInd = '';
+  const fibraR = Math.round((fibraT || 0) * 10) / 10;
+  if (fibraDiff >= 0) {
+    fibraInd = `<div class="meta-ind good" title="Meta de fibra atingida"><span class="meta-arrow">↓</span><span class="meta-diff">${fibraDiff > 0 ? '+' + fibraDiff.toFixed(1).replace('.', ',') + 'g' : 'ok'}</span></div>`;
+  } else {
+    fibraInd = `<div class="meta-ind warn" title="Fibra abaixo da meta"><span class="meta-arrow">↑</span><span class="meta-diff">${Math.abs(fibraDiff).toFixed(1).replace('.', ',')}g</span></div>`;
+  }
+
+  return `
+    <div class="meta-pill">
+      <div class="meta-pill-top">
+        <div class="val kcal">${kcalT}</div>
+        ${kcalInd}
+      </div>
+      <div class="lbl">kcal consumidas</div>
+      <div class="sub">meta: ${mK}</div>
+    </div>
+    <div class="meta-pill">
+      <div class="meta-pill-top">
+        <div class="val prot">${Math.round(protT)}g</div>
+        ${protInd}
+      </div>
+      <div class="lbl">proteína</div>
+      <div class="sub">meta: ${mP}g</div>
+    </div>
+    <div class="meta-pill">
+      <div class="meta-pill-top">
+        <div class="val fibra">${fibraR.toFixed(1).replace('.', ',')}g</div>
+        ${fibraInd}
+      </div>
+      <div class="lbl">fibra</div>
+      <div class="sub">meta: ${mF}g</div>
+    </div>
+    ${htmlResumoDia(kcalT, protT, fibraT, mK, mP, mF)}`;
+}
+
+async function abrirAlimentacao() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-alimentacao').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-home')?.classList.add('active');
+  await carregarResumoAlimentacao();
+}
+
+async function carregarResumoAlimentacao() {
+  const el = document.getElementById('lista-alimentacao-dias');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
+  const mK = perfilData?.meta_kcal || 2000;
+  const mP = perfilData?.meta_proteina_g || 120;
+  const mF = metaFibraPerfil();
+
+  try {
+    const { data: dias } = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(30);
+    if (!dias?.length) {
+      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição hoje</strong> para começar!</p></div>';
+      return;
+    }
+    const ids = dias.map(d => d.id);
+    const { data: refs } = await sb.from('refeicoes').select('dia_id,kcal,proteina_g,fibra_g').in('dia_id', ids);
+    const diasComRefeicao = dias.filter(d => (refs || []).some(r => r.dia_id === d.id));
+
+    if (!diasComRefeicao.length) {
+      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição hoje</strong> para começar!</p></div>';
+      return;
+    }
+
+    el.innerHTML = diasComRefeicao.map(d => {
+      const dr = (refs || []).filter(r => r.dia_id === d.id);
+      const kcalT = dr.reduce((s, r) => s + (r.kcal || 0), 0);
+      const protT = dr.reduce((s, r) => s + (r.proteina_g || 0), 0);
+      const fibraT = dr.reduce((s, r) => s + (r.fibra_g || 0), 0);
+      const dt = new Date(d.data + 'T12:00:00');
+      const qtd = dr.length;
+      return `<div class="ali-dia-card" onclick="abrirDia('${d.id}','${d.data}','alimentacao')">
+        <div class="ali-dia-header">
+          <div class="day-date">${dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</div>
+          <div class="day-date-sub">${dt.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
+        </div>
+        <div class="meta-pills">${htmlMacrosPills(kcalT, protT, fibraT, mK, mP, mF)}</div>
+        <div class="ali-refeicoes-qtd">🍽️ ${qtd} refeiç${qtd === 1 ? 'ão' : 'ões'} registrada${qtd === 1 ? '' : 's'}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Erro resumo alimentação:', e);
+    el.innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>Erro ao carregar.<br><button onclick="carregarResumoAlimentacao()" style="margin-top:12px;padding:8px 16px;background:var(--green);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Tentar novamente</button></p></div>';
+  }
+}
+
+async function carregarRefeicoes() {
+  const mK = perfilData?.meta_kcal || 2000;
+  const mP = perfilData?.meta_proteina_g || 120;
+  const mF = metaFibraPerfil();
+  if (!diaAtual?.id) {
+    document.getElementById('macros-hoje').innerHTML = htmlMacrosPills(0, 0, 0, mK, mP, mF);
+    document.getElementById('lista-refeicoes').innerHTML = '<div class="empty"><p>Nenhuma refeição registrada.</p></div>';
+    const btnRecalc = document.getElementById('btn-recalc-ref');
+    if (btnRecalc) btnRecalc.disabled = true;
+    return;
+  }
+  const { data: refs } = await sb.from('refeicoes').select('*').eq('dia_id', diaAtual.id).order('created_at');
+  refeicoesDiaAtual = refs || [];
+  const kcalT = (refs||[]).reduce((s,r) => s+(r.kcal||0), 0);
+  const protT = (refs||[]).reduce((s,r) => s+(r.proteina_g||0), 0);
+  const fibraT = (refs||[]).reduce((s,r) => s+(r.fibra_g||0), 0);
+  document.getElementById('macros-hoje').innerHTML = htmlMacrosPills(kcalT, protT, fibraT, mK, mP, mF);
+  const btnRecalc = document.getElementById('btn-recalc-ref');
+  if (btnRecalc) btnRecalc.disabled = !(refs && refs.length);
+  document.getElementById('lista-refeicoes').innerHTML = TIPOS_REF.map(t => {
+    const doTipo = (refs || []).filter(r => (r.tipo || 'cafe_manha') === t.id);
+    const inner = doTipo.length
+      ? doTipo.map(htmlRefeicaoItem).join('')
+      : '<div class="ref-grupo-empty">Nenhuma refeição nesta categoria.</div>';
+    return `<div class="ref-grupo-block"><div class="section-label">${t.label}</div>${inner}</div>`;
+  }).join('');
+}
+
+let refeicaoEditandoId = null;
+let refeicaoEditandoOriginal = null;
+
+async function obterMacrosDia(excluirRefeicaoId = null) {
+  const mK = perfilData?.meta_kcal || 2000;
+  const mP = perfilData?.meta_proteina_g || 120;
+  const mF = metaFibraPerfil();
+  if (!diaAtual?.id) return { mK, mP, mF, kcalJ: 0, protJ: 0, fibraJ: 0 };
+  const { data: refs } = await sb.from('refeicoes').select('id,kcal,proteina_g,fibra_g').eq('dia_id', diaAtual.id);
+  const lista = (refs || []).filter(r => !excluirRefeicaoId || r.id !== excluirRefeicaoId);
+  return {
+    mK, mP, mF,
+    kcalJ: lista.reduce((s, r) => s + (r.kcal || 0), 0),
+    protJ: lista.reduce((s, r) => s + (r.proteina_g || 0), 0),
+    fibraJ: lista.reduce((s, r) => s + (r.fibra_g || 0), 0),
+  };
+}
+
+async function analisarTextoRefeicao(texto, excluirRefeicaoId = null) {
+  const { mK, mP, mF, kcalJ, protJ, fibraJ } = await obterMacrosDia(excluirRefeicaoId);
+  const parsed = await chamarIA('refeicao', { texto, mK, mP, mF, kcalJ, protJ, fibraJ });
+  return {
+    kcal: Math.round(Number(parsed.kcal) || 0),
+    prot: Math.round((Number(parsed.proteina_g) || 0) * 10) / 10,
+    fibra: Math.round((Number(parsed.fibra_g) || 0) * 10) / 10,
+    alerta: parsed.alerta_alimentacao || parsed.sugestao || '',
+  };
+}
+
+function isErroCotaIA(e) {
+  const msg = String(e?.message || e || '').toLowerCase();
+  return msg.includes('429') || msg.includes('quota') || msg.includes('cota') || msg.includes('resource_exhausted');
+}
+
+function editarRefeicao(id) {
+  const refs = refeicoesDiaAtual || [];
+  const r = refs.find(x => x.id === id);
+  if (!r) return;
+  refeicaoEditandoId = id;
+  refeicaoEditandoOriginal = {
+    descricao: (r.descricao || '').trim(),
+    kcal: r.kcal ?? 0,
+    proteina_g: r.proteina_g ?? 0,
+    fibra_g: r.fibra_g ?? 0,
+    tipo: r.tipo || 'cafe_manha',
+  };
+  refeicaoTipoModal = r.tipo || 'cafe_manha';
+  atualizarPillsTipoModal();
+  document.getElementById('ref-edit-desc').value = r.descricao || '';
+  document.getElementById('ref-edit-kcal').value = r.kcal ?? '';
+  document.getElementById('ref-edit-prot').value = r.proteina_g ?? '';
+  document.getElementById('ref-edit-fibra').value = r.fibra_g ?? '';
+  document.getElementById('ref-modal').classList.add('show');
+}
+
+function fecharModalRefeicao(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('ref-modal').classList.remove('show');
+  refeicaoEditandoId = null;
+  refeicaoEditandoOriginal = null;
+}
+
+async function salvarEdicaoRefeicao() {
+  if (!refeicaoEditandoId) return;
+  const desc = document.getElementById('ref-edit-desc').value.trim();
+  if (!desc) { showToast('⚠️ Descreva a refeição'); return; }
+  const btn = document.getElementById('btn-ref-salvar');
+  btn.disabled = true;
+
+  const descMudou = desc !== refeicaoEditandoOriginal?.descricao;
+  const tipoMudou = refeicaoTipoModal !== refeicaoEditandoOriginal?.tipo;
+  const semFibra = !(refeicaoEditandoOriginal?.fibra_g > 0);
+  let kcal = refeicaoEditandoOriginal?.kcal ?? 0;
+  let prot = refeicaoEditandoOriginal?.proteina_g ?? 0;
+  let fibra = refeicaoEditandoOriginal?.fibra_g ?? 0;
+
+  try {
+    if (descMudou || semFibra) {
+      btn.textContent = 'Analisando...';
+      const res = await analisarTextoRefeicao(desc, refeicaoEditandoId);
+      kcal = res.kcal;
+      prot = res.prot;
+      fibra = res.fibra;
+      document.getElementById('ref-edit-kcal').value = kcal;
+      document.getElementById('ref-edit-prot').value = prot;
+      document.getElementById('ref-edit-fibra').value = fibra;
+      if (kcal < 20 && desc.length > 10) {
+        showToast('⚠️ Valores parecem baixos — confira na lista');
+      }
+    }
+
+    btn.textContent = 'Salvando...';
+    const { data, error } = await sb.from('refeicoes')
+      .update({ descricao: desc, kcal, proteina_g: prot, fibra_g: fibra, tipo: refeicaoTipoModal })
+      .eq('id', refeicaoEditandoId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error(error);
+      const msg = error.message || '';
+      if (msg.includes('tipo') || error.code === 'PGRST204') {
+        showToast('⚠️ Rode metriafit_refeicoes_tipo.sql no Supabase');
+      } else {
+        showToast('⚠️ Erro ao salvar');
+      }
+      return;
+    }
+    if (!data) {
+      showToast('⚠️ Edição bloqueada — rode metriafit_refeicoes_update.sql no Supabase');
+      return;
+    }
+    fecharModalRefeicao();
+    await carregarRefeicoes();
+    carregarResumoAlimentacao().catch(() => {});
+    showToast(descMudou || semFibra ? '✅ Refeição reanalisada e salva!' : '✅ Refeição atualizada!');
+  } catch (e) {
+    console.error(e);
+    const msg = e?.message || '';
+    if (isErroCotaIA(e) && (descMudou || tipoMudou)) {
+      try {
+        btn.textContent = 'Salvando...';
+        const { data, error } = await sb.from('refeicoes')
+          .update({ descricao: desc, tipo: refeicaoTipoModal })
+          .eq('id', refeicaoEditandoId)
+          .select()
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) {
+          showToast('⚠️ Edição bloqueada — rode metriafit_refeicoes_update.sql no Supabase');
+          return;
+        }
+        fecharModalRefeicao();
+        await carregarRefeicoes();
+        carregarResumoAlimentacao().catch(() => {});
+        showToast('⚠️ Alteração salva, mas a IA está sem cota para recalcular macros');
+        return;
+      } catch (saveErr) {
+        console.error(saveErr);
+        showToast('⚠️ IA sem cota e erro ao salvar alteração');
+      }
+    } else if (isErroCotaIA(e)) {
+      showToast('⚠️ Gemini sem cota agora. Tente recalcular as fibras mais tarde.');
+    } else if (msg.includes('GEMINI_KEY')) {
+      showToast('⚠️ Chave GEMINI_KEY não configurada no Supabase');
+    } else if (msg) {
+      showToast('⚠️ ' + msg.slice(0, 80));
+    } else {
+      showToast('⚠️ Erro na IA ao reanalisar');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✓ Salvar alteração';
+  }
 }
 
 async function processarRefeicao() {
-  const texto = document.getElementById('ai-input').value.trim();
-  if (!texto) { showToast('⚠️ Descreva o que comeu'); return; }
+  detectarTipoNoTexto();
+  const textoBruto = document.getElementById('ai-input').value.trim();
+  if (!textoBruto) { showToast('⚠️ Descreva o que comeu'); return; }
+  const texto = limparPrefixoRefeicao(textoBruto) || textoBruto;
+  const tipo = refeicaoTipoAtual;
   const btn = document.getElementById('btn-ai');
   btn.disabled = true; btn.textContent = '...';
   document.getElementById('ai-result').classList.remove('show');
-  const mK = perfilData?.meta_kcal || 2000;
-  const mP = perfilData?.meta_proteina_g || 120;
-  const { data: refs } = await sb.from('refeicoes').select('kcal,proteina_g').eq('dia_id', diaAtual.id);
-  const kcalJ = (refs||[]).reduce((s,r) => s+(r.kcal||0), 0);
-  const protJ = (refs||[]).reduce((s,r) => s+(r.proteina_g||0), 0);
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const res = await fetch(`${SUPA_URL}/functions/v1/analisar-refeicao`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': SUPA_KEY,
-      },
-      body: JSON.stringify({ texto, mK, mP, kcalJ, protJ }),
+    await garantirDiaCriado();
+    const { kcal, prot, fibra, alerta } = await analisarTextoRefeicao(texto);
+    if (kcal < 20 && texto.length > 10) {
+      showToast('⚠️ Valores parecem baixos — confira na lista');
+    }
+    const { error: insErr } = await sb.from('refeicoes').insert({
+      dia_id: diaAtual.id,
+      descricao: texto,
+      kcal,
+      proteina_g: prot,
+      fibra_g: fibra,
+      tipo,
     });
-    const parsed = await res.json();
-    await sb.from('refeicoes').insert({ dia_id: diaAtual.id, descricao: parsed.descricao||texto, kcal: parsed.kcal||0, proteina_g: parsed.proteina_g||0 });
-    document.getElementById('ai-result').innerHTML = `<strong>✅ ${parsed.kcal} kcal · ${parsed.proteina_g}g proteína registrados!</strong><br><br><strong>💡 Sugestão para o resto do dia:</strong><br>${parsed.sugestao}`;
+    if (insErr) {
+      if ((insErr.message || '').includes('tipo') || (insErr.message || '').includes('fibra_g') || insErr.code === 'PGRST204') {
+        throw new Error('Rode metriafit_refeicoes_tipo.sql e metriafit_fibra.sql no Supabase');
+      }
+      throw insErr;
+    }
+    document.getElementById('ai-result').innerHTML = `<strong>✅ ${nomeTipoRef(tipo)} · ${kcal} kcal · ${prot}g prot · ${fibra}g fibra!</strong><br><br><strong>💡 Coach alimentação:</strong><br>${alerta}`;
     document.getElementById('ai-result').classList.add('show');
     document.getElementById('ai-input').value = '';
+    setTipoRefeicao(tipo);
     await carregarRefeicoes();
-  } catch(e) { console.error(e); showToast('⚠️ Erro na IA. Tente novamente.'); }
+    carregarResumoAlimentacao().catch(() => {});
+  } catch(e) {
+    console.error(e);
+    const msg = e?.message || '';
+    if (isErroCotaIA(e)) {
+      showToast('⚠️ Gemini sem cota agora. Tente registrar/recalcular mais tarde.');
+    } else if (msg.includes('GEMINI_KEY')) {
+      showToast('⚠️ Chave GEMINI_KEY não configurada no Supabase');
+    } else if (msg) {
+      showToast('⚠️ ' + msg.slice(0, 80));
+    } else {
+      showToast('⚠️ Erro na IA. Tente novamente.');
+    }
+  }
   btn.disabled = false; btn.textContent = 'Analisar';
 }
 
 async function delRefeicao(id) {
   await sb.from('refeicoes').delete().eq('id', id);
   await carregarRefeicoes();
+  carregarResumoAlimentacao().catch(() => {});
+}
+
+async function recalcularRefeicoesDia() {
+  if (!diaAtual?.id) { showToast('⚠️ Nenhum dia selecionado'); return; }
+  const { data: refs, error: errLoad } = await sb.from('refeicoes').select('*').eq('dia_id', diaAtual.id).order('created_at');
+  if (errLoad) { showToast('⚠️ Erro ao carregar refeições'); return; }
+  if (!refs?.length) { showToast('⚠️ Nenhuma refeição para recalcular'); return; }
+
+  const btn = document.getElementById('btn-recalc-ref');
+  const btnAi = document.getElementById('btn-ai');
+  const labelOriginal = btn?.textContent || '🔄 Recalcular tudo';
+  if (btn) { btn.disabled = true; }
+  if (btnAi) btnAi.disabled = true;
+
+  let ok = 0;
+  let fail = 0;
+  let falhaPorCota = false;
+
+  for (let i = 0; i < refs.length; i++) {
+    const r = refs[i];
+    const desc = (r.descricao || '').trim();
+    if (!desc) { fail++; continue; }
+    if (btn) btn.textContent = `🔄 ${i + 1}/${refs.length}...`;
+    try {
+      const res = await analisarTextoRefeicao(desc, r.id);
+      const { error } = await sb.from('refeicoes')
+        .update({ kcal: res.kcal, proteina_g: res.prot, fibra_g: res.fibra })
+        .eq('id', r.id);
+      if (error) throw error;
+      ok++;
+    } catch (e) {
+      console.error('Recalc refeição', r.id, e);
+      if (isErroCotaIA(e)) falhaPorCota = true;
+      fail++;
+    }
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = labelOriginal;
+  }
+  if (btnAi) btnAi.disabled = false;
+
+  await carregarRefeicoes();
+  carregarResumoAlimentacao().catch(() => {});
+
+  if (fail && !ok && falhaPorCota) {
+    showToast('⚠️ Gemini sem cota agora. Tente recalcular mais tarde.');
+  } else if (fail && !ok) {
+    showToast('⚠️ Erro ao recalcular — confira a edge function');
+  } else if (fail) {
+    showToast(`⚠️ ${ok} recalculadas, ${fail} com erro`);
+  } else {
+    showToast(`✅ ${ok} refeiç${ok === 1 ? 'ão' : 'ões'} recalculadas com fibra!`);
+  }
 }
 
 // ===== ÁGUA =====
+let aguaDiaAtual = [];
+let aguaEditandoId = null;
+
+async function prepararDiaParaData(data) {
+  if (!data) throw new Error('Data do dia não definida');
+  if (!diaAtual || diaAtual.data !== data) {
+    const { data: ex } = await sb.from('dias')
+      .select('id')
+      .eq('user_id', userAtual.id)
+      .eq('data', data)
+      .maybeSingle();
+    diaAtual = { id: ex?.id || null, data };
+  }
+  const input = document.getElementById('dia-data');
+  if (input && document.getElementById('screen-dia')?.classList.contains('active')) {
+    input.value = data;
+  }
+  return garantirDiaCriado();
+}
+
+async function refreshAguaUI() {
+  if (document.getElementById('screen-dia')?.classList.contains('active')) {
+    await carregarAgua();
+  }
+  carregarDias().catch(() => {});
+}
+
+async function selecionarDiaAgua(id, data) {
+  diaAtual = { id, data };
+  atualizarTituloDia(data);
+  const input = document.getElementById('dia-data');
+  if (input) input.value = data;
+  await carregarAgua();
+}
+
+function htmlAguaItemLista(r) {
+  const t = new Date(r.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return `<div class="agua-item">
+    <div class="agua-item-info">
+      <div class="agua-item-qtd">💧 ${formatAguaMl(r.quantidade_ml)}</div>
+      <div class="agua-item-hora">às ${t}</div>
+    </div>
+    <div class="agua-item-actions">
+      <button class="edit-btn" onclick="event.stopPropagation();editarAgua('${r.id}')" title="Editar">✏️</button>
+      <button class="del-btn" onclick="event.stopPropagation();delAgua('${r.id}')" title="Excluir">🗑</button>
+    </div>
+  </div>`;
+}
+
+function formatAguaDiffMl(diffMl) {
+  const abs = Math.abs(Number(diffMl) || 0);
+  if (abs >= 1000) return (abs / 1000).toFixed(1).replace('.', ',') + ' L';
+  return abs + ' ml';
+}
+
+function htmlAguaIndicador(totalMl, metaMl) {
+  const diff = Math.round((totalMl - metaMl) / 50) * 50;
+  if (diff > 0) {
+    return `<div class="agua-card-ind meta-ind bad" title="Acima da meta"><span class="meta-arrow">↑</span><span class="meta-diff">+${formatAguaDiffMl(diff)}</span></div>`;
+  }
+  if (diff < 0) {
+    return `<div class="agua-card-ind meta-ind warn" title="Abaixo da meta"><span class="meta-arrow">↓</span><span class="meta-diff">${formatAguaDiffMl(diff)}</span></div>`;
+  }
+  return `<div class="agua-card-ind meta-ind good" title="Meta atingida"><span class="meta-arrow">✓</span><span class="meta-diff">ok</span></div>`;
+}
+
+function htmlAguaDiaCard(d, regs, metaMl, dataSelecionada) {
+  const totalMl = regs.reduce((s, r) => s + (r.quantidade_ml || 0), 0);
+  const pct = Math.round(totalMl / metaMl * 100);
+  const barPct = Math.min(100, pct);
+  const dt = new Date(d.data + 'T12:00:00');
+  const qtd = regs.length;
+  const ativo = dataSelecionada === d.data ? ' ativo' : '';
+  return `<div class="agua-dia-card${ativo}" onclick="selecionarDiaAgua('${d.id}','${d.data}')">
+    <div class="agua-card-top">
+      <div class="ali-dia-header">
+        <div class="day-date">${dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</div>
+        <div class="day-date-sub">${dt.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
+      </div>
+      ${htmlAguaIndicador(totalMl, metaMl)}
+    </div>
+    <div class="agua-hero">
+      <div class="agua-num">${formatAguaTotal(totalMl)}</div>
+      <div class="agua-info">
+        <div class="meta">${pct}%</div>
+        <div class="lbl">da meta (${(metaMl / 1000).toFixed(1).replace('.', ',')} L)</div>
+      </div>
+    </div>
+    <div class="agua-prog">
+      <div class="agua-prog-fill" style="width:${barPct}%"></div>
+    </div>
+    <div class="ali-refeicoes-qtd">💧 ${qtd} registro${qtd === 1 ? '' : 's'}</div>
+  </div>`;
+}
+
 async function carregarAgua() {
-  const { data: regs } = await sb.from('agua').select('*').eq('dia_id', diaAtual.id).order('created_at');
-  const totalMl = (regs||[]).reduce((s,r) => s+(r.quantidade_ml||0), 0);
-  const totalL  = totalMl / 1000;
-  const metaL   = perfilData ? perfilData.meta_agua_ml / 1000 : 2.5;
-  const pct     = Math.min(100, Math.round(totalL / metaL * 100));
-  document.getElementById('agua-total').textContent = totalL.toFixed(1) + 'L';
-  document.getElementById('agua-pct').textContent   = pct + '%';
-  document.getElementById('agua-meta-txt').textContent = `da meta (${metaL.toFixed(1)}L)`;
-  document.getElementById('agua-bar').style.width   = pct + '%';
-  if (!regs||regs.length===0) { document.getElementById('lista-agua').innerHTML = '<div class="empty"><p>Nenhum registro ainda.</p></div>'; return; }
-  document.getElementById('lista-agua').innerHTML = regs.map(r => {
-    const t = new Date(r.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    return `<div class="exercicio-item">
-      <div class="exercicio-info"><div class="exercicio-nome">💧 ${r.quantidade_ml/1000}L</div><div class="exercicio-det">às ${t}</div></div>
-      <button class="del-btn" onclick="delAgua('${r.id}')">🗑</button>
-    </div>`;
-  }).join('');
+  const metaMl = perfilData?.meta_agua_ml || 2500;
+  const metaL = metaMl / 1000;
+  const indEl = document.getElementById('agua-dia-ind');
+  const entradasEl = document.getElementById('lista-agua-entradas');
+  const elDias = document.getElementById('lista-agua');
+
+  if (diaAtual?.data && !diaAtual.id) {
+    const { data: ex } = await sb.from('dias')
+      .select('id')
+      .eq('user_id', userAtual.id)
+      .eq('data', diaAtual.data)
+      .maybeSingle();
+    if (ex) diaAtual.id = ex.id;
+  }
+
+  let regsAtual = [];
+  if (diaAtual?.id) {
+    const { data: regs } = await sb.from('agua').select('*').eq('dia_id', diaAtual.id).order('created_at');
+    regsAtual = regs || [];
+  }
+  aguaDiaAtual = regsAtual;
+  const totalMl = regsAtual.reduce((s, r) => s + (r.quantidade_ml || 0), 0);
+  const pct = Math.round(totalMl / metaMl * 100);
+  const barPct = Math.min(100, pct);
+
+  document.getElementById('agua-total').textContent = formatAguaTotal(totalMl);
+  document.getElementById('agua-pct').textContent = pct + '%';
+  document.getElementById('agua-meta-txt').textContent = `da meta (${metaL.toFixed(1).replace('.', ',')} L)`;
+  document.getElementById('agua-bar').style.width = barPct + '%';
+  if (indEl) indEl.innerHTML = htmlAguaIndicador(totalMl, metaMl);
+
+  if (entradasEl) {
+    entradasEl.innerHTML = regsAtual.length
+      ? regsAtual.map(htmlAguaItemLista).join('')
+      : '<div class="empty" style="padding:8px 0"><p style="margin:0;font-size:0.75rem">Nenhum registro nesta data.</p></div>';
+  }
+
+  if (!elDias) return;
+  elDias.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
+
+  try {
+    const { data: dias } = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(30);
+    const ids = (dias || []).map(d => d.id);
+    let aguas = [];
+    if (ids.length) {
+      const { data } = await sb.from('agua').select('*').in('dia_id', ids).order('created_at');
+      aguas = data || [];
+    }
+
+    const diasComAgua = (dias || []).filter(d => aguas.some(a => a.dia_id === d.id));
+    const dataSel = diaAtual?.data || '';
+
+    if (!diasComAgua.length) {
+      elDias.innerHTML = '<div class="empty"><p>Nenhum dia com água registrada ainda.</p></div>';
+      return;
+    }
+
+    elDias.innerHTML = diasComAgua.map(d => {
+      const regs = aguas.filter(a => a.dia_id === d.id);
+      return htmlAguaDiaCard(d, regs, metaMl, dataSel);
+    }).join('');
+  } catch (e) {
+    console.error('Erro ao carregar água:', e);
+    elDias.innerHTML = '<div class="empty"><p>Erro ao carregar registros.</p></div>';
+  }
+}
+function formatAguaMl(ml) {
+  const n = Number(ml) || 0;
+  if (n >= 1000 && n % 1000 === 0) return `${n / 1000} L`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.', ',')} L`;
+  return `${n} ml`;
 }
 
-async function adicionarAgua() {
-  await sb.from('agua').insert({ dia_id: diaAtual.id, quantidade_ml: 1000 });
-  await carregarAgua();
-  showToast('💧 +1L registrado!');
+function formatAguaTotal(ml) {
+  const n = Number(ml) || 0;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace('.', ',')} L`;
+  return `${n} ml`;
 }
 
-async function removerAgua() {
-  const { data: regs } = await sb.from('agua').select('*').eq('dia_id', diaAtual.id).order('created_at',{ascending:false}).limit(1);
-  if (!regs||regs.length===0) { showToast('⚠️ Nada para remover'); return; }
-  await sb.from('agua').delete().eq('id', regs[0].id);
-  await carregarAgua();
+function atualizarPillsAguaModal() {
+  const val = Number(document.getElementById('agua-edit-ml')?.value) || 0;
+  document.querySelectorAll('#agua-pills-modal .agua-pill-modal').forEach(p => {
+    p.classList.toggle('active', Number(p.dataset.ml) === val);
+  });
+}
+
+function setAguaModalMl(ml) {
+  document.getElementById('agua-edit-ml').value = ml;
+  atualizarPillsAguaModal();
+}
+
+async function adicionarAguaMl(ml, dataRef = null) {
+  const qtd = Math.round(Number(ml));
+  if (!qtd || qtd < 1) { showToast('⚠️ Quantidade inválida'); return; }
+  const data = dataRef || diaAtual?.data || hojeISO();
+  try {
+    const diaId = await prepararDiaParaData(data);
+    const { data: inserido, error } = await sb.from('agua')
+      .insert({ dia_id: diaId, quantidade_ml: qtd })
+      .select()
+      .single();
+    if (error) {
+      console.error(error);
+      showToast('⚠️ Erro ao registrar água');
+      return;
+    }
+    if (!inserido) {
+      showToast('⚠️ Água não foi salva — tente novamente');
+      return;
+    }
+    diaAtual.id = diaId;
+    await refreshAguaUI();
+    showToast(`💧 +${formatAguaMl(qtd)} registrado!`);
+  } catch (e) {
+    console.error(e);
+    showToast('⚠️ Erro ao registrar água');
+  }
+}
+
+function adicionarAguaCustom() {
+  const inp = document.getElementById('agua-custom-ml');
+  const qtd = Math.round(Number(inp?.value));
+  if (!qtd || qtd < 1) { showToast('⚠️ Informe a quantidade em ml'); return; }
+  adicionarAguaMl(qtd).then(() => { if (inp) inp.value = ''; });
+}
+
+function editarAgua(id) {
+  const r = (aguaDiaAtual || []).find(x => x.id === id);
+  if (!r) return;
+  aguaEditandoId = id;
+  document.getElementById('agua-edit-ml').value = r.quantidade_ml ?? '';
+  atualizarPillsAguaModal();
+  document.getElementById('agua-modal').classList.add('show');
+}
+
+function fecharModalAgua(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('agua-modal').classList.remove('show');
+  aguaEditandoId = null;
+}
+
+async function salvarEdicaoAgua() {
+  if (!aguaEditandoId) return;
+  const qtd = Math.round(Number(document.getElementById('agua-edit-ml').value));
+  if (!qtd || qtd < 1) { showToast('⚠️ Informe a quantidade em ml'); return; }
+  const btn = document.getElementById('btn-agua-salvar');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+  try {
+    const { data, error } = await sb.from('agua')
+      .update({ quantidade_ml: qtd })
+      .eq('id', aguaEditandoId)
+      .select()
+      .maybeSingle();
+    if (error) {
+      console.error(error);
+      const msg = error.message || '';
+      if (msg.includes('agua_update') || error.code === 'PGRST204' || msg.toLowerCase().includes('policy')) {
+        showToast('⚠️ Rode metriafit_agua_update.sql no Supabase');
+      } else {
+        showToast('⚠️ Erro ao salvar água');
+      }
+      return;
+    }
+    if (!data) {
+      showToast('⚠️ Edição bloqueada — rode metriafit_agua_update.sql no Supabase');
+      return;
+    }
+    fecharModalAgua();
+    await refreshAguaUI();
+    showToast(`✅ Atualizado para ${formatAguaMl(qtd)}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✓ Salvar alteração';
+  }
 }
 
 async function delAgua(id) {
   await sb.from('agua').delete().eq('id', id);
-  await carregarAgua();
+  await refreshAguaUI();
+  showToast('🗑 Registro removido');
 }
+
+document.getElementById('agua-edit-ml')?.addEventListener('input', atualizarPillsAguaModal);
 
 // ===== TOAST =====
 let toastTimer;
@@ -1727,6 +3407,10 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
 }
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ex-nome-wrap')) fecharSugestoes();
+});
 </script>
 </body>
 </html>
