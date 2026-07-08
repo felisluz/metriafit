@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MetriaFit</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,6 +57,80 @@ body {
 .alerta-card .alerta-desc { font-size: 0.75rem; color: #78350f; margin-top: 3px; line-height: 1.5; }
 .alerta-section { margin-bottom: 16px; }
 .alerta-section-title { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: var(--amber); margin-bottom: 8px; }
+.elogio-card {
+  background: linear-gradient(135deg, #e2f8ee, #f0fdf4);
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.elogio-card .alerta-icon { font-size: 1.4rem; flex-shrink: 0; }
+.elogio-card .alerta-title { font-size: 0.8rem; font-weight: 800; color: #065f46; }
+.elogio-card .alerta-desc { font-size: 0.75rem; color: #047857; margin-top: 3px; line-height: 1.5; }
+.lembrete-card {
+  background: linear-gradient(135deg, #ede8ff, #e8f4ff);
+  border: 1.5px solid #c4b8ff;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.lembrete-card.urgente {
+  background: linear-gradient(135deg, #fff8e1, #fffde7);
+  border-color: #f59e0b;
+}
+.lembrete-card .alerta-icon { font-size: 1.4rem; flex-shrink: 0; }
+.lembrete-card .alerta-title { font-size: 0.8rem; font-weight: 800; color: #4930c8; }
+.lembrete-card.urgente .alerta-title { color: #92400e; }
+.lembrete-card .alerta-desc { font-size: 0.75rem; color: #5b4fc7; margin-top: 3px; line-height: 1.5; }
+.lembrete-card.urgente .alerta-desc { color: #78350f; }
+.btn-lembrete-corpo {
+  margin-top: 8px; padding: 6px 12px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 0.72rem; font-weight: 700; cursor: pointer;
+}
+.lembrete-card.urgente .btn-lembrete-corpo { background: var(--amber); }
+.home-alertas-wrap { margin-bottom: 4px; }
+.home-alertas-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+.home-alertas-title {
+  font-size: 0.72rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin-bottom: 12px;
+}
+.home-alertas-sub { font-size: 0.68rem; color: var(--muted); margin: -6px 0 12px; line-height: 1.4; }
+.periodo-progress {
+  height: 6px; background: var(--surface2); border-radius: 4px;
+  overflow: hidden; margin-bottom: 12px;
+}
+.periodo-progress-fill {
+  height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s;
+}
+.resumo-periodo-card {
+  background: linear-gradient(135deg, #ede8ff, #e8f4ff);
+  border: 1.5px solid #c4b8ff; border-radius: var(--radius);
+  padding: 14px; margin-bottom: 14px;
+}
+.resumo-periodo-title {
+  font-size: 0.72rem; font-weight: 900; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--accent); margin-bottom: 8px;
+}
+.resumo-periodo-linha { font-size: 0.78rem; line-height: 1.55; margin-bottom: 4px; }
+.resumo-periodo-destaque {
+  font-size: 0.8rem; font-weight: 800; color: var(--text);
+  margin: 10px 0 6px; padding-top: 8px; border-top: 1px solid rgba(98,70,234,.2);
+}
+.home-alertas-empty {
+  font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+  text-align: center; padding: 8px 4px;
+}
 
 .exercicio-item.deve-aumentar { border: 1.5px solid #f59e0b; background: #fffbeb; }
 .prog-badge {
@@ -401,8 +476,8 @@ body {
   font-weight: 700;
 }
 .back-btn:hover { color: var(--accent); }
-.day-title { font-size: 1.35rem; font-weight: 900; margin-bottom: 3px; text-transform: capitalize; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.day-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 3px; flex-wrap: nowrap; }
+.day-title { font-size: 1.35rem; font-weight: 900; margin-bottom: 0; text-transform: capitalize; }
+.day-header { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
 .day-date-picker {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--surface2); border: 1.5px solid var(--border);
@@ -411,10 +486,11 @@ body {
   cursor: pointer; flex-shrink: 0;
 }
 .day-nav-wrap {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  flex-shrink: 0;
+  width: 100%;
 }
 .day-nav-btn {
   width: 34px; height: 34px;
@@ -509,6 +585,27 @@ body {
 .exercicio-info { flex: 1; }
 .exercicio-nome { font-size: 0.85rem; font-weight: 800; }
 .exercicio-det  { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+.exercicio-hora { font-size: 0.65rem; color: var(--muted); margin-top: 3px; }
+.aerobico-tipo-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.aerobico-tipo-pill {
+  padding: 6px 10px; font-size: 0.72rem; font-weight: 700;
+  border: 1.5px solid var(--border); border-radius: 20px;
+  background: var(--surface2); color: var(--muted); cursor: pointer;
+}
+.aerobico-tipo-pill.active { background: var(--aer); color: #fff; border-color: var(--aer); }
+.esforco-pills { display: flex; gap: 6px; margin-bottom: 10px; }
+.esforco-pill {
+  flex: 1; padding: 8px 6px; font-size: 0.72rem; font-weight: 700; text-align: center;
+  border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--surface2); color: var(--muted); cursor: pointer;
+}
+.esforco-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.esforco-pill[data-esforco="baixo"].active { background: var(--green); border-color: var(--green); }
+.esforco-pill[data-esforco="moderado"].active { background: var(--amber); border-color: var(--amber); }
+.esforco-pill[data-esforco="alto"].active { background: var(--red); border-color: var(--red); }
+.aerobico-item { border-left: 3px solid var(--aer); }
+.alongamento-item { border-left: 3px solid var(--alo); }
+.inp-label { font-size: 0.68rem; font-weight: 700; color: var(--muted); margin: 8px 0 4px; }
 .del-btn {
   background: none; border: none;
   color: var(--muted); cursor: pointer; font-size: 1rem;
@@ -1051,12 +1148,68 @@ textarea.inp { min-height: 72px; resize: vertical; }
   flex: 1; display: flex; flex-direction: column;
   align-items: center; gap: 3px;
   background: none; border: none;
-  color: var(--muted); font-size: 0.62rem; font-weight: 700;
+  color: var(--muted); font-size: 0.58rem; font-weight: 700;
   cursor: pointer; padding: 4px 0;
   transition: color .15s;
 }
 .nav-item .icon { font-size: 1.25rem; }
 .nav-item.active { color: var(--accent); }
+
+/* Corpo — medidas corporais */
+.corpo-section { margin-bottom: 16px; }
+.corpo-field {
+  margin-bottom: 10px;
+}
+.corpo-field-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.68rem; font-weight: 800; color: var(--muted);
+  margin-bottom: 4px;
+}
+.corpo-tip-btn {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--muted);
+  font-size: 0.62rem; font-weight: 900; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0; line-height: 1;
+}
+.corpo-tip-btn:hover, .corpo-tip-btn.ativo { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+.corpo-tip-box {
+  display: none; font-size: 0.72rem; line-height: 1.45;
+  color: var(--text); background: #fffbeb;
+  border: 1px solid #f59e0b; border-radius: 8px;
+  padding: 8px 10px; margin: 4px 0 6px;
+}
+.corpo-tip-box.show { display: block; }
+.corpo-peso-destaque {
+  background: linear-gradient(135deg, var(--accent-lt), #f0f4ff);
+  border: 1.5px solid #c4b8ff; border-radius: var(--radius);
+  padding: 12px; margin-bottom: 14px;
+}
+.corpo-peso-destaque .corpo-field-label { color: var(--accent); font-size: 0.72rem; }
+.corpo-grafico-wrap {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px; margin-bottom: 14px;
+}
+.corpo-grafico-pills {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+}
+.corpo-grafico-pill {
+  padding: 5px 9px; font-size: 0.65rem; font-weight: 700;
+  border: 1.5px solid var(--border); border-radius: 16px;
+  background: var(--surface2); color: var(--muted); cursor: pointer;
+}
+.corpo-grafico-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.corpo-chart-canvas { width: 100%; max-height: 220px; }
+.corpo-hist-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; background: var(--surface2);
+  border-radius: 10px; margin-bottom: 8px;
+}
+.corpo-hist-info { flex: 1; min-width: 0; }
+.corpo-hist-data { font-size: 0.78rem; font-weight: 800; }
+.corpo-hist-detal { font-size: 0.68rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.corpo-hist-actions { display: flex; gap: 2px; flex-shrink: 0; }
 
 /* Empty */
 .empty { text-align: center; padding: 36px 16px; color: var(--muted); }
@@ -1150,6 +1303,50 @@ textarea.inp { min-height: 72px; resize: vertical; }
         <button onclick="abrirAlimentacao()" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🥗<br>Alimentação</button>
         <button onclick="abrirMenuAgua()" style="background:var(--blue);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💧<br>Água</button>
       </div>
+      <div id="alertas-inicio" class="home-alertas-wrap"></div>
+    </div>
+
+    <!-- CORPO -->
+    <div class="screen" id="screen-corpo">
+      <div class="screen-title">📏 Corpo</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin:-12px 0 16px">Peso semanal e medidas mensais em cm</p>
+
+      <div class="section-card">
+        <div class="section-label" id="corpo-form-titulo">+ Novo registro</div>
+        <div class="inp-label">Data e hora do registro</div>
+        <input class="inp" id="corpo-registrado" type="datetime-local" style="margin-bottom:12px">
+
+        <div class="corpo-peso-destaque">
+          <div class="corpo-field">
+            <div class="corpo-field-label">
+              <span>Peso (kg)</span>
+              <button type="button" class="corpo-tip-btn" onclick="toggleDicaCorpo('peso_kg', this)" aria-label="Como medir">?</button>
+            </div>
+            <div class="corpo-tip-box" id="corpo-tip-peso_kg">Registre seu peso na balança, de preferência em jejum e sempre no mesmo horário. Ideal medir 1x por semana.</div>
+            <input class="inp" id="corpo-peso_kg" type="number" step="0.1" min="0" placeholder="Ex: 78.5">
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:4px">📐 Circunferências (cm)</div>
+        <p style="font-size:0.65rem;color:var(--muted);margin:4px 0 10px;line-height:1.4">Medidas corporais: registre 1x por mês. Preencha só o que mediu hoje.</p>
+        <div id="corpo-campos-medidas"></div>
+
+        <div class="add-form-actions" style="margin-top:12px">
+          <button class="btn-add" id="btn-corpo-salvar" onclick="salvarMedidaCorporal()">+ Salvar registro</button>
+          <button class="btn-cancel-ex" id="btn-corpo-cancelar" style="display:none" onclick="cancelarEdicaoCorpo()">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="section-card corpo-grafico-wrap">
+        <div class="section-label">📈 Evolução</div>
+        <div class="corpo-grafico-pills" id="corpo-grafico-pills"></div>
+        <canvas id="corpo-chart" class="corpo-chart-canvas"></canvas>
+      </div>
+
+      <div class="section-card">
+        <div class="section-label">📋 Histórico</div>
+        <div id="corpo-historico"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+      </div>
     </div>
 
     <!-- DASHBOARD -->
@@ -1164,6 +1361,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
         <div class="coach-home-alerta" id="coach-home-alertas"></div>
         <button type="button" class="btn-personal" id="btn-coach-dia" onclick="atualizarCoachDia(true)">🤖 Atualizar orientação de hoje</button>
       </div>
+      <div id="resumo-periodo-dashboard"></div>
       <div id="alertas-home"></div>
       <div id="lista-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
@@ -1235,6 +1433,63 @@ textarea.inp { min-height: 72px; resize: vertical; }
         </div>
 
         <div class="section-card">
+          <div class="section-label">❤️ Aeróbico</div>
+          <div class="aerobico-tipo-pills" id="aerobico-tipo-pills">
+            <button type="button" class="aerobico-tipo-pill active" data-tipo="caminhada" onclick="setTipoAerobico('caminhada')">🚶 Caminhada</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="corrida" onclick="setTipoAerobico('corrida')">🏃 Corrida</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="ciclismo" onclick="setTipoAerobico('ciclismo')">🚴 Ciclismo</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="hiit" onclick="setTipoAerobico('hiit')">⚡ HIIT</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="escadas" onclick="setTipoAerobico('escadas')">🪜 Escadas</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="corda" onclick="setTipoAerobico('corda')">🪢 Corda</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="transport" onclick="setTipoAerobico('transport')">🚇 Transport</button>
+            <button type="button" class="aerobico-tipo-pill" data-tipo="outro" onclick="setTipoAerobico('outro')">✏️ Outro</button>
+          </div>
+          <div id="aerobico-outro-wrap" style="display:none;margin-bottom:8px">
+            <input class="inp" id="aer-tipo-outro" placeholder="Qual exercício? (ex: Natação)">
+          </div>
+          <div class="inp-label">Horário do exercício</div>
+          <div class="row">
+            <input class="inp" id="aer-hora-ini" type="time" title="Hora início">
+            <input class="inp" id="aer-hora-fim" type="time" title="Hora fim">
+          </div>
+          <div class="row">
+            <input class="inp" id="aer-kcal" type="number" min="0" placeholder="Calorias (kcal)">
+          </div>
+          <div class="inp-label">Esforço percebido</div>
+          <div class="esforco-pills" id="esforco-pills">
+            <button type="button" class="esforco-pill active" data-esforco="baixo" onclick="setEsforcoAerobico('baixo')">Baixo</button>
+            <button type="button" class="esforco-pill" data-esforco="moderado" onclick="setEsforcoAerobico('moderado')">Moderado</button>
+            <button type="button" class="esforco-pill" data-esforco="alto" onclick="setEsforcoAerobico('alto')">Alto</button>
+          </div>
+          <div class="inp-label">Data e hora do registro</div>
+          <input class="inp" id="aer-realizado" type="datetime-local">
+          <div class="add-form-actions" style="margin-top:10px">
+            <button class="btn-add" id="btn-aerobico" onclick="salvarAerobico()">+ Adicionar aeróbico</button>
+            <button class="btn-cancel-ex" id="btn-cancel-aer" style="display:none" onclick="cancelarEdicaoAerobico()">Cancelar</button>
+          </div>
+          <div class="section-label" style="margin-top:16px">❤️ Aeróbicos do dia</div>
+          <div id="lista-aerobicos" class="ex-grupo-list"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-label">💚 Alongamento</div>
+          <div class="inp-label">Horário do alongamento</div>
+          <div class="row">
+            <input class="inp" id="alo-hora-ini" type="time" title="Hora início">
+            <input class="inp" id="alo-hora-fim" type="time" title="Hora fim">
+          </div>
+          <input class="inp" id="alo-obs" placeholder="Obs. (opcional)">
+          <div class="inp-label">Data e hora do registro</div>
+          <input class="inp" id="alo-realizado" type="datetime-local">
+          <div class="add-form-actions" style="margin-top:10px">
+            <button class="btn-add" id="btn-alongamento" onclick="salvarAlongamento()">+ Adicionar alongamento</button>
+            <button class="btn-cancel-ex" id="btn-cancel-alo" style="display:none" onclick="cancelarEdicaoAlongamento()">Cancelar</button>
+          </div>
+          <div class="section-label" style="margin-top:16px">💚 Alongamentos do dia</div>
+          <div id="lista-alongamentos" class="ex-grupo-list"></div>
+        </div>
+
+        <div class="section-card">
           <div class="section-label">🏋️ Adicionar exercício</div>
           <div class="grupo-pills" id="grupo-pills">
             <button type="button" class="grupo-pill active" data-grupo="superior" onclick="setGrupo('superior')">💪 Superior</button>
@@ -1257,6 +1512,8 @@ textarea.inp { min-height: 72px; resize: vertical; }
               <input class="inp" id="ex-reps"   placeholder="Reps"       type="number">
             </div>
             <input class="inp" id="ex-obs" placeholder="Obs. (opcional)">
+            <div class="inp-label">Data e hora do exercício</div>
+            <input class="inp" id="ex-realizado" type="datetime-local">
             <div class="add-form-actions">
               <button class="btn-add" id="btn-exercicio" onclick="salvarExercicio()">+ Adicionar exercício</button>
               <button class="btn-cancel-ex" id="btn-cancel-ex" style="display:none" onclick="cancelarEdicaoExercicio()">Cancelar</button>
@@ -1466,6 +1723,9 @@ textarea.inp { min-height: 72px; resize: vertical; }
     <button class="nav-item active" id="nav-home" onclick="navTo('home')">
       <span class="icon">🏠</span>Início
     </button>
+    <button class="nav-item" id="nav-corpo" onclick="navTo('corpo')">
+      <span class="icon">📏</span>Corpo
+    </button>
     <button class="nav-item" id="nav-dashboard" onclick="navTo('dashboard')">
       <span class="icon">📊</span>Dashboard
     </button>
@@ -1644,6 +1904,7 @@ async function iniciarApp(user) {
   document.getElementById('perfil-email').textContent = userAtual.email;
   carregarSugOcultos();
   await Promise.allSettled([carregarPerfil(), carregarDias()]);
+  atualizarAlertasAposRegistro();
   carregarSugestoesAlimentosDoBanco().catch(() => {});
   atualizarCoachDia().catch(() => {});
 }
@@ -1665,12 +1926,15 @@ function navTo(screen) {
   document.getElementById('screen-' + screen).classList.add('active');
   const navEl = document.getElementById('nav-' + screen);
   if (navEl) navEl.classList.add('active');
+  if (screen === 'home') atualizarAlertasAposRegistro();
+  if (screen === 'corpo') carregarCorpo();
   if (screen === 'perfil') carregarPerfilForm();
   if (screen === 'dashboard') {
     carregarPerfil().then(() => {
       renderMetaHome();
+      renderResumoPeriodoDashboard().catch(() => {});
       carregarDias();
-    }).catch(() => carregarDias());
+    }).catch(() => { renderResumoPeriodoDashboard().catch(() => {}); carregarDias(); });
   }
 }
 
@@ -2127,6 +2391,7 @@ async function salvarPerfil() {
   }
   await carregarPerfil();
   renderMetaHome();
+  atualizarAlertasAposRegistro();
   // Garante que a aba Alimentação re-renderize metas (kcal/prot/fib) imediatamente.
   carregarRefeicoes().catch(() => {});
   // Coach do dia fica em cache no localStorage; ao mudar metas, invalida o cache para não mostrar texto antigo.
@@ -2134,7 +2399,663 @@ async function salvarPerfil() {
   showToast('✅ Perfil salvo!');
 }
 
-// ===== ALERTAS HOME =====
+// ===== ALERTAS HOME (período mensal progressivo) =====
+function storageKeyPeriodo() {
+  return `metriafit-periodo:${userAtual?.id || 'anon'}`;
+}
+
+function storageKeyResumosPeriodo() {
+  return `metriafit-resumos-periodo:${userAtual?.id || 'anon'}`;
+}
+
+function diasNoMesDe(dataISO) {
+  const [y, m] = dataISO.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
+}
+
+function diasEntreISO(inicio, fim) {
+  const a = new Date(inicio + 'T12:00:00');
+  const b = new Date(fim + 'T12:00:00');
+  return Math.floor((b - a) / 86400000) + 1;
+}
+
+function datasDoPeriodo(inicio, qtd) {
+  return Array.from({ length: qtd }, (_, i) => somarDiasISO(inicio, i));
+}
+
+function fmtDataCurta(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+}
+
+function carregarEstadoPeriodo() {
+  try {
+    const raw = localStorage.getItem(storageKeyPeriodo());
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function salvarEstadoPeriodo(estado) {
+  try { localStorage.setItem(storageKeyPeriodo(), JSON.stringify(estado)); } catch {}
+}
+
+function carregarResumosFechados() {
+  try {
+    const raw = localStorage.getItem(storageKeyResumosPeriodo());
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+
+function salvarResumosFechados(lista) {
+  try { localStorage.setItem(storageKeyResumosPeriodo(), JSON.stringify(lista.slice(0, 12))); } catch {}
+}
+
+function agruparPorDiaId(lista) {
+  const map = {};
+  (lista || []).forEach(item => {
+    if (!map[item.dia_id]) map[item.dia_id] = [];
+    map[item.dia_id].push(item);
+  });
+  return map;
+}
+
+function htmlCardAlertaInicio(item, tipo) {
+  const cls = tipo === 'elogio' ? 'elogio-card' : 'alerta-card';
+  return `<div class="${cls}">
+    <div class="alerta-icon">${item.icon}</div>
+    <div>
+      <div class="alerta-title">${item.title}</div>
+      <div class="alerta-desc">${item.desc}</div>
+    </div>
+  </div>`;
+}
+
+async function buscarEAnalisarPeriodo(datas) {
+  const hoje = hojeISO();
+  const inicio = datas[0];
+  const fim = datas[datas.length - 1];
+
+  const { data: diasDb } = await sb.from('dias')
+    .select('id,data')
+    .eq('user_id', userAtual.id)
+    .gte('data', inicio)
+    .lte('data', fim);
+
+  const diaPorData = {};
+  (diasDb || []).forEach(d => { diaPorData[d.data] = d; });
+  const ids = (diasDb || []).map(d => d.id);
+
+  let exs = [], aers = [], alos = [], ativs = [], refs = [], aguas = [];
+  if (ids.length) {
+    const [r1, r2, r3, r4, r5, r6] = await Promise.allSettled([
+      sb.from('exercicios').select('dia_id').in('dia_id', ids),
+      sb.from('aerobicos').select('dia_id').in('dia_id', ids),
+      sb.from('alongamentos').select('dia_id').in('dia_id', ids),
+      sb.from('atividades').select('dia_id,tipo,feito').in('dia_id', ids).eq('feito', true),
+      sb.from('refeicoes').select('dia_id,kcal,proteina_g,fibra_g').in('dia_id', ids),
+      sb.from('agua').select('dia_id,quantidade_ml').in('dia_id', ids),
+    ]);
+    exs   = r1.status === 'fulfilled' ? (r1.value.data || []) : [];
+    aers  = r2.status === 'fulfilled' ? (r2.value.data || []) : [];
+    alos  = r3.status === 'fulfilled' ? (r3.value.data || []) : [];
+    ativs = r4.status === 'fulfilled' ? (r4.value.data || []) : [];
+    refs  = r5.status === 'fulfilled' ? (r5.value.data || []) : [];
+    aguas = r6.status === 'fulfilled' ? (r6.value.data || []) : [];
+  }
+
+  const exPorDia = agruparPorDiaId(exs);
+  const aerPorDia = agruparPorDiaId(aers);
+  const aloPorDia = agruparPorDiaId(alos);
+  const ativPorDia = agruparPorDiaId(ativs);
+  const refPorDia = agruparPorDiaId(refs);
+  const aguaPorDia = agruparPorDiaId(aguas);
+
+  const mK = perfilData?.meta_kcal || 2000;
+  const mP = perfilData?.meta_proteina_g || 120;
+  const mF = metaFibraPerfil();
+  const mAml = perfilData?.meta_agua_ml || 2500;
+
+  const tiposAtiv = (id) => new Set((ativPorDia[id] || []).map(a => a.tipo));
+  const teveExercicio = (id) => {
+    if (!id) return false;
+    const t = tiposAtiv(id);
+    return (exPorDia[id]?.length > 0)
+      || (aerPorDia[id]?.length > 0)
+      || (aloPorDia[id]?.length > 0)
+      || t.has('aerobica') || t.has('musc_inferior') || t.has('musc_superior') || t.has('alongamento');
+  };
+  const teveAcademia = (id) => {
+    if (!id) return false;
+    const t = tiposAtiv(id);
+    return (exPorDia[id]?.length > 0) || t.has('musc_inferior') || t.has('musc_superior');
+  };
+  const teveAlongamento = (id) => {
+    if (!id) return false;
+    return (aloPorDia[id]?.length > 0) || tiposAtiv(id).has('alongamento');
+  };
+  const teveAerobica = (id) => {
+    if (!id) return false;
+    return (aerPorDia[id]?.length > 0) || tiposAtiv(id).has('aerobica');
+  };
+
+  const datasRecentes = [...datas].reverse();
+  let diasSemExercicioConsecutivos = 0;
+  let diasComTreino = 0;
+  let diasAcademiaSemAlo = 0;
+  let diasAcademiaSemAer = 0;
+  let diasProtBaixa = 0;
+  let diasProtOk = 0;
+  let diasFibraBaixa = 0;
+  let diasKcalAlta = 0;
+  let diasKcalOk = 0;
+  let diasNutricaoBoa = 0;
+  let diasAguaBaixa = 0;
+  let diasAguaOk = 0;
+  let diasComRefeicao = 0;
+
+  for (const data of datas) {
+    const id = diaPorData[data]?.id;
+    if (teveExercicio(id)) diasComTreino++;
+    if (teveAcademia(id)) {
+      if (!teveAlongamento(id)) diasAcademiaSemAlo++;
+      if (!teveAerobica(id)) diasAcademiaSemAer++;
+    }
+    const dr = id ? (refPorDia[id] || []) : [];
+    if (dr.length) {
+      diasComRefeicao++;
+      const kcalT = dr.reduce((s, r) => s + (r.kcal || 0), 0);
+      const protT = dr.reduce((s, r) => s + (r.proteina_g || 0), 0);
+      const fibraT = dr.reduce((s, r) => s + (r.fibra_g || 0), 0);
+      const protOk = protT >= mP * 0.9;
+      const fibraOk = fibraT >= mF * 0.9;
+      const kcalOk = kcalT <= mK * 1.05;
+      if (protOk) diasProtOk++; else diasProtBaixa++;
+      if (!fibraOk) diasFibraBaixa++;
+      if (kcalOk) diasKcalOk++; else if (kcalT > mK * 1.05) diasKcalAlta++;
+      if (protOk && fibraOk && kcalOk) diasNutricaoBoa++;
+    }
+    const dw = id ? (aguaPorDia[id] || []) : [];
+    const aguaMl = dw.reduce((s, w) => s + (w.quantidade_ml || 0), 0);
+    const teveRegistro = dr.length > 0 || dw.length > 0 || teveExercicio(id);
+    if (teveRegistro) {
+      if (aguaMl >= mAml) diasAguaOk++;
+      else if (dr.length > 0 || dw.length > 0) diasAguaBaixa++;
+    }
+  }
+
+  for (const data of datasRecentes) {
+    const id = diaPorData[data]?.id;
+    if (data > hoje) continue;
+    if (teveExercicio(id)) break;
+    diasSemExercicioConsecutivos++;
+  }
+
+  return {
+    inicio, fim, totalDias: datas.length, temRegistro: ids.length > 0,
+    diasSemExercicioConsecutivos, diasComTreino, diasAcademiaSemAlo, diasAcademiaSemAer,
+    diasProtBaixa, diasProtOk, diasFibraBaixa, diasKcalAlta, diasKcalOk, diasNutricaoBoa,
+    diasAguaBaixa, diasAguaOk, diasComRefeicao, mK, mP, mF, mAml,
+  };
+}
+
+function diasTexto(qtd) {
+  return qtd === 1 ? '1 dia' : `${qtd} dias`;
+}
+
+function gerarAlertasElogios(stats) {
+  const alertas = [];
+  const elogios = [];
+  const n = stats.totalDias;
+  const limAlerta = n <= 7 ? Math.min(3, n) : Math.max(3, Math.ceil(n * 0.35));
+  const limElogioTreino = n <= 7 ? Math.min(4, n) : Math.max(4, Math.ceil(n * 0.55));
+  const limNutricaoBoa = n <= 7 ? Math.min(4, n) : Math.max(4, Math.ceil(n * 0.5));
+  const limAguaAlerta = limAlerta;
+  const streak = stats.diasSemExercicioConsecutivos;
+  const inativoProlongado = streak >= 4;
+
+  if (inativoProlongado) {
+    alertas.push({
+      icon: '🏋️',
+      title: 'Treino: deficiente',
+      desc: `Está há <strong>${diasTexto(streak)}</strong> sem registrar <strong>exercícios</strong>, <strong>alongamento</strong> ou <strong>aeróbico</strong>. Os três são importantes para um treino completo. Que tal retomar hoje?`,
+    });
+  } else if (streak >= 2) {
+    alertas.push({
+      icon: '🏋️',
+      title: 'Movimento: atenção',
+      desc: `Há <strong>${diasTexto(streak)}</strong> sem registrar exercícios, alongamento ou aeróbico. Um movimento leve hoje já ajuda!`,
+    });
+  } else if (streak === 0) {
+    elogios.push({
+      icon: '💪',
+      title: 'Treino em dia!',
+      desc: 'Você registrou atividade hoje. Continue assim. Consistência é o segredo!',
+    });
+  }
+
+  if (!inativoProlongado) {
+    if (stats.diasAcademiaSemAlo > 0) {
+      alertas.push({
+        icon: '💚',
+        title: 'Alongamento pendente',
+        desc: `Em <strong>${stats.diasAcademiaSemAlo} dia(s)</strong> você treinou musculação sem registrar alongamento. Alongar reduz lesões e melhora a recuperação.`,
+      });
+    }
+    if (stats.diasAcademiaSemAer > 0) {
+      alertas.push({
+        icon: '❤️',
+        title: 'Aeróbico pendente',
+        desc: `Em <strong>${stats.diasAcademiaSemAer} dia(s)</strong> você foi à academia sem registrar aeróbico. Combine força + cardio para melhores resultados.`,
+      });
+    }
+  }
+
+  if (stats.diasComRefeicao >= 1) {
+    const minDiasBom = Math.max(n <= 3 ? 1 : 2, Math.ceil(stats.diasComRefeicao * 0.5));
+    const umDiaSo = stats.diasComRefeicao === 1;
+
+    if (stats.diasProtBaixa >= limAlerta) {
+      alertas.push({
+        icon: '🥩',
+        title: 'Proteína abaixo da meta',
+        desc: umDiaSo
+          ? `Hoje a proteína ficou abaixo de 90% da meta (${stats.mP}g).`
+          : `Em <strong>${stats.diasProtBaixa} de ${stats.diasComRefeicao} dias</strong> com refeições, a proteína ficou abaixo de 90% da meta (${stats.mP}g/dia).`,
+      });
+    } else if (stats.diasProtOk >= minDiasBom) {
+      elogios.push({
+        icon: '🥩',
+        title: 'Proteína no caminho certo!',
+        desc: umDiaSo
+          ? `Hoje você bateu a meta de proteína (${stats.mP}g). Ótimo para manter e ganhar massa muscular!`
+          : `Em <strong>${stats.diasProtOk} de ${stats.diasComRefeicao} dias</strong> você bateu a meta de proteína (${stats.mP}g). Ótimo para manter e ganhar massa muscular!`,
+      });
+    }
+
+    if (stats.diasKcalAlta >= limAlerta) {
+      alertas.push({
+        icon: '🔥',
+        title: 'Calorias acima da meta',
+        desc: umDiaSo
+          ? `Hoje você passou da meta calórica (${stats.mK} kcal). Vale revisar porções e lanches.`
+          : `Em <strong>${stats.diasKcalAlta} de ${stats.diasComRefeicao} dias</strong>, você passou da meta calórica (${stats.mK} kcal). Vale revisar porções e lanches.`,
+      });
+    } else if (stats.diasKcalOk >= minDiasBom) {
+      elogios.push({
+        icon: '🔥',
+        title: 'Calorias no caminho certo!',
+        desc: umDiaSo
+          ? `Hoje suas calorias ficaram dentro da meta (${stats.mK} kcal). Continue controlando assim!`
+          : `Em <strong>${stats.diasKcalOk} de ${stats.diasComRefeicao} dias</strong> suas calorias ficaram dentro da meta (${stats.mK} kcal). Continue controlando assim!`,
+      });
+    }
+
+    if (stats.diasFibraBaixa >= limAlerta) {
+      alertas.push({
+        icon: '🌾',
+        title: 'Fibra insuficiente',
+        desc: umDiaSo
+          ? `Hoje a fibra ficou abaixo de 90% da meta (${stats.mF}g). Frutas, legumes e grãos integrais ajudam!`
+          : `Em <strong>${stats.diasFibraBaixa} de ${stats.diasComRefeicao} dias</strong>, a fibra ficou abaixo de 90% da meta (${stats.mF}g/dia). Frutas, legumes e grãos integrais ajudam!`,
+      });
+    }
+
+    if (stats.diasNutricaoBoa >= limNutricaoBoa) {
+      elogios.push({
+        icon: '🥗',
+        title: 'Alimentação equilibrada!',
+        desc: `${stats.diasNutricaoBoa} dias com proteína, fibra e calorias dentro da meta. Excelente disciplina. Seu corpo agradece!`,
+      });
+    }
+  }
+
+  if (stats.diasAguaBaixa >= limAguaAlerta) {
+    alertas.push({
+      icon: '💧',
+      title: 'Hidratação baixa',
+      desc: stats.diasAguaBaixa === 1
+        ? `Hoje a água ficou abaixo da meta (${(stats.mAml / 1000).toFixed(1).replace('.', ',')}L). Beba ao longo do dia!`
+        : `Em <strong>${stats.diasAguaBaixa} dia(s)</strong> do período, a água ficou abaixo da meta (${(stats.mAml / 1000).toFixed(1).replace('.', ',')}L). Beba ao longo do dia!`,
+    });
+  } else if (stats.diasAguaOk >= limElogioTreino) {
+    elogios.push({
+      icon: '💧',
+      title: 'Hidratação exemplar!',
+      desc: `${stats.diasAguaOk} dias com a meta de água batida. Hidratação em dia melhora energia e recuperação!`,
+    });
+  } else if (stats.diasAguaOk >= (n <= 3 ? 1 : 2)) {
+    elogios.push({
+      icon: '💧',
+      title: 'Boa hidratação',
+      desc: stats.diasAguaOk === 1
+        ? 'Hoje você atingiu a meta de água. Continue bebendo!'
+        : `Você atingiu a meta de água em ${stats.diasAguaOk} dia(s) neste período. Continue bebendo!`,
+    });
+  }
+
+  if (stats.diasComTreino >= 5 && n >= 5) {
+    elogios.push({
+      icon: '🔥',
+      title: n <= 7 ? 'Semana de treino forte!' : 'Período de treino forte!',
+      desc: `<strong>${stats.diasComTreino} de ${n} dias</strong> com atividade registrada. Você está construindo um hábito sólido. Parabéns!`,
+    });
+  } else if (stats.diasComTreino >= Math.max(3, Math.ceil(n * 0.4)) && streak < 2) {
+    elogios.push({
+      icon: '⭐',
+      title: 'Boa frequência de treinos',
+      desc: `${stats.diasComTreino} dias ativos no período. Mantenha o ritmo!`,
+    });
+  }
+
+  return { alertas, elogios };
+}
+
+function montarResumoFechado(stats, inicio, fim, maxDias) {
+  const pctTreino = stats.totalDias ? Math.round(stats.diasComTreino / stats.totalDias * 100) : 0;
+  const pctProt = stats.diasComRefeicao ? Math.round(stats.diasProtOk / stats.diasComRefeicao * 100) : 0;
+  const pctKcal = stats.diasComRefeicao ? Math.round(stats.diasKcalOk / stats.diasComRefeicao * 100) : 0;
+  const pctAgua = stats.totalDias ? Math.round(stats.diasAguaOk / stats.totalDias * 100) : 0;
+  let destaque = 'Período registrado com sucesso. Novo ciclo iniciado!';
+  if (pctTreino >= 60) destaque = `Excelente consistência no treino (${pctTreino}% dos dias ativos).`;
+  else if (pctProt >= 60) destaque = `Boa adesão à meta de proteína (${pctProt}% dos dias).`;
+  else if (pctAgua >= 60) destaque = `Hidratação consistente (${pctAgua}% dos dias na meta).`;
+  return {
+    inicio, fim, maxDias, fechadoEm: hojeISO(),
+    pctTreino, pctProt, pctKcal, pctAgua, destaque,
+    stats: {
+      diasComTreino: stats.diasComTreino,
+      diasComRefeicao: stats.diasComRefeicao,
+      diasProtOk: stats.diasProtOk,
+      diasKcalOk: stats.diasKcalOk,
+      diasAguaOk: stats.diasAguaOk,
+      totalDias: stats.totalDias,
+    },
+  };
+}
+
+async function buscarInicioPeriodoSugerido() {
+  const hoje = hojeISO();
+  const { data: dias } = await sb.from('dias')
+    .select('data')
+    .eq('user_id', userAtual.id)
+    .order('data', { ascending: true });
+  if (!dias?.length) return hoje;
+  const primeiro = dias[0].data;
+  const maxDias = diasNoMesDe(primeiro);
+  const limiteAntigo = somarDiasISO(hoje, -(maxDias - 1));
+  return primeiro < limiteAntigo ? limiteAntigo : primeiro;
+}
+
+async function fecharPeriodosVencidos() {
+  const hoje = hojeISO();
+  let estado = carregarEstadoPeriodo();
+  if (!estado?.inicio) {
+    const inicio = await buscarInicioPeriodoSugerido();
+    estado = { inicio };
+    salvarEstadoPeriodo(estado);
+    return estado;
+  }
+
+  const sugerido = await buscarInicioPeriodoSugerido();
+  if (sugerido < estado.inicio) {
+    estado.inicio = sugerido;
+    salvarEstadoPeriodo(estado);
+  }
+
+  let inicio = estado.inicio;
+  let resumos = carregarResumosFechados();
+  let alterou = false;
+
+  while (true) {
+    const maxDias = diasNoMesDe(inicio);
+    const fimPeriodo = somarDiasISO(inicio, maxDias - 1);
+    if (hoje <= fimPeriodo) break;
+
+    const datas = datasDoPeriodo(inicio, maxDias);
+    const stats = await buscarEAnalisarPeriodo(datas);
+    resumos.unshift(montarResumoFechado(stats, inicio, fimPeriodo, maxDias));
+    inicio = somarDiasISO(fimPeriodo, 1);
+    alterou = true;
+  }
+
+  if (alterou) {
+    salvarResumosFechados(resumos);
+    salvarEstadoPeriodo({ inicio });
+  }
+  return { inicio };
+}
+
+async function obterPeriodoAtual() {
+  const hoje = hojeISO();
+  const estado = await fecharPeriodosVencidos();
+  const inicio = estado.inicio || hoje;
+  const maxDias = diasNoMesDe(inicio);
+  const diasDecorridos = Math.min(diasEntreISO(inicio, hoje), maxDias);
+  const datas = datasDoPeriodo(inicio, diasDecorridos);
+  const fim = datas[datas.length - 1] || inicio;
+  return { inicio, fim, maxDias, diaAtual: diasDecorridos, datas };
+}
+
+const DIA_PESO_SEMANA = 5; // sexta-feira
+const INTERVALO_MEDIDAS_DIAS = 30;
+
+function diaSemanaISO(dataISO) {
+  return new Date(dataISO + 'T12:00:00').getDay();
+}
+
+function inicioCicloPeso(hoje) {
+  const diasAtras = (diaSemanaISO(hoje) - DIA_PESO_SEMANA + 7) % 7;
+  return somarDiasISO(hoje, -diasAtras);
+}
+
+function proximaSextaPeso(hoje) {
+  const diasFrente = (DIA_PESO_SEMANA - diaSemanaISO(hoje) + 7) % 7;
+  return somarDiasISO(hoje, diasFrente);
+}
+
+function proximaSextaDepoisDe(hoje) {
+  const prox = proximaSextaPeso(hoje);
+  return prox === hoje ? somarDiasISO(hoje, 7) : prox;
+}
+
+function registroTemMedidasCorporais(m) {
+  const ids = ['pescoco','torax','braco_relaxado_dir','braco_contraido_dir','antebraco_dir','cintura_umbigo','quadril','coxa_dir','panturrilha_dir'];
+  return ids.some(id => m[id] != null);
+}
+
+function htmlCardLembrete(item) {
+  const cls = item.urgente ? 'lembrete-card urgente' : 'lembrete-card';
+  return `<div class="${cls}">
+    <div class="alerta-icon">${item.icon}</div>
+    <div style="flex:1">
+      <div class="alerta-title">${item.title}</div>
+      <div class="alerta-desc">${item.desc}</div>
+      <button type="button" class="btn-lembrete-corpo" onclick="navTo('corpo')">📏 Ir para Corpo</button>
+    </div>
+  </div>`;
+}
+
+function calcularLembretePeso(medidas) {
+  const hoje = hojeISO();
+  const comPeso = (medidas || [])
+    .filter(m => m.peso_kg != null)
+    .sort((a, b) => new Date(b.registrado_em || b.created_at) - new Date(a.registrado_em || a.created_at));
+  const ultimo = comPeso[0];
+  const cicloInicio = inicioCicloPeso(hoje);
+  const ultimaData = ultimo ? String(ultimo.registrado_em || ultimo.created_at).slice(0, 10) : null;
+  const pesoNoCiclo = ultimaData && ultimaData >= cicloInicio;
+  const proxima = proximaSextaDepoisDe(hoje);
+  const proximaFmt = fmtDataCurta(proximaSextaPeso(hoje));
+  const hojeESexta = diaSemanaISO(hoje) === DIA_PESO_SEMANA;
+  const diasSemPeso = ultimaData ? diasEntreISO(ultimaData, hoje) - 1 : 999;
+
+  if (pesoNoCiclo) {
+    return {
+      icon: '⚖️',
+      title: 'Peso em dia',
+      desc: `Você já registrou o peso nesta semana. Próxima medição: <strong>sexta ${fmtDataCurta(proxima)}</strong>.`,
+      urgente: false,
+    };
+  }
+  if (hojeESexta || diasSemPeso >= 7) {
+    return {
+      icon: '⚖️',
+      title: 'Hora de pesar!',
+      desc: `Rotina semanal: toda <strong>sexta de manhã</strong>. ${hojeESexta ? 'Hoje é o dia!' : `Está pendente há ${diasSemPeso} dias.`} Próxima data: <strong>${proximaFmt}</strong>.`,
+      urgente: true,
+    };
+  }
+  return {
+    icon: '⚖️',
+    title: 'Próximo peso',
+    desc: `Sua medição semanal é na <strong>sexta ${proximaFmt}</strong> (de manhã, em jejum se possível).`,
+    urgente: false,
+  };
+}
+
+function calcularLembreteMedidas(medidas) {
+  const hoje = hojeISO();
+  const comMedida = (medidas || [])
+    .filter(registroTemMedidasCorporais)
+    .sort((a, b) => new Date(b.registrado_em || b.created_at) - new Date(a.registrado_em || a.created_at));
+  const ultimo = comMedida[0];
+
+  if (!ultimo) {
+    return {
+      icon: '📐',
+      title: 'Medidas corporais',
+      desc: 'Faça seu primeiro registro de circunferências: pescoço, tórax, braços, cintura, quadril e demais medidas.',
+      urgente: true,
+    };
+  }
+
+  const ultimaData = String(ultimo.registrado_em || ultimo.created_at).slice(0, 10);
+  const dias = diasEntreISO(ultimaData, hoje) - 1;
+  const proxima = somarDiasISO(ultimaData, INTERVALO_MEDIDAS_DIAS);
+  const faltam = Math.max(0, INTERVALO_MEDIDAS_DIAS - dias);
+
+  if (dias >= INTERVALO_MEDIDAS_DIAS) {
+    return {
+      icon: '📐',
+      title: 'Hora das medidas corporais!',
+      desc: `Já se passaram <strong>${dias} dias</strong> desde a última medição completa. Atualize pescoço, tórax, braços, cintura e demais campos.`,
+      urgente: true,
+    };
+  }
+  return {
+    icon: '📐',
+    title: 'Medidas em dia',
+    desc: `Próximo check completo em <strong>${fmtDataCurta(proxima)}</strong> (faltam ${faltam} dias). Intervalo: a cada ${INTERVALO_MEDIDAS_DIAS} dias.`,
+    urgente: false,
+  };
+}
+
+function renderHtmlAlertasPeriodo(periodo, stats, lembretePeso, lembreteMedidas, alertas, elogios) {
+  const pct = Math.round(periodo.diaAtual / periodo.maxDias * 100);
+  let html = '<div class="home-alertas-card">';
+  html += '<div class="home-alertas-title">📊 Seu período atual</div>';
+  html += `<div class="home-alertas-sub">Dia <strong>${periodo.diaAtual}</strong> de <strong>${periodo.maxDias}</strong> · ${fmtDataCurta(periodo.inicio)} a ${fmtDataCurta(periodo.fim)}</div>`;
+  html += `<div class="periodo-progress"><div class="periodo-progress-fill" style="width:${pct}%"></div></div>`;
+
+  html += '<div class="alerta-section"><div class="alerta-section-title" style="color:var(--accent)">📋 Lembretes</div>';
+  html += htmlCardLembrete(lembretePeso);
+  html += htmlCardLembrete(lembreteMedidas);
+  html += '</div>';
+
+  const temConteudo = stats.temRegistro || alertas.length || elogios.length;
+  if (!temConteudo && !alertas.length && !elogios.length) {
+    // lembretes já mostrados acima
+  }
+
+  if (alertas.length) {
+    html += '<div class="alerta-section"><div class="alerta-section-title">⚠️ Atenção</div>';
+    html += alertas.map(a => htmlCardAlertaInicio(a, 'alerta')).join('');
+    html += '</div>';
+  }
+
+  if (elogios.length) {
+    html += '<div class="alerta-section"><div class="alerta-section-title" style="color:var(--green)">🌟 Elogios</div>';
+    html += elogios.map(e => htmlCardAlertaInicio(e, 'elogio')).join('');
+    html += '</div>';
+  }
+
+  if (!temConteudo && !alertas.length && !elogios.length) {
+    html += '<div class="home-alertas-empty">Continue registrando treino, alimentação e água para ver alertas e elogios aqui.</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+async function carregarAlertasInicio() {
+  const el = document.getElementById('alertas-inicio');
+  if (!el || !userAtual) return;
+
+  el.innerHTML = '<div class="home-alertas-card"><div class="loading"><div class="spinner"></div>Analisando seu período...</div></div>';
+
+  try {
+    if (!perfilData) await carregarPerfil();
+    const periodo = await obterPeriodoAtual();
+    const [stats, medidasRes] = await Promise.all([
+      buscarEAnalisarPeriodo(periodo.datas),
+      sb.from('medidas_corporais').select('*').eq('user_id', userAtual.id).order('registrado_em', { ascending: false }).limit(50),
+    ]);
+    const medidas = medidasRes.error ? [] : (medidasRes.data || []);
+    const { alertas, elogios } = gerarAlertasElogios(stats);
+    const lembretePeso = calcularLembretePeso(medidas);
+    const lembreteMedidas = calcularLembreteMedidas(medidas);
+    el.innerHTML = renderHtmlAlertasPeriodo(periodo, stats, lembretePeso, lembreteMedidas, alertas, elogios);
+  } catch (e) {
+    console.error('Erro alertas início:', e);
+    el.innerHTML = '';
+  }
+}
+
+async function renderResumoPeriodoDashboard() {
+  const el = document.getElementById('resumo-periodo-dashboard');
+  if (!el || !userAtual) return;
+
+  try {
+    if (!perfilData) await carregarPerfil();
+    const periodo = await obterPeriodoAtual();
+    const resumos = carregarResumosFechados();
+    const pctAtual = Math.round(periodo.diaAtual / periodo.maxDias * 100);
+
+    let html = '';
+    if (resumos.length) {
+      const r = resumos[0];
+      html += `<div class="resumo-periodo-card">
+        <div class="resumo-periodo-title">📋 Apanhado do período fechado</div>
+        <div class="resumo-periodo-linha">${fmtDataCurta(r.inicio)} a ${fmtDataCurta(r.fim)} · ${r.maxDias} dias</div>
+        <div class="resumo-periodo-linha">💪 Treino: <strong>${r.stats.diasComTreino}/${r.stats.totalDias}</strong> dias ativos (${r.pctTreino}%)</div>
+        <div class="resumo-periodo-linha">🥩 Proteína ok: <strong>${r.stats.diasProtOk}/${r.stats.diasComRefeicao || '—'}</strong> dias (${r.pctProt}%)</div>
+        <div class="resumo-periodo-linha">🔥 Calorias ok: <strong>${r.stats.diasKcalOk}/${r.stats.diasComRefeicao || '—'}</strong> dias (${r.pctKcal}%)</div>
+        <div class="resumo-periodo-linha">💧 Água ok: <strong>${r.stats.diasAguaOk}/${r.stats.totalDias}</strong> dias (${r.pctAgua}%)</div>
+        <div class="resumo-periodo-destaque">${r.destaque}</div>
+      </div>`;
+    }
+
+    html += `<div class="resumo-periodo-card" style="background:var(--surface);border-color:var(--border)">
+      <div class="resumo-periodo-title" style="color:var(--text)">📅 Período em andamento</div>
+      <div class="resumo-periodo-linha">Dia <strong>${periodo.diaAtual}</strong> de <strong>${periodo.maxDias}</strong> · ${fmtDataCurta(periodo.inicio)} a ${fmtDataCurta(periodo.fim)}</div>
+      <div class="periodo-progress" style="margin-top:8px"><div class="periodo-progress-fill" style="width:${pctAtual}%"></div></div>
+      <div class="resumo-periodo-linha" style="margin-top:8px;font-size:0.72rem;color:var(--muted)">Ao completar ${periodo.maxDias} dias, o apanhado vai para cá e um novo período começa do zero.</div>
+    </div>`;
+
+    el.innerHTML = html;
+  } catch (e) {
+    console.error('Erro resumo período:', e);
+    el.innerHTML = '';
+  }
+}
+
+function atualizarAlertasAposRegistro() {
+  carregarAlertasInicio().catch(() => {});
+  renderResumoPeriodoDashboard().catch(() => {});
+}
+
+// ===== ALERTAS DASHBOARD (progressão de carga) =====
 async function verificarAlertasHome(dias) {
   try {
     const alertasEl = document.getElementById('alertas-home');
@@ -2520,7 +3441,7 @@ async function abrirDia(id, data, tabInicial) {
   atualizarBotoesNavegacaoDias().catch(() => {});
 }
 
-function voltarHome() { navTo('home'); carregarDias(); }
+function voltarHome() { navTo('home'); atualizarAlertasAposRegistro(); }
 
 function obterTabAtivaDia() {
   const tabs = ['treino', 'alimentacao', 'agua'];
@@ -2640,14 +3561,96 @@ async function carregarResumoAguaMenu() {
 
 // ===== TREINO =====
 const GRUPOS_EX = ['superior', 'inferior', 'abdomen'];
+const TIPOS_AEROBICO = [
+  { id: 'caminhada', label: 'Caminhada' },
+  { id: 'corrida', label: 'Corrida' },
+  { id: 'ciclismo', label: 'Ciclismo' },
+  { id: 'hiit', label: 'HIIT' },
+  { id: 'escadas', label: 'Subida de Escadas' },
+  { id: 'corda', label: 'Pular Corda' },
+  { id: 'transport', label: 'Transport' },
+  { id: 'outro', label: 'Outro' },
+];
+const ESFORCO_LABELS = { baixo: 'Baixo', moderado: 'Moderado', alto: 'Alto' };
 let historicoExercicios = {};
 let exerciciosDiaAtual = [];
+let aerobicosDiaAtual = [];
+let alongamentosDiaAtual = [];
 let exercicioEditandoId = null;
+let aerobicoEditandoId = null;
+let alongamentoEditandoId = null;
 let catalogoImagens = {};
 let modalImagemNome = '';
 let grupoAtual = 'superior';
+let aerobicoTipoAtual = 'caminhada';
+let aerobicoEsforcoAtual = 'baixo';
 let sugestoesNomes = [];
 let sugestoesFiltradas = [];
+
+function agoraDatetimeLocal() {
+  const n = new Date();
+  n.setMinutes(n.getMinutes() - n.getTimezoneOffset());
+  return n.toISOString().slice(0, 16);
+}
+
+function datetimeLocalToIso(val) {
+  if (!val) return null;
+  return new Date(val).toISOString();
+}
+
+function isoToDatetimeLocal(iso) {
+  if (!iso) return agoraDatetimeLocal();
+  const d = new Date(iso);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+
+function fmtDataHoraEx(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function fmtHoraCurta(val) {
+  if (!val) return '';
+  const s = String(val);
+  return s.length >= 5 ? s.slice(0, 5) : s;
+}
+
+function calcDuracaoAerobico(horaInicio, horaFim) {
+  if (!horaInicio || !horaFim) return '';
+  const [h1, m1] = horaInicio.split(':').map(Number);
+  const [h2, m2] = horaFim.split(':').map(Number);
+  let mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+  if (mins < 0) mins += 24 * 60;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h && m) return `${h}h ${m}min`;
+  if (h) return `${h}h`;
+  return `${m}min`;
+}
+
+function labelTipoAerobico(a) {
+  if (a.tipo === 'outro' && a.tipo_outro) return a.tipo_outro.trim();
+  return TIPOS_AEROBICO.find(t => t.id === a.tipo)?.label || a.tipo;
+}
+
+function setTipoAerobico(tipo) {
+  aerobicoTipoAtual = tipo;
+  document.querySelectorAll('.aerobico-tipo-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.tipo === tipo);
+  });
+  document.getElementById('aerobico-outro-wrap').style.display = tipo === 'outro' ? '' : 'none';
+}
+
+function setEsforcoAerobico(esforco) {
+  aerobicoEsforcoAtual = esforco;
+  document.querySelectorAll('.esforco-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.esforco === esforco);
+  });
+}
 
 function histKey(grupo, nome) { return `${grupo || 'inferior'}:${nome.trim().toLowerCase()}`; }
 
@@ -2671,15 +3674,23 @@ async function carregarTreino() {
     document.getElementById('obs-geral').value = '';
     await Promise.all([carregarHistoricoExercicios(), carregarCatalogoImagens()]);
     exerciciosDiaAtual = [];
+    aerobicosDiaAtual = [];
+    alongamentosDiaAtual = [];
     atualizarListaNomesExercicios();
     renderExercicios([], historicoExercicios);
+    renderAerobicos([]);
+    renderAlongamentos([]);
     cancelarEdicaoExercicio();
+    cancelarEdicaoAerobico();
+    cancelarEdicaoAlongamento();
     mostrarPersonalBox([]);
     return;
   }
-  const [{ data: ativs }, { data: exs }, { data: dia }] = await Promise.all([
+  const [{ data: ativs }, { data: exs }, { data: aers }, { data: alos }, { data: dia }] = await Promise.all([
     sb.from('atividades').select('*').eq('dia_id', diaAtual.id),
     sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem'),
+    sb.from('aerobicos').select('*').eq('dia_id', diaAtual.id).order('ordem'),
+    sb.from('alongamentos').select('*').eq('dia_id', diaAtual.id).order('ordem'),
     sb.from('dias').select('obs_geral').eq('id', diaAtual.id).single(),
   ]);
   document.querySelectorAll('.act-btn').forEach(btn => {
@@ -2687,15 +3698,19 @@ async function carregarTreino() {
     btn.classList.toggle('on', a?.feito || false);
   });
 
-  // Carregar histórico dos últimos 30 dias para comparação
   await Promise.all([carregarHistoricoExercicios(), carregarCatalogoImagens()]);
   exerciciosDiaAtual = exs || [];
+  aerobicosDiaAtual = aers || [];
+  alongamentosDiaAtual = alos || [];
   atualizarListaNomesExercicios();
   renderExercicios(exerciciosDiaAtual, historicoExercicios);
+  renderAerobicos(aerobicosDiaAtual);
+  renderAlongamentos(alongamentosDiaAtual);
   cancelarEdicaoExercicio();
+  cancelarEdicaoAerobico();
+  cancelarEdicaoAlongamento();
   document.getElementById('obs-geral').value = dia?.obs_geral || '';
 
-  // Mostrar personal trainer box
   mostrarPersonalBox(exs || []);
 }
 
@@ -2985,6 +4000,33 @@ function preencherExercicioAnterior() {
 
 function limparFormExercicio() {
   ['ex-nome','ex-peso','ex-series','ex-reps','ex-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ex-realizado').value = agoraDatetimeLocal();
+}
+
+function limparFormAerobico() {
+  setTipoAerobico('caminhada');
+  setEsforcoAerobico('baixo');
+  ['aer-tipo-outro','aer-hora-ini','aer-hora-fim','aer-kcal'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('aer-realizado').value = agoraDatetimeLocal();
+}
+
+function cancelarEdicaoAerobico() {
+  aerobicoEditandoId = null;
+  limparFormAerobico();
+  document.getElementById('btn-aerobico').textContent = '+ Adicionar aeróbico';
+  document.getElementById('btn-cancel-aer').style.display = 'none';
+}
+
+function limparFormAlongamento() {
+  ['alo-hora-ini','alo-hora-fim','alo-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('alo-realizado').value = agoraDatetimeLocal();
+}
+
+function cancelarEdicaoAlongamento() {
+  alongamentoEditandoId = null;
+  limparFormAlongamento();
+  document.getElementById('btn-alongamento').textContent = '+ Adicionar alongamento';
+  document.getElementById('btn-cancel-alo').style.display = 'none';
 }
 
 function cancelarEdicaoExercicio() {
@@ -3005,11 +4047,41 @@ function editarExercicio(id) {
   document.getElementById('ex-series').value  = ex.series     ?? '';
   document.getElementById('ex-reps').value    = ex.repeticoes ?? '';
   document.getElementById('ex-obs').value     = ex.obs        ?? '';
+  document.getElementById('ex-realizado').value = isoToDatetimeLocal(ex.realizado_em || ex.created_at);
   document.getElementById('btn-exercicio').textContent = '✓ Salvar alteração';
   document.getElementById('btn-cancel-ex').style.display = '';
   document.getElementById('ex-nome').focus();
   document.getElementById('ex-nome').scrollIntoView({ behavior: 'smooth', block: 'center' });
   atualizarBotaoImagem();
+}
+
+function editarAerobico(id) {
+  const a = aerobicosDiaAtual.find(x => x.id === id);
+  if (!a) return;
+  aerobicoEditandoId = id;
+  setTipoAerobico(a.tipo || 'caminhada');
+  setEsforcoAerobico(a.esforco || 'baixo');
+  document.getElementById('aer-tipo-outro').value = a.tipo_outro || '';
+  document.getElementById('aer-hora-ini').value = fmtHoraCurta(a.hora_inicio);
+  document.getElementById('aer-hora-fim').value = fmtHoraCurta(a.hora_fim);
+  document.getElementById('aer-kcal').value = a.kcal ?? '';
+  document.getElementById('aer-realizado').value = isoToDatetimeLocal(a.realizado_em || a.created_at);
+  document.getElementById('btn-aerobico').textContent = '✓ Salvar alteração';
+  document.getElementById('btn-cancel-aer').style.display = '';
+  document.getElementById('aerobico-tipo-pills').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function editarAlongamento(id) {
+  const a = alongamentosDiaAtual.find(x => x.id === id);
+  if (!a) return;
+  alongamentoEditandoId = id;
+  document.getElementById('alo-hora-ini').value = fmtHoraCurta(a.hora_inicio);
+  document.getElementById('alo-hora-fim').value = fmtHoraCurta(a.hora_fim);
+  document.getElementById('alo-obs').value = a.obs || '';
+  document.getElementById('alo-realizado').value = isoToDatetimeLocal(a.realizado_em || a.created_at);
+  document.getElementById('btn-alongamento').textContent = '✓ Salvar alteração';
+  document.getElementById('btn-cancel-alo').style.display = '';
+  document.getElementById('alo-hora-ini').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function htmlExercicioItem(e, historico) {
@@ -3019,11 +4091,13 @@ function htmlExercicioItem(e, historico) {
   const badge = deveAumentar ? `<div class="prog-badge">⬆️ Hora de aumentar a carga!</div>` : '';
     const temFoto = catalogoImagens[nomeKey(e.nome)];
   const nomeEsc = e.nome.replace(/'/g, "\\'");
+  const quando = fmtDataHoraEx(e.realizado_em || e.created_at);
   return `
   <div class="exercicio-item${deveAumentar ? ' deve-aumentar' : ''}">
     <div class="exercicio-info">
       <div class="exercicio-nome">${e.nome}</div>
       <div class="exercicio-det">${[e.peso_kg?e.peso_kg+'kg':null, (e.series&&e.repeticoes)?e.series+'×'+e.repeticoes:null, e.obs].filter(Boolean).join(' · ')}</div>
+      ${quando ? `<div class="exercicio-hora">🕐 ${quando}</div>` : ''}
       ${badge}
     </div>
     <div class="ex-actions">
@@ -3032,6 +4106,68 @@ function htmlExercicioItem(e, historico) {
       <button class="del-btn" onclick="delExercicio('${e.id}')" title="Excluir">🗑</button>
     </div>
   </div>`;
+}
+
+function htmlAerobicoItem(a) {
+  const nome = labelTipoAerobico(a);
+  const horario = [fmtHoraCurta(a.hora_inicio), fmtHoraCurta(a.hora_fim)].filter(Boolean).join(' – ');
+  const duracao = calcDuracaoAerobico(a.hora_inicio, a.hora_fim);
+  const det = [
+    horario ? (duracao ? `${horario} (${duracao})` : horario) : null,
+    a.kcal ? `${a.kcal} kcal` : null,
+    a.esforco ? `Esforço: ${ESFORCO_LABELS[a.esforco] || a.esforco}` : null,
+  ].filter(Boolean).join(' · ');
+  const quando = fmtDataHoraEx(a.realizado_em || a.created_at);
+  return `
+  <div class="exercicio-item aerobico-item">
+    <div class="exercicio-info">
+      <div class="exercicio-nome">${nome}</div>
+      <div class="exercicio-det">${det || 'Sem detalhes'}</div>
+      ${quando ? `<div class="exercicio-hora">🕐 ${quando}</div>` : ''}
+    </div>
+    <div class="ex-actions">
+      <button class="edit-btn" onclick="editarAerobico('${a.id}')" title="Editar">✏️</button>
+      <button class="del-btn" onclick="delAerobico('${a.id}')" title="Excluir">🗑</button>
+    </div>
+  </div>`;
+}
+
+function renderAerobicos(lista) {
+  aerobicosDiaAtual = lista || [];
+  const el = document.getElementById('lista-aerobicos');
+  el.innerHTML = aerobicosDiaAtual.length
+    ? aerobicosDiaAtual.map(htmlAerobicoItem).join('')
+    : '<div class="ex-grupo-empty">Nenhum aeróbico registrado.</div>';
+}
+
+function htmlAlongamentoItem(a) {
+  const horario = [fmtHoraCurta(a.hora_inicio), fmtHoraCurta(a.hora_fim)].filter(Boolean).join(' – ');
+  const duracao = calcDuracaoAerobico(a.hora_inicio, a.hora_fim);
+  const det = [
+    horario ? (duracao ? `${horario} (${duracao})` : horario) : null,
+    a.obs || null,
+  ].filter(Boolean).join(' · ');
+  const quando = fmtDataHoraEx(a.realizado_em || a.created_at);
+  return `
+  <div class="exercicio-item alongamento-item">
+    <div class="exercicio-info">
+      <div class="exercicio-nome">Alongamento</div>
+      <div class="exercicio-det">${det || 'Sem horário informado'}</div>
+      ${quando ? `<div class="exercicio-hora">🕐 ${quando}</div>` : ''}
+    </div>
+    <div class="ex-actions">
+      <button class="edit-btn" onclick="editarAlongamento('${a.id}')" title="Editar">✏️</button>
+      <button class="del-btn" onclick="delAlongamento('${a.id}')" title="Excluir">🗑</button>
+    </div>
+  </div>`;
+}
+
+function renderAlongamentos(lista) {
+  alongamentosDiaAtual = lista || [];
+  const el = document.getElementById('lista-alongamentos');
+  el.innerHTML = alongamentosDiaAtual.length
+    ? alongamentosDiaAtual.map(htmlAlongamentoItem).join('')
+    : '<div class="ex-grupo-empty">Nenhum alongamento registrado.</div>';
 }
 
 function renderExercicios(exs, historico) {
@@ -3057,6 +4193,7 @@ async function salvarExercicio() {
     series:     parseInt(document.getElementById('ex-series').value)   || null,
     repeticoes: parseInt(document.getElementById('ex-reps').value)     || null,
     obs:        document.getElementById('ex-obs').value.trim()         || null,
+    realizado_em: datetimeLocalToIso(document.getElementById('ex-realizado').value) || new Date().toISOString(),
   };
   try {
     if (!exercicioEditandoId) await garantirDiaCriado();
@@ -3073,6 +4210,8 @@ async function salvarExercicio() {
     const msg = error.message || '';
     if (msg.includes('grupo') || error.code === 'PGRST204') {
       showToast('⚠️ Rode metriafit_atualizacao.sql no Supabase (SQL Editor)');
+    } else if (msg.includes('realizado_em')) {
+      showToast('⚠️ Rode metriafit_aerobicos.sql no Supabase (SQL Editor)');
     } else {
       showToast('⚠️ Erro ao salvar exercício — veja o console (F12)');
     }
@@ -3085,6 +4224,134 @@ async function salvarExercicio() {
   renderExercicios(exs || [], historicoExercicios);
   btn.disabled = false;
   showToast(eraEdicao ? '✅ Exercício atualizado!' : '✅ Exercício adicionado!');
+  atualizarAlertasAposRegistro();
+}
+
+async function marcarAtividadeFeita(tipo) {
+  const btn = document.querySelector(`.act-btn[data-tipo="${tipo}"]`);
+  const { data: ex } = await sb.from('atividades').select('*').eq('dia_id', diaAtual.id).eq('tipo', tipo).maybeSingle();
+  if (ex) {
+    if (!ex.feito) await sb.from('atividades').update({ feito: true }).eq('id', ex.id);
+  } else {
+    await sb.from('atividades').insert({ dia_id: diaAtual.id, tipo, feito: true });
+  }
+  if (btn) btn.classList.add('on');
+}
+
+async function salvarAerobico() {
+  if (aerobicoTipoAtual === 'outro') {
+    const outro = document.getElementById('aer-tipo-outro').value.trim();
+    if (!outro) { showToast('⚠️ Descreva o tipo de exercício'); return; }
+  }
+  const btn = document.getElementById('btn-aerobico');
+  btn.disabled = true;
+  const payload = {
+    tipo: aerobicoTipoAtual,
+    tipo_outro: aerobicoTipoAtual === 'outro' ? document.getElementById('aer-tipo-outro').value.trim() : null,
+    hora_inicio: document.getElementById('aer-hora-ini').value || null,
+    hora_fim: document.getElementById('aer-hora-fim').value || null,
+    kcal: parseInt(document.getElementById('aer-kcal').value, 10) || null,
+    esforco: aerobicoEsforcoAtual,
+    realizado_em: datetimeLocalToIso(document.getElementById('aer-realizado').value) || new Date().toISOString(),
+  };
+  try {
+    if (!aerobicoEditandoId) await garantirDiaCriado();
+    let error;
+    if (aerobicoEditandoId) {
+      ({ error } = await sb.from('aerobicos').update(payload).eq('id', aerobicoEditandoId));
+    } else {
+      ({ error } = await sb.from('aerobicos').insert({ ...payload, dia_id: diaAtual.id, ordem: Date.now() }));
+    }
+    if (error) throw error;
+    await marcarAtividadeFeita('aerobica');
+  } catch (error) {
+    console.error('Erro salvar aeróbico:', error);
+    btn.disabled = false;
+    const msg = error.message || '';
+    if (msg.includes('aerobicos') || error.code === 'PGRST204' || error.code === '42P01') {
+      showToast('⚠️ Rode metriafit_aerobicos.sql no Supabase (SQL Editor)');
+    } else {
+      showToast('⚠️ Erro ao salvar aeróbico — veja o console (F12)');
+    }
+    return;
+  }
+  const eraEdicao = !!aerobicoEditandoId;
+  cancelarEdicaoAerobico();
+  const { data: aers } = await sb.from('aerobicos').select('*').eq('dia_id', diaAtual.id).order('ordem');
+  renderAerobicos(aers || []);
+  btn.disabled = false;
+  showToast(eraEdicao ? '✅ Aeróbico atualizado!' : '✅ Aeróbico adicionado!');
+  atualizarAlertasAposRegistro();
+}
+
+async function delAerobico(id) {
+  if (aerobicoEditandoId === id) cancelarEdicaoAerobico();
+  await sb.from('aerobicos').delete().eq('id', id);
+  const { data: aers } = await sb.from('aerobicos').select('*').eq('dia_id', diaAtual.id).order('ordem');
+  renderAerobicos(aers || []);
+  if (!aers?.length) {
+    const btn = document.querySelector('.act-btn[data-tipo="aerobica"]');
+    const { data: ex } = await sb.from('atividades').select('*').eq('dia_id', diaAtual.id).eq('tipo', 'aerobica').maybeSingle();
+    if (ex) await sb.from('atividades').update({ feito: false }).eq('id', ex.id);
+    if (btn) btn.classList.remove('on');
+  }
+  atualizarAlertasAposRegistro();
+}
+
+async function salvarAlongamento() {
+  const horaIni = document.getElementById('alo-hora-ini').value;
+  const horaFim = document.getElementById('alo-hora-fim').value;
+  if (!horaIni && !horaFim) { showToast('⚠️ Informe pelo menos o horário'); return; }
+  const btn = document.getElementById('btn-alongamento');
+  btn.disabled = true;
+  const payload = {
+    hora_inicio: horaIni || null,
+    hora_fim: horaFim || null,
+    obs: document.getElementById('alo-obs').value.trim() || null,
+    realizado_em: datetimeLocalToIso(document.getElementById('alo-realizado').value) || new Date().toISOString(),
+  };
+  try {
+    if (!alongamentoEditandoId) await garantirDiaCriado();
+    let error;
+    if (alongamentoEditandoId) {
+      ({ error } = await sb.from('alongamentos').update(payload).eq('id', alongamentoEditandoId));
+    } else {
+      ({ error } = await sb.from('alongamentos').insert({ ...payload, dia_id: diaAtual.id, ordem: Date.now() }));
+    }
+    if (error) throw error;
+    await marcarAtividadeFeita('alongamento');
+  } catch (error) {
+    console.error('Erro salvar alongamento:', error);
+    btn.disabled = false;
+    const msg = error.message || '';
+    if (msg.includes('alongamentos') || error.code === 'PGRST204' || error.code === '42P01') {
+      showToast('⚠️ Rode metriafit_alongamentos.sql no Supabase (SQL Editor)');
+    } else {
+      showToast('⚠️ Erro ao salvar alongamento — veja o console (F12)');
+    }
+    return;
+  }
+  const eraEdicao = !!alongamentoEditandoId;
+  cancelarEdicaoAlongamento();
+  const { data: alos } = await sb.from('alongamentos').select('*').eq('dia_id', diaAtual.id).order('ordem');
+  renderAlongamentos(alos || []);
+  btn.disabled = false;
+  showToast(eraEdicao ? '✅ Alongamento atualizado!' : '✅ Alongamento adicionado!');
+  atualizarAlertasAposRegistro();
+}
+
+async function delAlongamento(id) {
+  if (alongamentoEditandoId === id) cancelarEdicaoAlongamento();
+  await sb.from('alongamentos').delete().eq('id', id);
+  const { data: alos } = await sb.from('alongamentos').select('*').eq('dia_id', diaAtual.id).order('ordem');
+  renderAlongamentos(alos || []);
+  if (!alos?.length) {
+    const btn = document.querySelector('.act-btn[data-tipo="alongamento"]');
+    const { data: ex } = await sb.from('atividades').select('*').eq('dia_id', diaAtual.id).eq('tipo', 'alongamento').maybeSingle();
+    if (ex) await sb.from('atividades').update({ feito: false }).eq('id', ex.id);
+    if (btn) btn.classList.remove('on');
+  }
+  atualizarAlertasAposRegistro();
 }
 
 async function toggleAtividade(tipo) {
@@ -3097,6 +4364,7 @@ async function toggleAtividade(tipo) {
   if (ex) { await sb.from('atividades').update({ feito: !atual }).eq('id', ex.id); }
   else     { await sb.from('atividades').insert({ dia_id: diaAtual.id, tipo, feito: true }); }
   btn.classList.toggle('on');
+  atualizarAlertasAposRegistro();
 }
 
 async function delExercicio(id) {
@@ -3105,6 +4373,7 @@ async function delExercicio(id) {
   const { data: exs } = await sb.from('exercicios').select('*').eq('dia_id', diaAtual.id).order('ordem');
   atualizarListaNomesExercicios();
   renderExercicios(exs || [], historicoExercicios);
+  atualizarAlertasAposRegistro();
 }
 
 async function salvarObs() {
@@ -4240,6 +5509,7 @@ async function salvarEdicaoRefeicao() {
     carregarResumoAlimentacao().catch(() => {});
     renderProgressoHojeHome().catch(() => {});
     showToast(descMudou || semFibra ? '✅ Refeição reanalisada e salva!' : '✅ Refeição atualizada!');
+    atualizarAlertasAposRegistro();
   } catch (e) {
     console.error(e);
     const msg = e?.message || '';
@@ -4359,6 +5629,7 @@ async function processarRefeicao() {
     await carregarRefeicoes();
     carregarResumoAlimentacao().catch(() => {});
     renderProgressoHojeHome().catch(() => {});
+    atualizarAlertasAposRegistro();
   } catch(e) {
     console.error(e);
     const msg = e?.message || '';
@@ -4380,6 +5651,7 @@ async function delRefeicao(id) {
   await carregarRefeicoes();
   carregarResumoAlimentacao().catch(() => {});
   renderProgressoHojeHome().catch(() => {});
+  atualizarAlertasAposRegistro();
 }
 
 async function recalcularRefeicoesDia() {
@@ -4742,6 +6014,7 @@ async function adicionarAguaMl(ml, dataRef = null) {
     diaAtual.id = diaId;
     await refreshAguaUI();
     showToast(`💧 +${formatAguaMl(qtd)} registrado!`);
+    atualizarAlertasAposRegistro();
   } catch (e) {
     console.error(e);
     showToast('⚠️ Erro ao registrar água');
@@ -4785,6 +6058,7 @@ async function salvarEdicaoAgua() {
     fecharEdicaoAguaInline();
     await refreshAguaUI();
     showToast(`✅ Atualizado para ${formatAguaMl(qtd)}`);
+    atualizarAlertasAposRegistro();
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -4798,8 +6072,300 @@ async function delAgua(id) {
   await sb.from('agua').delete().eq('id', id);
   await refreshAguaUI();
   showToast('🗑 Registro removido');
+  atualizarAlertasAposRegistro();
 }
 
+
+// ===== CORPO (medidas corporais) =====
+const CAMPOS_CORPO_MEDIDAS = [
+  { id: 'pescoco', label: 'Pescoço', dica: 'Meça na metade do pescoço, logo acima do pomo de Adão. Mantenha o olhar para frente e o pescoço relaxado.' },
+  { id: 'torax', label: 'Tórax', dica: 'Passe a fita na altura dos mamilos com os braços relaxados ao lado do corpo. Expire normalmente antes de medir, sem estufar o peito.' },
+  { id: 'braco_relaxado_dir', label: 'Braço Relaxado (Direito)', dica: 'Meça o braço direito estendido e relaxado ao lado do corpo, no ponto de maior volume entre o ombro e o cotovelo.' },
+  { id: 'braco_contraido_dir', label: 'Braço Contraído (Direito)', dica: 'Dobre o braço direito a 90° e faça força (muque). Posicione a fita exatamente no ponto mais alto do pico do bíceps.' },
+  { id: 'antebraco_dir', label: 'Antebraço (Direito)', dica: 'Meça o antebraço direito no ponto de maior circunferência, logo abaixo do cotovelo, com a musculatura relaxada.' },
+  { id: 'cintura_umbigo', label: 'Cintura (Linha do Umbigo)', dica: 'Passe a fita métrica exatamente em cima da linha do seu umbigo. Fundamental para monitorar o controle de gordura abdominal.' },
+  { id: 'quadril', label: 'Quadril', dica: 'Fique de pés juntos e passe a fita na região de maior circunferência do bumbum (glúteos).' },
+  { id: 'coxa_dir', label: 'Coxa (Direita)', dica: 'Meça a coxa direita no ponto médio (exatamente na metade da distância entre a dobra do quadril e o topo do joelho).' },
+  { id: 'panturrilha_dir', label: 'Panturrilha (Direita)', dica: 'Meça a panturrilha direita no ponto de maior largura e volume do músculo gêmeo.' },
+];
+
+const CAMPOS_CORPO_GRAFICO = [
+  { id: 'peso_kg', label: 'Peso', unidade: 'kg' },
+  ...CAMPOS_CORPO_MEDIDAS.map(c => ({ id: c.id, label: c.label.replace(/ \(Direito\)| \(Direita\)/g, ''), unidade: 'cm' })),
+];
+
+let medidasCorporaisCache = [];
+let corpoEditandoId = null;
+let corpoGraficoCampo = 'peso_kg';
+let corpoChartInstance = null;
+let corpoFormMontado = false;
+
+function montarFormularioCorpo() {
+  if (corpoFormMontado) return;
+  const wrap = document.getElementById('corpo-campos-medidas');
+  if (!wrap) return;
+  wrap.innerHTML = CAMPOS_CORPO_MEDIDAS.map(c => `
+    <div class="corpo-field">
+      <div class="corpo-field-label">
+        <span>${c.label}</span>
+        <button type="button" class="corpo-tip-btn" onclick="toggleDicaCorpo('${c.id}', this)" aria-label="Como medir">?</button>
+      </div>
+      <div class="corpo-tip-box" id="corpo-tip-${c.id}">${c.dica}</div>
+      <input class="inp" id="corpo-${c.id}" type="number" step="0.1" min="0" placeholder="cm">
+    </div>`).join('');
+
+  const pills = document.getElementById('corpo-grafico-pills');
+  if (pills) {
+    pills.innerHTML = CAMPOS_CORPO_GRAFICO.map(c =>
+      `<button type="button" class="corpo-grafico-pill${c.id === corpoGraficoCampo ? ' active' : ''}" data-campo="${c.id}" onclick="setGraficoCorpo('${c.id}')">${c.label}</button>`
+    ).join('');
+  }
+  corpoFormMontado = true;
+}
+
+function toggleDicaCorpo(campoId, btn) {
+  document.querySelectorAll('.corpo-tip-box').forEach(el => {
+    if (el.id !== `corpo-tip-${campoId}`) el.classList.remove('show');
+  });
+  document.querySelectorAll('.corpo-tip-btn').forEach(b => {
+    if (b !== btn) b.classList.remove('ativo');
+  });
+  const box = document.getElementById(`corpo-tip-${campoId}`);
+  if (!box) return;
+  const abrir = !box.classList.contains('show');
+  box.classList.toggle('show', abrir);
+  btn.classList.toggle('ativo', abrir);
+}
+
+function limparFormCorpo() {
+  document.getElementById('corpo-peso_kg').value = '';
+  CAMPOS_CORPO_MEDIDAS.forEach(c => {
+    const el = document.getElementById('corpo-' + c.id);
+    if (el) el.value = '';
+  });
+  document.getElementById('corpo-registrado').value = agoraDatetimeLocal();
+  document.querySelectorAll('.corpo-tip-box').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.corpo-tip-btn').forEach(b => b.classList.remove('ativo'));
+}
+
+function cancelarEdicaoCorpo() {
+  corpoEditandoId = null;
+  limparFormCorpo();
+  document.getElementById('corpo-form-titulo').textContent = '+ Novo registro';
+  document.getElementById('btn-corpo-salvar').textContent = '+ Salvar registro';
+  document.getElementById('btn-corpo-cancelar').style.display = 'none';
+}
+
+function editarMedidaCorporal(id) {
+  const m = medidasCorporaisCache.find(x => x.id === id);
+  if (!m) return;
+  corpoEditandoId = id;
+  document.getElementById('corpo-peso_kg').value = m.peso_kg ?? '';
+  CAMPOS_CORPO_MEDIDAS.forEach(c => {
+    const el = document.getElementById('corpo-' + c.id);
+    if (el) el.value = m[c.id] ?? '';
+  });
+  document.getElementById('corpo-registrado').value = isoToDatetimeLocal(m.registrado_em || m.created_at);
+  document.getElementById('corpo-form-titulo').textContent = '✏️ Editar registro';
+  document.getElementById('btn-corpo-salvar').textContent = '✓ Salvar alteração';
+  document.getElementById('btn-corpo-cancelar').style.display = '';
+  document.getElementById('corpo-registrado').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function fmtDataHoraCorpo(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function resumoMedidaCorporal(m) {
+  const partes = [];
+  if (m.peso_kg != null) partes.push(`⚖️ ${m.peso_kg} kg`);
+  CAMPOS_CORPO_MEDIDAS.forEach(c => {
+    if (m[c.id] != null) partes.push(`${c.label.split(' ')[0]}: ${m[c.id]} cm`);
+  });
+  return partes.join(' · ') || 'Sem valores';
+}
+
+function renderHistoricoCorpo() {
+  const el = document.getElementById('corpo-historico');
+  if (!el) return;
+  if (!medidasCorporaisCache.length) {
+    el.innerHTML = '<div class="ex-grupo-empty">Nenhum registro ainda.</div>';
+    return;
+  }
+  el.innerHTML = medidasCorporaisCache.map(m => `
+    <div class="corpo-hist-item">
+      <div class="corpo-hist-info">
+        <div class="corpo-hist-data">🕐 ${fmtDataHoraCorpo(m.registrado_em || m.created_at)}</div>
+        <div class="corpo-hist-detal">${resumoMedidaCorporal(m)}</div>
+      </div>
+      <div class="corpo-hist-actions">
+        <button class="edit-btn" onclick="editarMedidaCorporal('${m.id}')" title="Editar">✏️</button>
+        <button class="del-btn" onclick="delMedidaCorporal('${m.id}')" title="Excluir">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function setGraficoCorpo(campoId) {
+  corpoGraficoCampo = campoId;
+  document.querySelectorAll('.corpo-grafico-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.campo === campoId);
+  });
+  renderGraficoCorpo();
+}
+
+function renderGraficoCorpo() {
+  const canvas = document.getElementById('corpo-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  const cfg = CAMPOS_CORPO_GRAFICO.find(c => c.id === corpoGraficoCampo);
+  const pontos = [...medidasCorporaisCache]
+    .filter(m => m[corpoGraficoCampo] != null && m[corpoGraficoCampo] !== '')
+    .sort((a, b) => new Date(a.registrado_em || a.created_at) - new Date(b.registrado_em || b.created_at));
+
+  if (corpoChartInstance) {
+    corpoChartInstance.destroy();
+    corpoChartInstance = null;
+  }
+
+  if (!pontos.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  const labels = pontos.map(p => {
+    const d = new Date(p.registrado_em || p.created_at);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+  });
+  const valores = pontos.map(p => Number(p[corpoGraficoCampo]));
+
+  corpoChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: `${cfg?.label || corpoGraficoCampo} (${cfg?.unidade || ''})`,
+        data: valores,
+        borderColor: '#6246ea',
+        backgroundColor: 'rgba(98, 70, 234, 0.12)',
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: '#6246ea',
+        tension: 0.25,
+        fill: true,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.parsed.y} ${cfg?.unidade || ''}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 0 },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { font: { size: 10 } },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+        },
+      },
+    },
+  });
+}
+
+async function carregarCorpo() {
+  if (!userAtual) return;
+  montarFormularioCorpo();
+  if (!corpoEditandoId) {
+    document.getElementById('corpo-registrado').value = agoraDatetimeLocal();
+  }
+
+  const el = document.getElementById('corpo-historico');
+  if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
+
+  try {
+    const { data, error } = await sb.from('medidas_corporais')
+      .select('*')
+      .eq('user_id', userAtual.id)
+      .order('registrado_em', { ascending: false });
+    if (error) throw error;
+    medidasCorporaisCache = data || [];
+    renderHistoricoCorpo();
+    renderGraficoCorpo();
+  } catch (e) {
+    console.error('Erro carregar corpo:', e);
+    if (el) {
+      const msg = e.message || '';
+      if (msg.includes('medidas_corporais') || e.code === '42P01' || e.code === 'PGRST204') {
+        el.innerHTML = '<div class="ex-grupo-empty">⚠️ Rode metriafit_corpo.sql no Supabase (SQL Editor)</div>';
+      } else {
+        el.innerHTML = '<div class="ex-grupo-empty">Erro ao carregar medidas.</div>';
+      }
+    }
+  }
+}
+
+async function salvarMedidaCorporal() {
+  const payload = {
+    peso_kg: parseFloat(document.getElementById('corpo-peso_kg').value) || null,
+    registrado_em: datetimeLocalToIso(document.getElementById('corpo-registrado').value) || new Date().toISOString(),
+  };
+  CAMPOS_CORPO_MEDIDAS.forEach(c => {
+    const v = parseFloat(document.getElementById('corpo-' + c.id).value);
+    payload[c.id] = Number.isFinite(v) ? v : null;
+  });
+
+  const temValor = payload.peso_kg != null || CAMPOS_CORPO_MEDIDAS.some(c => payload[c.id] != null);
+  if (!temValor) {
+    showToast('⚠️ Informe o peso ou pelo menos uma medida');
+    return;
+  }
+
+  const btn = document.getElementById('btn-corpo-salvar');
+  btn.disabled = true;
+  try {
+    let error;
+    if (corpoEditandoId) {
+      ({ error } = await sb.from('medidas_corporais').update(payload).eq('id', corpoEditandoId));
+    } else {
+      ({ error } = await sb.from('medidas_corporais').insert({ ...payload, user_id: userAtual.id }));
+    }
+    if (error) throw error;
+    const eraEdicao = !!corpoEditandoId;
+    cancelarEdicaoCorpo();
+    await carregarCorpo();
+    atualizarAlertasAposRegistro();
+    showToast(eraEdicao ? '✅ Registro atualizado!' : '✅ Medidas salvas!');
+  } catch (e) {
+    console.error('Erro salvar corpo:', e);
+    const msg = e.message || '';
+    if (msg.includes('medidas_corporais') || e.code === '42P01' || e.code === 'PGRST204') {
+      showToast('⚠️ Rode metriafit_corpo.sql no Supabase (SQL Editor)');
+    } else {
+      showToast('⚠️ Erro ao salvar medidas');
+    }
+  }
+  btn.disabled = false;
+}
+
+async function delMedidaCorporal(id) {
+  if (corpoEditandoId === id) cancelarEdicaoCorpo();
+  await sb.from('medidas_corporais').delete().eq('id', id);
+  await carregarCorpo();
+  atualizarAlertasAposRegistro();
+  showToast('🗑 Registro removido');
+}
 
 // ===== TOAST =====
 let toastTimer;
