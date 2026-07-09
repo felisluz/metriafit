@@ -191,7 +191,30 @@ body {
 .auth-logo {
   text-align: center; margin-bottom: 28px;
 }
-.auth-logo .logo-icon { font-size: 2.8rem; }
+.app-logo {
+  display: block;
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+}
+.app-logo-auth {
+  width: min(220px, 72vw);
+  height: auto;
+  margin-bottom: 12px;
+}
+.home-brand-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.app-logo-home {
+  width: min(200px, 68vw);
+  height: auto;
+  margin-bottom: 12px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 12px rgba(26, 16, 64, 0.06);
+}
 .auth-logo h1 {
   font-size: 1.9rem; font-weight: 900;
   letter-spacing: -1px; margin-top: 6px;
@@ -345,7 +368,7 @@ body {
 }
 .home-brand {
   font-size: 2.2rem; font-weight: 900; letter-spacing: -1px;
-  text-align: center; margin-bottom: 24px;
+  text-align: center; margin-bottom: 0;
 }
 .home-brand span { color: var(--accent); }
 
@@ -1270,7 +1293,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
 <div id="auth-wrap" class="auth-wrap">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="logo-icon">🏋️</div>
+      <img src="logo.png" alt="MetriaFit" class="app-logo app-logo-auth">
       <h1>Metria<span>Fit</span></h1>
       <p>Treino, alimentação e hidratação em um só lugar</p>
     </div>
@@ -1312,7 +1335,10 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
     <!-- HOME -->
     <div class="screen active" id="screen-home">
-      <div class="home-brand">Metria<span>Fit</span></div>
+      <div class="home-brand-wrap">
+        <img src="logo.png" alt="" class="app-logo app-logo-home" aria-hidden="true">
+        <div class="home-brand">Metria<span>Fit</span></div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
         <button onclick="abrirMenuTreino()" style="background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">💪<br>Treino</button>
         <button onclick="abrirAlimentacao()" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🥗<br>Alimentação</button>
