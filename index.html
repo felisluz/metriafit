@@ -210,10 +210,6 @@ body {
   width: min(200px, 68vw);
   height: auto;
   margin-bottom: 12px;
-  background: #fff;
-  border-radius: 18px;
-  padding: 10px 14px;
-  box-shadow: 0 2px 12px rgba(26, 16, 64, 0.06);
 }
 .auth-logo h1 {
   font-size: 1.9rem; font-weight: 900;
@@ -1336,7 +1332,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
     <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="home-brand-wrap">
-        <img src="logo.png" alt="" class="app-logo app-logo-home" aria-hidden="true">
+        <img src="logo-home.png" alt="" class="app-logo app-logo-home" aria-hidden="true">
         <div class="home-brand">Metria<span>Fit</span></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
@@ -2011,6 +2007,7 @@ async function logout() {
   pararMonitorInatividade();
   await sb.auth.signOut();
   userAtual = null; perfilData = null; appIniciado = false;
+  resetarTelaInicial();
   document.getElementById('app').style.display = 'none';
   document.getElementById('auth-wrap').style.display = 'flex';
   document.getElementById('auth-email').value = '';
@@ -2027,6 +2024,7 @@ async function iniciarApp(user) {
   appIniciado = true;
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  resetarTelaInicial();
   // user-chip oculto (home clean)
   document.getElementById('user-chip').textContent = userAtual.email;
   document.getElementById('perfil-email').textContent = userAtual.email;
@@ -2044,12 +2042,20 @@ sb.auth.onAuthStateChange((event, session) => {
   } else if (event === 'SIGNED_OUT') {
     pararMonitorInatividade();
     userAtual = null; appIniciado = false;
+    resetarTelaInicial();
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-wrap').style.display = 'flex';
   }
 });
 
 // ===== NAVEGAÇÃO =====
+function resetarTelaInicial() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-home')?.classList.add('active');
+  document.getElementById('nav-home')?.classList.add('active');
+}
+
 function navTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2312,12 +2318,13 @@ async function renderProgressoHojeHome() {
   const { data: dia } = await sb.from('dias').select('id').eq('user_id', userAtual.id).eq('data', hoje).maybeSingle();
   if (dia?.id) {
     const [{ data: refs }, { data: aguas }] = await Promise.all([
-      sb.from('refeicoes').select('kcal,proteina_g,fibra_g').eq('dia_id', dia.id),
+      sb.from('refeicoes').select('kcal,proteina_g,fibra_g,itens_calculados').eq('dia_id', dia.id),
       sb.from('agua').select('quantidade_ml').eq('dia_id', dia.id),
     ]);
-    kcalT = (refs || []).reduce((s, r) => s + (r.kcal || 0), 0);
-    protT = (refs || []).reduce((s, r) => s + (r.proteina_g || 0), 0);
-    fibraT = (refs || []).reduce((s, r) => s + (r.fibra_g || 0), 0);
+    const tot = somaMacrosRefeicoes(refs);
+    kcalT = tot.kcal;
+    protT = tot.prot;
+    fibraT = tot.fibra;
     aguaT = (aguas || []).reduce((s, w) => s + (w.quantidade_ml || 0), 0) / 1000;
   }
 
@@ -4741,9 +4748,41 @@ function tokensAlimentoCanon(txt) {
     .filter(t => t.length > 2 && !MANUAL_STOP_TOKENS.has(t));
 }
 
+function ehFeijao(txt) {
+  return /\bfeij/.test(canonSugKey(txt || ''));
+}
+
+function textoTemSopaOuCaldo(txt) {
+  const c = canonSugKey(txt || '');
+  return /\bsopa\b/.test(c) || /\bcaldo\b/.test(c);
+}
+
+function manualFeijaoPermitido(txt) {
+  if (!ehFeijao(txt)) return true;
+  return textoTemSopaOuCaldo(txt);
+}
+
+function sanitizarItemManualFeijao(item, linhaDesc = '') {
+  if (!item?.manual_lock) return item;
+  const lookup = linhaDesc || item.nome || '';
+  if (!manualFeijaoPermitido(lookup)) {
+    const { manual_lock, kcal_override, proteina_override_g, fibra_override_g, ...rest } = item;
+    return rest;
+  }
+  return item;
+}
+
+function itensCalculadosSanitizados(ref) {
+  const itens = parseItensCalculados(ref);
+  if (!itens?.length) return null;
+  const linhas = extrairItensDeDescricao(ref?.descricao || '');
+  return itens.map((it, idx) => sanitizarItemManualFeijao(it, linhas[idx] || it.nome || ''));
+}
+
 function registrarManualGlobal(calc, descLinha) {
   const cloned = cloneItemManual(calc);
   if (!cloned) return;
+  if (!manualFeijaoPermitido(descLinha || '')) return;
   // Usa só o texto que o usuário digitou — evita propagar manual de "sopa de feijão preto" para "feijão preto".
   const k = canonSugKey(descLinha || '');
   if (k) manualOverridesGlobais.set(k, cloned);
@@ -4752,6 +4791,10 @@ function registrarManualGlobal(calc, descLinha) {
 function manualMatchScore(ck, mapKey) {
   if (!ck || !mapKey) return 0;
   if (ck === mapKey) return 1;
+  if (ehFeijao(mapKey) && !textoTemSopaOuCaldo(mapKey) && !textoTemSopaOuCaldo(ck)) {
+    if (ck !== mapKey) return 0;
+  }
+  if (ehFeijao(mapKey) && textoTemSopaOuCaldo(mapKey) && !textoTemSopaOuCaldo(ck)) return 0;
   const a = tokensAlimentoCanon(ck);
   const b = tokensAlimentoCanon(mapKey);
   if (!a.length || !b.length) return 0;
@@ -5065,15 +5108,15 @@ function htmlTabelaNutricao(itens) {
 }
 
 function htmlRefeicaoItem(r) {
-  const fibraVal = r.fibra_g != null ? r.fibra_g : 0;
-  const fibra = `<span>🌾 ${fibraVal}g fibra</span>`;
-  const tabela = htmlTabelaNutricao(parseItensCalculados(r));
+  const m = macrosRefeicao(r);
+  const fibra = `<span>🌾 ${m.fibra}g fibra</span>`;
+  const tabela = htmlTabelaNutricao(itensCalculadosSanitizados(r));
   return `
     <div class="refeicao-item">
       <div class="refeicao-header">
         <div class="refeicao-info">
           <div class="refeicao-desc">${escHtml(r.descricao)}</div>
-          <div class="refeicao-macros"><span>🔥 ${r.kcal||0} kcal</span><span>💪 ${r.proteina_g||0}g prot.</span>${fibra}</div>
+          <div class="refeicao-macros"><span>🔥 ${m.kcal} kcal</span><span>💪 ${m.prot}g prot.</span>${fibra}</div>
         </div>
         <div class="refeicao-actions">
           <button class="edit-btn" onclick="editarRefeicao('${r.id}')" title="Editar">✏️</button>
@@ -5285,9 +5328,10 @@ async function carregarRefeicoes() {
   }
   const { data: refs } = await sb.from('refeicoes').select('*').eq('dia_id', diaIdExibir).order('created_at');
   refeicoesDiaAtual = refs || [];
-  const kcalT = (refs||[]).reduce((s,r) => s+(r.kcal||0), 0);
-  const protT = (refs||[]).reduce((s,r) => s+(r.proteina_g||0), 0);
-  const fibraT = (refs||[]).reduce((s,r) => s+(r.fibra_g||0), 0);
+  const tot = somaMacrosRefeicoes(refs);
+  const kcalT = tot.kcal;
+  const protT = tot.prot;
+  const fibraT = tot.fibra;
   document.getElementById('macros-hoje').innerHTML = htmlMacrosPills(kcalT, protT, fibraT, mK, mP, mF);
   const btnRecalc = document.getElementById('btn-recalc-ref');
   if (btnRecalc) btnRecalc.disabled = !(refs && refs.length);
@@ -5356,6 +5400,33 @@ function totaisDeItens(itens) {
   }, { kcal: 0, prot: 0, fibra: 0 });
 }
 
+function macrosRefeicao(r) {
+  const itens = itensCalculadosSanitizados(r);
+  if (itens?.length) {
+    const t = totaisDeItens(itens);
+    return {
+      kcal: Math.round(t.kcal),
+      prot: Math.round(t.prot * 10) / 10,
+      fibra: Math.round(t.fibra * 10) / 10,
+    };
+  }
+  return {
+    kcal: Math.round(Number(r?.kcal) || 0),
+    prot: Math.round((Number(r?.proteina_g) || 0) * 10) / 10,
+    fibra: Math.round((Number(r?.fibra_g) || 0) * 10) / 10,
+  };
+}
+
+function somaMacrosRefeicoes(refs) {
+  return (Array.isArray(refs) ? refs : []).reduce((acc, r) => {
+    const m = macrosRefeicao(r);
+    acc.kcal += m.kcal;
+    acc.prot += m.prot;
+    acc.fibra += m.fibra;
+    return acc;
+  }, { kcal: 0, prot: 0, fibra: 0 });
+}
+
 function mergeItensComLock(itensAntigos, itensNovos) {
   const oldL = Array.isArray(itensAntigos) ? itensAntigos : [];
   const novoL = Array.isArray(itensNovos) ? itensNovos : [];
@@ -5372,6 +5443,7 @@ function mergeItensComLock(itensAntigos, itensNovos) {
     const ck = canonSugKey(n.nome || '');
     const oldLocked = lockedByKey.get(k) || (ck ? lockedByCanon.get(ck) : null);
     if (!oldLocked) return n;
+    if (!manualFeijaoPermitido(n.nome || '')) return n;
     return {
       ...n,
       manual_lock: true,
@@ -5385,16 +5457,21 @@ function mergeItensComLock(itensAntigos, itensNovos) {
 function buscarManualGlobal(txtOuNome) {
   const ck = canonSugKey(txtOuNome || '');
   if (!ck) return null;
+  if (!manualFeijaoPermitido(txtOuNome)) return null;
   if (manualOverridesGlobais.has(ck)) return manualOverridesGlobais.get(ck);
   let best = null;
   let bestScore = 0.6;
+  let bestKey = '';
   for (const [k, v] of manualOverridesGlobais) {
     const score = manualMatchScore(ck, k);
     if (score > bestScore) {
       bestScore = score;
       best = v;
+      bestKey = k;
     }
   }
+  if (best && ehFeijao(txtOuNome) && !textoTemSopaOuCaldo(txtOuNome)) return null;
+  if (best && ehFeijao(bestKey) && !textoTemSopaOuCaldo(txtOuNome)) return null;
   return best;
 }
 
@@ -5427,7 +5504,7 @@ function aplicarLocksNosItens(itensNovos, itensSeeds = [], descLinhas = []) {
       proteina_override_g: global.proteina_override_g ?? global.proteina_g,
       fibra_override_g: global.fibra_override_g ?? global.fibra_g,
     };
-  });
+  }).map((n, idx) => sanitizarItemManualFeijao(n, descLinhas[idx] || n.nome || ''));
 }
 
 function renderItensEdicaoModal(itens) {
@@ -5518,13 +5595,14 @@ async function obterMacrosDia(excluirRefeicaoId = null, diaId = null) {
   const mF = metaFibraPerfil();
   const targetDiaId = diaId ?? diaAtual?.id;
   if (!targetDiaId) return { mK, mP, mF, kcalJ: 0, protJ: 0, fibraJ: 0 };
-  const { data: refs } = await sb.from('refeicoes').select('id,kcal,proteina_g,fibra_g').eq('dia_id', targetDiaId);
+  const { data: refs } = await sb.from('refeicoes').select('id,kcal,proteina_g,fibra_g,itens_calculados').eq('dia_id', targetDiaId);
   const lista = (refs || []).filter(r => !excluirRefeicaoId || r.id !== excluirRefeicaoId);
+  const tot = somaMacrosRefeicoes(lista);
   return {
     mK, mP, mF,
-    kcalJ: lista.reduce((s, r) => s + (r.kcal || 0), 0),
-    protJ: lista.reduce((s, r) => s + (r.proteina_g || 0), 0),
-    fibraJ: lista.reduce((s, r) => s + (r.fibra_g || 0), 0),
+    kcalJ: tot.kcal,
+    protJ: tot.prot,
+    fibraJ: tot.fibra,
   };
 }
 
@@ -5634,6 +5712,16 @@ async function salvarEdicaoRefeicao() {
       if (kcal < 20 && desc.length > 10) {
         showToast('⚠️ Valores parecem baixos — confira na lista');
       }
+    }
+
+    if (itens?.length) {
+      const t = totaisDeItens(itens);
+      kcal = Math.round(t.kcal);
+      prot = Math.round(t.prot * 10) / 10;
+      fibra = Math.round(t.fibra * 10) / 10;
+      document.getElementById('ref-edit-kcal').value = kcal;
+      document.getElementById('ref-edit-prot').value = prot;
+      document.getElementById('ref-edit-fibra').value = fibra;
     }
 
     btn.textContent = 'Salvando...';
