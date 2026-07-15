@@ -980,8 +980,20 @@ textarea.inp { min-height: 72px; resize: vertical; }
 .refeicao-header { display: flex; align-items: flex-start; gap: 10px; width: 100%; }
 .refeicao-info { flex: 1; min-width: 0; }
 .refeicao-desc { font-size: 0.83rem; font-weight: 700; }
+.refeicao-local { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
 .refeicao-macros { font-size: 0.7rem; color: var(--muted); margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; }
 .refeicao-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.ref-locais-recentes {
+  display: flex; flex-wrap: wrap; gap: 5px; margin: -2px 0 9px;
+}
+.ref-local-recente {
+  padding: 5px 9px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface2); color: var(--muted); font-family: inherit;
+  font-size: 0.65rem; font-weight: 700;
+  cursor: pointer;
+}
+.ref-locais-label { width: 100%; font-size: 0.62rem; color: var(--muted); }
+.ref-local-recente:hover { border-color: var(--accent); color: var(--accent); }
 .ref-nutri-wrap { width: 100%; margin-top: 10px; overflow-x: auto; }
 .ref-nutri-table {
   width: 100%; border-collapse: collapse; font-size: 0.65rem; line-height: 1.35;
@@ -1597,6 +1609,8 @@ textarea.inp { min-height: 72px; resize: vertical; }
             <button type="button" class="ref-tipo-pill" data-tipo="jantar" onclick="setTipoRefeicao('jantar')">🌙 Jantar</button>
             <button type="button" class="ref-tipo-pill" data-tipo="lanche_noite" onclick="setTipoRefeicao('lanche_noite')">🍪 Lanche após jantar</button>
           </div>
+          <input class="inp" id="ref-local" maxlength="120" placeholder="📍 Onde você comeu? Ex: Casa, trabalho, restaurante" style="margin-bottom:8px">
+          <div class="ref-locais-recentes" id="ref-locais-recentes"></div>
           <div class="al-input-wrap">
           <div class="ai-input-row">
             <div class="ai-input-field">
@@ -1808,6 +1822,11 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <div class="inp-label">Descrição</div>
       <input class="inp" id="ref-edit-desc" placeholder="Ex: Shake com whey e mel">
     </div>
+    <div class="inp-group" style="margin-bottom:10px">
+      <div class="inp-label">Local (opcional)</div>
+      <input class="inp" id="ref-edit-local" maxlength="120" placeholder="Ex: Casa, trabalho, restaurante">
+    </div>
+    <div class="ref-locais-recentes" id="ref-edit-locais-recentes"></div>
     <div class="two-col">
       <div class="inp-group">
         <div class="inp-label">Calorias (kcal)</div>
@@ -1829,7 +1848,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
         Dica: para editar manualmente um item, clique em <strong>🔒</strong> e ajuste os valores. Itens travados não serão sobrescritos ao recalcular.
       </p>
     </div>
-    <p style="font-size:0.65rem;color:var(--muted);margin:-4px 0 10px;line-height:1.4">Ao salvar, a IA recalcula kcal, proteína e fibra se você mudar a descrição.</p>
+    <p style="font-size:0.65rem;color:var(--muted);margin:-4px 0 10px;line-height:1.4">Ao salvar, a IA recalcula macros se a descrição mudar. Itens 🔒 travados mantêm os valores que você digitou.</p>
     <button type="button" class="btn-add" id="btn-ref-salvar" onclick="salvarEdicaoRefeicao()">✓ Salvar alteração</button>
   </div>
 </div>
@@ -2032,6 +2051,7 @@ async function iniciarApp(user) {
   await Promise.allSettled([carregarPerfil(), carregarDias()]);
   atualizarAlertasAposRegistro();
   carregarSugestoesAlimentosDoBanco().catch(() => {});
+  carregarLocaisRecentes().catch(() => {});
   atualizarCoachDia().catch(() => {});
   iniciarMonitorInatividade();
 }
@@ -4551,6 +4571,7 @@ let manualOverridesGlobais = new Map();
 let alimentosSugOcultos = new Set();
 let alimentosSugAberto = false;
 let alimentosSugPinned = false; // se true, pode manter aberto mesmo com input vazio
+let locaisRecentes = [];
 
 function storageKeySugOcultos() {
   return `metriafit-alimentos-sug-ocultos:${userAtual?.id || 'anon'}`;
@@ -4846,6 +4867,73 @@ function invalidarCacheAlimentosSug() {
   alimentosSugCache = { loaded: false, byTipo: {}, all: [] };
   manualOverridesGlobais = new Map();
   carregarSugestoesAlimentosDoBanco().catch(() => {});
+  carregarLocaisRecentes().catch(() => {});
+}
+
+function selecionarLocalRecente(indice, inputId) {
+  const inp = document.getElementById(inputId);
+  const local = locaisRecentes[indice];
+  if (!inp || !local) return;
+  inp.value = local;
+  inp.focus();
+}
+
+function renderLocaisRecentes() {
+  const render = (hostId, inputId) => {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    const botoes = locaisRecentes.map((local, idx) =>
+      `<button type="button" class="ref-local-recente" onclick="selecionarLocalRecente(${idx},'${inputId}')">📍 ${escHtml(local)}</button>`
+    ).join('');
+    host.innerHTML = botoes ? `<div class="ref-locais-label">Locais usados mais de 2 vezes:</div>${botoes}` : '';
+  };
+  render('ref-locais-recentes', 'ref-local');
+  render('ref-edit-locais-recentes', 'ref-edit-local');
+}
+
+async function carregarLocaisRecentes() {
+  if (!userAtual?.id) return;
+  try {
+    const { data: dias, error: diasErr } = await sb.from('dias')
+      .select('id')
+      .eq('user_id', userAtual.id)
+      .order('data', { ascending: false })
+      .limit(120);
+    if (diasErr) throw diasErr;
+    const ids = (dias || []).map(d => d.id).filter(Boolean);
+    if (!ids.length) {
+      locaisRecentes = [];
+      renderLocaisRecentes();
+      return;
+    }
+    const { data: refs, error } = await sb.from('refeicoes')
+      .select('local_refeicao,created_at')
+      .in('dia_id', ids)
+      .not('local_refeicao', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(600);
+    if (error) throw error;
+    const contagem = new Map();
+    const nomesRecentes = new Map();
+    for (const r of (refs || [])) {
+      const local = String(r.local_refeicao || '').trim();
+      const chave = local.toLocaleLowerCase('pt-BR');
+      if (!local) continue;
+      contagem.set(chave, (contagem.get(chave) || 0) + 1);
+      // A consulta vem do mais recente para o mais antigo.
+      if (!nomesRecentes.has(chave)) nomesRecentes.set(chave, local);
+    }
+    locaisRecentes = [...nomesRecentes]
+      .filter(([chave]) => (contagem.get(chave) || 0) > 2)
+      .slice(0, 8)
+      .map(([, local]) => local);
+    renderLocaisRecentes();
+  } catch (e) {
+    // Antes da migration do campo, apenas mantém as sugestões ocultas.
+    locaisRecentes = [];
+    renderLocaisRecentes();
+    console.warn('locais recentes:', e);
+  }
 }
 
 function extrairItensDeDescricao(desc) {
@@ -5111,11 +5199,13 @@ function htmlRefeicaoItem(r) {
   const m = macrosRefeicao(r);
   const fibra = `<span>🌾 ${m.fibra}g fibra</span>`;
   const tabela = htmlTabelaNutricao(itensCalculadosSanitizados(r));
+  const local = String(r.local_refeicao || '').trim();
   return `
     <div class="refeicao-item">
       <div class="refeicao-header">
         <div class="refeicao-info">
           <div class="refeicao-desc">${escHtml(r.descricao)}</div>
+          ${local ? `<div class="refeicao-local">📍 ${escHtml(local)}</div>` : ''}
           <div class="refeicao-macros"><span>🔥 ${m.kcal} kcal</span><span>💪 ${m.prot}g prot.</span>${fibra}</div>
         </div>
         <div class="refeicao-actions">
@@ -5482,17 +5572,15 @@ function aplicarLocksNosItens(itensNovos, itensSeeds = [], descLinhas = []) {
     const lookup = linha || n.nome || '';
     const global = buscarManualGlobal(lookup);
 
+    // Lock local (modal / seed) tem prioridade — nunca descartar ao reanalisar.
     if (n?.manual_lock) {
-      if (!global) {
-        const { manual_lock, kcal_override, proteina_override_g, fibra_override_g, ...rest } = n;
-        return rest;
-      }
+      if (!global) return n;
       return {
         ...n,
         manual_lock: true,
-        kcal_override: global.kcal_override ?? global.kcal,
-        proteina_override_g: global.proteina_override_g ?? global.proteina_g,
-        fibra_override_g: global.fibra_override_g ?? global.fibra_g,
+        kcal_override: n.kcal_override ?? global.kcal_override ?? global.kcal,
+        proteina_override_g: n.proteina_override_g ?? global.proteina_override_g ?? global.proteina_g,
+        fibra_override_g: n.fibra_override_g ?? global.fibra_override_g ?? global.fibra_g,
       };
     }
 
@@ -5630,9 +5718,64 @@ function isErroCotaIA(e) {
   return msg.includes('429') || msg.includes('quota') || msg.includes('cota') || msg.includes('resource_exhausted');
 }
 
+function isErroRedeIA(e) {
+  const msg = String(e?.message || e || '').toLowerCase();
+  return msg.includes('failed to fetch')
+    || msg.includes('network')
+    || msg.includes('load failed')
+    || msg.includes('err_name_not_resolved')
+    || msg.includes('err_network');
+}
+
+async function persistirEdicaoRefeicao(desc, local, kcal, prot, fibra, itens, toastOk) {
+  const upd = { descricao: desc, local_refeicao: local || null, kcal, proteina_g: prot, fibra_g: fibra, tipo: refeicaoTipoModal };
+  if (itens?.length) upd.itens_calculados = itens;
+  let { data, error } = await sb.from('refeicoes')
+    .update(upd)
+    .eq('id', refeicaoEditandoId)
+    .select()
+    .maybeSingle();
+  if (error && (error.message || '').includes('itens_calculados')) {
+    delete upd.itens_calculados;
+    ({ data, error } = await sb.from('refeicoes').update(upd).eq('id', refeicaoEditandoId).select().maybeSingle());
+  }
+  if (error) {
+    console.error(error);
+    const msg = error.message || '';
+    if (msg.includes('local_refeicao')) {
+      showToast('⚠️ Rode metriafit_refeicoes_local.sql no Supabase');
+    } else if (msg.includes('tipo') || error.code === 'PGRST204') {
+      showToast('⚠️ Rode metriafit_refeicoes_tipo.sql no Supabase');
+    } else {
+      showToast('⚠️ Erro ao salvar');
+    }
+    return false;
+  }
+  if (!data) {
+    showToast('⚠️ Edição bloqueada — rode metriafit_refeicoes_update.sql no Supabase');
+    return false;
+  }
+  if (itens?.length) {
+    const partes = splitDescricaoRefeicao(desc);
+    itens.forEach((it, idx) => {
+      if (it?.manual_lock) registrarManualGlobal(it, partes[idx] || it.nome || '');
+    });
+  }
+  fecharModalRefeicao();
+  invalidarCacheAlimentosSug();
+  await carregarRefeicoes();
+  carregarResumoAlimentacao().catch(() => {});
+  renderProgressoHojeHome().catch(() => {});
+  showToast(toastOk);
+  atualizarAlertasAposRegistro();
+  return true;
+}
+
 function limparFormRefeicaoInline() {
   const inp = document.getElementById('ai-input');
   if (inp) inp.value = '';
+  const local = document.getElementById('ref-local');
+  if (local) local.value = '';
   limparItensPendentesRefeicao();
   const res = document.getElementById('ai-result');
   if (res) { res.classList.remove('show'); res.innerHTML = ''; }
@@ -5650,10 +5793,12 @@ function editarRefeicao(id) {
     proteina_g: r.proteina_g ?? 0,
     fibra_g: r.fibra_g ?? 0,
     tipo: r.tipo || 'cafe_manha',
+    local_refeicao: r.local_refeicao || '',
   };
   refeicaoTipoModal = r.tipo || 'cafe_manha';
   atualizarPillsTipoModal();
   document.getElementById('ref-edit-desc').value = r.descricao || '';
+  document.getElementById('ref-edit-local').value = r.local_refeicao || '';
   document.getElementById('ref-edit-kcal').value = r.kcal ?? '';
   document.getElementById('ref-edit-prot').value = r.proteina_g ?? '';
   document.getElementById('ref-edit-fibra').value = r.fibra_g ?? '';
@@ -5674,6 +5819,7 @@ function fecharModalRefeicao(e) {
 async function salvarEdicaoRefeicao() {
   if (!refeicaoEditandoId) return;
   const desc = document.getElementById('ref-edit-desc').value.trim();
+  const local = document.getElementById('ref-edit-local').value.trim();
   if (!desc) { showToast('⚠️ Descreva a refeição'); return; }
   const btn = document.getElementById('btn-ref-salvar');
   btn.disabled = true;
@@ -5685,9 +5831,13 @@ async function salvarEdicaoRefeicao() {
   let prot = refeicaoEditandoOriginal?.proteina_g ?? 0;
   let fibra = refeicaoEditandoOriginal?.fibra_g ?? 0;
   let itens = refeicaoEditandoItens ?? parseItensCalculados(refeicoesDiaAtual?.find(x => x.id === refeicaoEditandoId));
+  const temLocksManuais = Array.isArray(itens) && itens.some(i => i?.manual_lock);
+  // Não forçar reanálise só por fibra=0 se o usuário já travou macros manuais.
+  const precisaReanalisar = descMudou || (semFibra && !temLocksManuais);
+  let reanalisou = false;
 
   try {
-    if (descMudou || semFibra) {
+    if (precisaReanalisar) {
       btn.textContent = 'Analisando...';
       const partes = splitDescricaoRefeicao(desc);
       const res = partes.length > 1
@@ -5695,7 +5845,8 @@ async function salvarEdicaoRefeicao() {
         : await analisarTextoRefeicao(desc, refeicaoEditandoId);
       const itensNovos = res.itens?.length ? res.itens : null;
       // Preserva itens travados do detalhe antigo ao reanalisar.
-      itens = itensNovos ? aplicarLocksNosItens(itensNovos, itens || [], partes) : null;
+      itens = itensNovos ? aplicarLocksNosItens(itensNovos, itens || [], partes) : itens;
+      reanalisou = true;
       if (itens?.length) {
         const t = totaisDeItens(itens);
         kcal = Math.round(t.kcal);
@@ -5725,66 +5876,34 @@ async function salvarEdicaoRefeicao() {
     }
 
     btn.textContent = 'Salvando...';
-    const upd = { descricao: desc, kcal, proteina_g: prot, fibra_g: fibra, tipo: refeicaoTipoModal };
-    if (itens?.length) upd.itens_calculados = itens;
-    let { data, error } = await sb.from('refeicoes')
-      .update(upd)
-      .eq('id', refeicaoEditandoId)
-      .select()
-      .maybeSingle();
-    if (error && (error.message || '').includes('itens_calculados')) {
-      delete upd.itens_calculados;
-      ({ data, error } = await sb.from('refeicoes').update(upd).eq('id', refeicaoEditandoId).select().maybeSingle());
-    }
-
-    if (error) {
-      console.error(error);
-      const msg = error.message || '';
-      if (msg.includes('tipo') || error.code === 'PGRST204') {
-        showToast('⚠️ Rode metriafit_refeicoes_tipo.sql no Supabase');
-      } else {
-        showToast('⚠️ Erro ao salvar');
-      }
-      return;
-    }
-    if (!data) {
-      showToast('⚠️ Edição bloqueada — rode metriafit_refeicoes_update.sql no Supabase');
-      return;
-    }
-    fecharModalRefeicao();
-    invalidarCacheAlimentosSug();
-    await carregarRefeicoes();
-    carregarResumoAlimentacao().catch(() => {});
-    renderProgressoHojeHome().catch(() => {});
-    showToast(descMudou || semFibra ? '✅ Refeição reanalisada e salva!' : '✅ Refeição atualizada!');
-    atualizarAlertasAposRegistro();
+    const toastOk = reanalisou ? '✅ Refeição reanalisada e salva!' : '✅ Refeição atualizada!';
+    await persistirEdicaoRefeicao(desc, local, kcal, prot, fibra, itens, toastOk);
   } catch (e) {
     console.error(e);
     const msg = e?.message || '';
-    if (isErroCotaIA(e) && (descMudou || tipoMudou)) {
+    const podeSalvarSemIA = temLocksManuais || descMudou || tipoMudou || (itens?.length > 0);
+    if ((isErroCotaIA(e) || isErroRedeIA(e)) && podeSalvarSemIA) {
       try {
         btn.textContent = 'Salvando...';
-        const { data, error } = await sb.from('refeicoes')
-          .update({ descricao: desc, tipo: refeicaoTipoModal })
-          .eq('id', refeicaoEditandoId)
-          .select()
-          .maybeSingle();
-        if (error) throw error;
-        if (!data) {
-          showToast('⚠️ Edição bloqueada — rode metriafit_refeicoes_update.sql no Supabase');
-          return;
+        if (itens?.length) {
+          const t = totaisDeItens(itens);
+          kcal = Math.round(t.kcal);
+          prot = Math.round(t.prot * 10) / 10;
+          fibra = Math.round(t.fibra * 10) / 10;
         }
-        fecharModalRefeicao();
-        await carregarRefeicoes();
-        carregarResumoAlimentacao().catch(() => {});
-        showToast('⚠️ Alteração salva, mas a IA está sem cota para recalcular macros');
+        const aviso = isErroRedeIA(e)
+          ? '⚠️ Sem conexão com a IA — salvei com os valores atuais'
+          : '⚠️ Alteração salva, mas a IA está sem cota para recalcular macros';
+        await persistirEdicaoRefeicao(desc, local, kcal, prot, fibra, itens, aviso);
         return;
       } catch (saveErr) {
         console.error(saveErr);
-        showToast('⚠️ IA sem cota e erro ao salvar alteração');
+        showToast(isErroRedeIA(e) ? '⚠️ Sem rede e erro ao salvar alteração' : '⚠️ IA sem cota e erro ao salvar alteração');
       }
     } else if (isErroCotaIA(e)) {
       showToast('⚠️ Gemini sem cota agora. Tente recalcular as fibras mais tarde.');
+    } else if (isErroRedeIA(e)) {
+      showToast('⚠️ Sem conexão com o servidor. Verifique a internet e tente de novo.');
     } else if (msg.includes('GEMINI_KEY')) {
       showToast('⚠️ Chave GEMINI_KEY não configurada no Supabase');
     } else if (msg) {
@@ -5823,6 +5942,7 @@ async function processarRefeicao() {
   const itensManuaisSelecionados = itensPendentesManuais.filter(Boolean);
   const texto = itensLinhas.join(' + ');
   const tipo = refeicaoTipoAtual;
+  const local = document.getElementById('ref-local')?.value.trim() || '';
   const btn = document.getElementById('btn-ai');
   btn.disabled = true; btn.textContent = '...';
   document.getElementById('ai-result').classList.remove('show');
@@ -5853,6 +5973,7 @@ async function processarRefeicao() {
       proteina_g: prot,
       fibra_g: fibra,
       tipo,
+      local_refeicao: local || null,
       itens_calculados: itens.length ? itens : null,
     };
     let { error: insErr } = await sb.from('refeicoes').insert(payload);
@@ -5862,6 +5983,9 @@ async function processarRefeicao() {
       if (!insErr) showToast('⚠️ Rode metriafit_refeicoes_itens.sql para salvar o detalhe TACO');
     }
     if (insErr) {
+      if ((insErr.message || '').includes('local_refeicao')) {
+        throw new Error('Rode metriafit_refeicoes_local.sql no Supabase');
+      }
       if ((insErr.message || '').includes('tipo') || (insErr.message || '').includes('fibra_g') || insErr.code === 'PGRST204') {
         throw new Error('Rode metriafit_refeicoes_tipo.sql e metriafit_fibra.sql no Supabase');
       }
@@ -5871,6 +5995,7 @@ async function processarRefeicao() {
     const resumoCoach = alerta ? ` Coach: ${String(alerta).slice(0, 60)}${String(alerta).length > 60 ? '…' : ''}` : '';
     showToast(`✅ ${nomeTipoRef(tipo)} salvo!${resumoCoach}`);
     limparItensPendentesRefeicao();
+    document.getElementById('ref-local').value = '';
     fecharSugestoesAlimentos();
     setTipoRefeicao(tipo);
     invalidarCacheAlimentosSug();
