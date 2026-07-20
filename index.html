@@ -458,6 +458,10 @@ body {
 .agua-card-top .ali-dia-header,
 .agua-card-top .section-label { margin-bottom: 0; flex: 1; min-width: 0; }
 .agua-card-ind { flex-shrink: 0; padding-top: 2px; }
+.section-card.agua-card-ativo {
+  background: #ffe4ec !important;
+  border-color: #f9a8c4;
+}
 .agua-resumo-hoje { margin-bottom: 18px; }
 .agua-resumo-hoje .agua-num { font-size: 2.4rem; }
 .agua-resumo-list { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
@@ -497,6 +501,23 @@ body {
 .back-btn:hover { color: var(--accent); }
 .day-title { font-size: 1.35rem; font-weight: 900; margin-bottom: 0; text-transform: capitalize; }
 .day-header { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.day-registro-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 14px;
+}
+.day-registro-btns .btn-add {
+  margin: 0;
+  width: 100%;
+  padding: 10px 6px;
+  font-size: 0.78rem;
+}
+.day-registro-btns .btn-add.active {
+  outline: 2px solid rgba(0,0,0,.12);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.7) inset;
+}
 .day-date-picker {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--surface2); border: 1.5px solid var(--border);
@@ -546,6 +567,17 @@ body {
   width: 118px;
 }
 .day-date-picker input::-webkit-calendar-picker-indicator { cursor: pointer; }
+.day-date-picker.locked {
+  opacity: 0.85;
+  cursor: default;
+}
+.day-date-picker.locked input {
+  color: var(--muted);
+  cursor: default;
+}
+.day-date-picker.locked input::-webkit-calendar-picker-indicator {
+  display: none;
+}
 .day-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 20px; }
 
 .tabs {
@@ -789,6 +821,59 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
 /* Macros */
 .meta-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.sugestao-dia-box {
+  background: #ecfdf5;
+  border: 1.5px solid #86efac;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: -8px 0 16px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.sugestao-dia-box .sug-titulo {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #166534;
+  margin-bottom: 8px;
+}
+.sugestao-dia-box .sug-resumo {
+  margin-bottom: 10px;
+  color: var(--muted);
+}
+.sugestao-dia-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.sugestao-dia-box li { margin-bottom: 6px; }
+.sugestao-dia-box .sug-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 8px;
+}
+.sugestao-dia-box .sug-opcao {
+  background: #fff;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.sugestao-dia-box .sug-opcao-titulo {
+  font-weight: 800;
+  color: #166534;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+}
+.sugestao-dia-box .sug-opcao-prato {
+  color: var(--text);
+}
+.sugestao-dia-box .sug-opcao-porque {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
 .meta-pill.resumo { grid-column: 1 / -1; }
 .meta-pill {
   flex: 1; min-width: 85px;
@@ -1424,7 +1509,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <button class="back-btn" onclick="voltarHome()">← Voltar</button>
       <div class="screen-title">🥗 Alimentação</div>
       <p style="font-size:0.78rem;color:var(--muted);margin:-12px 0 16px">Resumo de cada dia com refeições registradas</p>
-      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--green)" onclick="abrirHojeTab('alimentacao')">+ Registrar refeição hoje</button>
+      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--green)" onclick="abrirRegistroTab('alimentacao')">+ Registrar refeição</button>
       <div id="lista-alimentacao-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
 
@@ -1433,7 +1518,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <button class="back-btn" onclick="voltarHome()">← Voltar</button>
       <div class="screen-title">💪 Treino</div>
       <p style="font-size:0.78rem;color:var(--muted);margin:-12px 0 16px">Resumo de cada dia com treino registrado</p>
-      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--accent)" onclick="abrirHojeTab('treino')">+ Registrar treino hoje</button>
+      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--accent)" onclick="abrirRegistroTab('treino')">+ Registrar treino</button>
       <div id="lista-treino-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
 
@@ -1442,29 +1527,27 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <button class="back-btn" onclick="voltarHome()">← Voltar</button>
       <div class="screen-title">💧 Água</div>
       <p style="font-size:0.78rem;color:var(--muted);margin:-12px 0 16px">Resumo de hidratação por dia</p>
-      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--blue)" onclick="abrirHojeTab('agua')">+ Registrar água hoje</button>
+      <button class="btn-add" style="width:100%;margin-bottom:16px;background:var(--blue)" onclick="abrirRegistroTab('agua')">+ Registrar água</button>
       <div id="lista-agua-menu-dias"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
     </div>
 
     <!-- DIA -->
     <div class="screen" id="screen-dia">
       <button class="back-btn" onclick="voltarDoDia()">← Voltar</button>
+      <div class="day-registro-btns" id="day-registro-btns">
+        <button type="button" class="btn-add active" data-tab="treino" style="background:var(--accent)" onclick="switchTab('treino')">+ Treino</button>
+        <button type="button" class="btn-add" data-tab="alimentacao" style="background:var(--green)" onclick="switchTab('alimentacao')">+ Alimentação</button>
+        <button type="button" class="btn-add" data-tab="agua" style="background:var(--blue)" onclick="switchTab('agua')">+ Água</button>
+      </div>
       <div class="day-header">
         <div class="day-title" id="dia-titulo"></div>
         <div class="day-nav-wrap">
           <button type="button" class="day-nav-btn" id="btn-prev-dia" onclick="navegarDia(-1)" title="Dia anterior">←</button>
-          <label class="day-date-picker" title="Alterar data">
+          <label class="day-date-picker" id="dia-data-label" title="Escolha a data do registro">
             📅 <input type="date" id="dia-data" onchange="mudarDataDia(this.value)">
           </label>
           <button type="button" class="day-nav-btn" id="btn-next-dia" onclick="navegarDia(1)" title="Próximo dia">→</button>
         </div>
-      </div>
-      <div class="day-subtitle">Registre seu treino e alimentação · toque na data para alterar</div>
-
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('treino')">💪 Treino</button>
-        <button class="tab" onclick="switchTab('alimentacao')">🥗 Alimentação</button>
-        <button class="tab" onclick="switchTab('agua')">💧 Água</button>
       </div>
 
       <!-- TREINO -->
@@ -1598,6 +1681,8 @@ textarea.inp { min-height: 72px; resize: vertical; }
       <div id="tab-alimentacao" style="display:none">
         <div class="coach-alerta-box" id="coach-alimentacao-box"></div>
         <div class="meta-pills" id="macros-hoje"></div>
+        <button type="button" class="btn-add" id="btn-sugestao-dia" onclick="gerarSugestaoDia()" style="width:100%;margin:-6px 0 16px;background:var(--green)">✨ Sugestão do dia</button>
+        <div class="sugestao-dia-box" id="sugestao-dia-box" style="display:none"></div>
 
         <div class="ai-box">
           <div class="ai-box-label">✨ Registrar com IA</div>
@@ -1642,10 +1727,13 @@ textarea.inp { min-height: 72px; resize: vertical; }
 
       <!-- ÁGUA -->
       <div id="tab-agua" style="display:none">
-        <div class="section-card">
+        <div class="section-card agua-card-ativo">
           <div class="agua-card-top">
-            <div class="section-label" style="margin:0">💧 Hidratação</div>
-            <div id="agua-dia-ind"></div>
+            <div style="flex:1;min-width:0">
+              <div class="ali-dia-header" id="agua-dia-header"></div>
+              <div class="section-label" style="margin:8px 0 0">💧 Hidratação</div>
+            </div>
+            <div id="agua-dia-ind" class="agua-card-ind"></div>
           </div>
           <div class="agua-hero">
             <div class="agua-num" id="agua-total">0L</div>
@@ -2098,8 +2186,8 @@ async function switchTab(tab) {
   ['treino','alimentacao','agua'].forEach(t => {
     document.getElementById('tab-' + t).style.display = t === tab ? '' : 'none';
   });
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', ['treino','alimentacao','agua'][i] === tab);
+  document.querySelectorAll('#day-registro-btns .btn-add').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
   });
   // Evita metas antigas: sempre recarrega o perfil antes de renderizar abas que dependem das metas.
   if (tab === 'alimentacao') {
@@ -2109,6 +2197,9 @@ async function switchTab(tab) {
   if (tab === 'agua') {
     await carregarPerfil();
     await carregarAgua();
+  }
+  if (tab === 'treino') {
+    await carregarTreino();
   }
 }
 
@@ -3384,38 +3475,19 @@ async function atualizarBotoesNavegacaoDias() {
   const btnPrev = document.getElementById('btn-prev-dia');
   const btnNext = document.getElementById('btn-next-dia');
   if (!btnPrev || !btnNext || !userAtual || !diaAtual?.data) return;
-
-  try {
-    const prevISO = somarDiasISO(diaAtual.data, -1);
-    const nextISO = somarDiasISO(diaAtual.data, 1);
-
-    const [prevDia, nextDia] = await Promise.all([
-      sb.from('dias').select('id').eq('user_id', userAtual.id).eq('data', prevISO).maybeSingle(),
-      sb.from('dias').select('id').eq('user_id', userAtual.id).eq('data', nextISO).maybeSingle(),
-    ]);
-
-    const prevExiste = !!prevDia?.data?.id;
-    const nextExiste = !!nextDia?.data?.id;
-    btnPrev.disabled = !prevExiste;
-    btnNext.disabled = !nextExiste;
-  } catch (e) {
-    // Se falhar, não bloqueia a navegação (evita travar o app).
-    console.warn('Falha ao atualizar navegação de dias', e);
-    btnPrev.disabled = false;
-    btnNext.disabled = false;
-  }
+  // Permite ir para qualquer dia (mesmo sem registro prévio).
+  btnPrev.disabled = false;
+  btnNext.disabled = false;
 }
 
 async function navegarDia(deltaDias) {
   if (!userAtual) return;
-  // Se estiver desabilitado, não faz nada.
-  if (deltaDias < 0 && document.getElementById('btn-prev-dia')?.disabled) return;
-  if (deltaDias > 0 && document.getElementById('btn-next-dia')?.disabled) return;
-
+  const modoRegistro = diaModoRegistro;
   const atualISO = diaAtual?.data || hojeISO();
   const novaISO = somarDiasISO(atualISO, deltaDias);
   const tab = typeof obterTabAtivaDia === 'function' ? obterTabAtivaDia() : 'treino';
   await abrirDiaPorData(novaISO, tab);
+  diaModoRegistro = modoRegistro;
 }
 
 async function garantirDiaCriado() {
@@ -3423,14 +3495,16 @@ async function garantirDiaCriado() {
 
   const input = document.getElementById('dia-data');
   if (input?.value && input.value !== diaAtual.data) {
-    // Importante: não chamar mudarDataDia() aqui.
-    // mudarDataDia() pode disparar mesclagem (mesclarDias) e "mover" refeições entre dias.
-    // Durante inserir refeições, o input pode estar momentaneamente fora de sincronia com diaAtual.data;
-    // nesse caso, apenas sincronizamos o estado para evitar contaminação entre datas.
-    diaAtual.data = input.value;
-    diaAtual.id = null;
-    atualizarTituloDia(diaAtual.data);
-    await recarregarTabAtiva();
+    // Dia já cadastrado: input fica sincronizado com a data fixa — nunca renomeia.
+    if (diaAtual.id) {
+      input.value = diaAtual.data;
+    } else {
+      // Rascunho: aceita a data escolhida no campo.
+      diaAtual.data = input.value;
+      diaAtual.id = null;
+      atualizarTituloDia(diaAtual.data);
+      await recarregarTabAtiva();
+    }
   }
 
   const { data: existente } = await sb.from('dias')
@@ -3441,6 +3515,7 @@ async function garantirDiaCriado() {
 
   if (existente) {
     diaAtual.id = existente.id;
+    atualizarBloqueioDataDia();
     return existente.id;
   }
 
@@ -3455,35 +3530,53 @@ async function garantirDiaCriado() {
         .eq('user_id', userAtual.id)
         .eq('data', diaAtual.data)
         .maybeSingle();
-      if (ex2) { diaAtual.id = ex2.id; return ex2.id; }
+      if (ex2) { diaAtual.id = ex2.id; atualizarBloqueioDataDia(); return ex2.id; }
     }
     throw error;
   }
 
   diaAtual.id = novo.id;
+  atualizarBloqueioDataDia();
   return novo.id;
 }
 
-async function abrirHojeTab(tab) {
+async function abrirRegistroTab(tab) {
   const hoje = hojeISO();
-  if (tab === 'alimentacao') {
-    diaModoRegistro = true;
-    await abrirDia(null, hoje, 'alimentacao');
-    return;
-  }
-  diaModoRegistro = false;
   const { data: ex } = await sb.from('dias').select('*').eq('user_id', userAtual.id).eq('data', hoje).maybeSingle();
   if (ex) {
     await abrirDia(ex.id, ex.data, tab);
   } else {
     await abrirDia(null, hoje, tab);
   }
+  // Após abrir: se o dia já existe, a data fica travada (use ← → para outro dia).
+  diaModoRegistro = true;
+}
+
+// Compatibilidade com chamadas antigas
+async function abrirHojeTab(tab) {
+  return abrirRegistroTab(tab);
 }
 
 function atualizarTituloDia(data) {
   const dt = new Date(data + 'T12:00:00');
   document.getElementById('dia-titulo').textContent = dt.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   document.getElementById('dia-data').value = data;
+  atualizarBloqueioDataDia();
+}
+
+function atualizarBloqueioDataDia() {
+  const input = document.getElementById('dia-data');
+  const label = document.getElementById('dia-data-label');
+  if (!input) return;
+  const travado = !!diaAtual?.id;
+  input.readOnly = travado;
+  input.disabled = travado;
+  const msg = travado
+    ? 'Data já cadastrada — use ← → para ir a outro dia'
+    : 'Escolha a data do novo registro';
+  input.title = msg;
+  if (label) label.title = msg;
+  label?.classList.toggle('locked', travado);
 }
 
 async function mesclarDias(deId, paraId) {
@@ -3514,9 +3607,7 @@ async function mesclarDias(deId, paraId) {
 }
 
 async function recarregarTabAtiva() {
-  const tabs = ['treino','alimentacao','agua'];
-  const idx = [...document.querySelectorAll('.tab')].findIndex(t => t.classList.contains('active'));
-  const tab = tabs[idx] || 'treino';
+  const tab = obterTabAtivaDia();
   if (tab === 'treino') await carregarTreino();
   else if (tab === 'alimentacao') await carregarRefeicoes();
   else if (tab === 'agua') await carregarAgua();
@@ -3525,62 +3616,32 @@ async function recarregarTabAtiva() {
 async function mudarDataDia(novaData) {
   if (!diaAtual || !novaData || novaData === diaAtual.data) return;
   const input = document.getElementById('dia-data');
+
+  // Dia já cadastrado: nunca renomear/mover — a data fica fixa.
+  if (diaAtual.id) {
+    input.value = diaAtual.data;
+    return;
+  }
+
   input.disabled = true;
-
   try {
-    // Modo registro: só muda a data alvo — não move refeições já salvas
-    if (diaModoRegistro) {
-      diaAtual.data = novaData;
-      diaAtual.id = null;
-      atualizarTituloDia(novaData);
-      await recarregarTabAtiva();
-      showToast('✅ Data alterada!');
-      input.disabled = false;
-      return;
-    }
-
-    // Rascunho: muda data; se já existe dia nessa data, usa o existente
-    if (!diaAtual.id) {
-      const { data: ex } = await sb.from('dias')
-        .select('id')
-        .eq('user_id', userAtual.id)
-        .eq('data', novaData)
-        .maybeSingle();
-      diaAtual.data = novaData;
-      diaAtual.id = ex?.id || null;
-      atualizarTituloDia(novaData);
-      await recarregarTabAtiva();
-      showToast('✅ Data alterada!');
-      input.disabled = false;
-      return;
-    }
-
     const { data: existente } = await sb.from('dias')
       .select('id')
       .eq('user_id', userAtual.id)
       .eq('data', novaData)
       .maybeSingle();
 
-    let mesclou = false;
-    if (existente && existente.id !== diaAtual.id) {
-      await mesclarDias(diaAtual.id, existente.id);
-      diaAtual = { id: existente.id, data: novaData };
-      mesclou = true;
-    } else {
-      const { error } = await sb.from('dias').update({ data: novaData }).eq('id', diaAtual.id);
-      if (error) throw error;
-      diaAtual.data = novaData;
-    }
-
+    diaAtual = { id: existente?.id || null, data: novaData };
+    if (existente?.id) diaModoRegistro = false;
     atualizarTituloDia(novaData);
     await recarregarTabAtiva();
-    showToast(mesclou ? '✅ Data alterada — registros unidos ao dia existente' : '✅ Data alterada!');
-  } catch(e) {
+    atualizarBotoesNavegacaoDias().catch(() => {});
+  } catch (e) {
     console.error('Erro ao mudar data:', e);
     input.value = diaAtual.data;
     showToast('⚠️ Não foi possível alterar a data');
   }
-  input.disabled = false;
+  atualizarBloqueioDataDia();
 }
 
 async function abrirDia(id, data, tabInicial) {
@@ -3601,9 +3662,8 @@ async function abrirDia(id, data, tabInicial) {
 function voltarHome() { navTo('home'); atualizarAlertasAposRegistro(); }
 
 function obterTabAtivaDia() {
-  const tabs = ['treino', 'alimentacao', 'agua'];
-  const idx = [...document.querySelectorAll('#screen-dia .tab')].findIndex(t => t.classList.contains('active'));
-  return tabs[idx] || 'treino';
+  const ativo = document.querySelector('#day-registro-btns .btn-add.active');
+  return ativo?.dataset?.tab || 'treino';
 }
 
 function voltarDoDia() {
@@ -3639,7 +3699,7 @@ async function carregarResumoTreino() {
   try {
     const { data: dias } = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(30);
     if (!dias?.length) {
-      el.innerHTML = '<div class="empty"><div class="emoji">💪</div><p>Nenhum treino registrado ainda.<br>Toque em <strong>+ Registrar treino hoje</strong> para começar!</p></div>';
+      el.innerHTML = '<div class="empty"><div class="emoji">💪</div><p>Nenhum treino registrado ainda.<br>Toque em <strong>+ Registrar treino</strong> para começar!</p></div>';
       return;
     }
     const ids = dias.map(d => d.id);
@@ -3658,7 +3718,7 @@ async function carregarResumoTreino() {
     });
 
     if (!diasComTreino.length) {
-      el.innerHTML = '<div class="empty"><div class="emoji">💪</div><p>Nenhum treino registrado ainda.<br>Toque em <strong>+ Registrar treino hoje</strong> para começar!</p></div>';
+      el.innerHTML = '<div class="empty"><div class="emoji">💪</div><p>Nenhum treino registrado ainda.<br>Toque em <strong>+ Registrar treino</strong> para começar!</p></div>';
       return;
     }
 
@@ -3702,7 +3762,7 @@ async function carregarResumoAguaMenu() {
     const diasComAgua = (dias || []).filter(d => aguas.some(a => a.dia_id === d.id));
 
     if (!diasComAgua.length) {
-      el.innerHTML = '<div class="empty"><div class="emoji">💧</div><p>Nenhuma água registrada ainda.<br>Toque em <strong>+ Registrar água hoje</strong> para começar!</p></div>';
+      el.innerHTML = '<div class="empty"><div class="emoji">💧</div><p>Nenhuma água registrada ainda.<br>Toque em <strong>+ Registrar água</strong> para começar!</p></div>';
       return;
     }
 
@@ -5361,7 +5421,7 @@ async function carregarResumoAlimentacao() {
   try {
     const { data: dias } = await sb.from('dias').select('*').eq('user_id', userAtual.id).order('data', { ascending: false }).limit(30);
     if (!dias?.length) {
-      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição hoje</strong> para começar!</p></div>';
+      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição</strong> para começar!</p></div>';
       return;
     }
     const ids = dias.map(d => d.id);
@@ -5369,7 +5429,7 @@ async function carregarResumoAlimentacao() {
     const diasComRefeicao = dias.filter(d => (refs || []).some(r => r.dia_id === d.id));
 
     if (!diasComRefeicao.length) {
-      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição hoje</strong> para começar!</p></div>';
+      el.innerHTML = '<div class="empty"><div class="emoji">🥗</div><p>Nenhuma refeição registrada ainda.<br>Toque em <strong>+ Registrar refeição</strong> para começar!</p></div>';
       return;
     }
 
@@ -5412,6 +5472,8 @@ async function carregarRefeicoes() {
     refeicoesDiaAtual = [];
     document.getElementById('macros-hoje').innerHTML = htmlMacrosPills(0, 0, 0, mK, mP, mF);
     document.getElementById('lista-refeicoes').innerHTML = '<div class="empty"><p>Nenhuma refeição registrada.</p></div>';
+    const boxSug = document.getElementById('sugestao-dia-box');
+    if (boxSug) { boxSug.style.display = 'none'; boxSug.innerHTML = ''; }
     const btnRecalc = document.getElementById('btn-recalc-ref');
     if (btnRecalc) btnRecalc.disabled = true;
     return;
@@ -5432,6 +5494,173 @@ async function carregarRefeicoes() {
       : '<div class="ref-grupo-empty">Nenhuma refeição nesta categoria.</div>';
     return `<div class="ref-grupo-block"><div class="section-label">${t.label}</div>${inner}</div>`;
   }).join('');
+}
+
+function renderSugestaoDiaBox(data) {
+  const box = document.getElementById('sugestao-dia-box');
+  if (!box) return;
+  const dicas = Array.isArray(data?.dicas) ? data.dicas.filter(Boolean) : [];
+  const resumo = String(data?.resumo || '').trim();
+  let opcoes = Array.isArray(data?.opcoes) ? data.opcoes : [];
+  if (!opcoes.length && data?.sugestao_jantar) {
+    opcoes = [{ titulo: 'Jantar', prato: data.sugestao_jantar, por_que: '' }];
+  }
+  if (!resumo && !opcoes.length && !dicas.length) {
+    box.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  const blocoOpcoes = opcoes.length
+    ? `<div class="sug-opcoes">${opcoes.map((o, i) => {
+        const titulo = escHtml(o.titulo || `Opção ${i + 1}`);
+        const prato = escHtml(o.prato || '');
+        const pq = o.por_que ? `<div class="sug-opcao-porque">${escHtml(o.por_que)}</div>` : '';
+        return `<div class="sug-opcao"><div class="sug-opcao-titulo">${i + 1}. ${titulo}</div><div class="sug-opcao-prato">${prato}</div>${pq}</div>`;
+      }).join('')}</div>`
+    : '';
+  const lista = dicas.length
+    ? `<ul>${dicas.map(d => `<li>${escHtml(d)}</li>`).join('')}</ul>`
+    : '';
+  box.innerHTML = `
+    <div class="sug-titulo">✨ Sugestão do dia</div>
+    ${resumo ? `<div class="sug-resumo">${escHtml(resumo)}</div>` : ''}
+    ${blocoOpcoes}
+    ${lista}`;
+  box.style.display = 'block';
+}
+
+function sugestaoDiaLocal(tot, mK, mP, mF, refs) {
+  const faltaKcal = Math.max(0, mK - tot.kcal);
+  const faltaProt = Math.max(0, Math.round((mP - tot.prot) * 10) / 10);
+  const faltaFibra = Math.max(0, Math.round((mF - tot.fibra) * 10) / 10);
+  const excedeuKcal = Math.max(0, Math.round(tot.kcal - mK));
+  const textoDia = (refs || []).map(r => r.descricao || '').join(' ').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const temVerdura = /(alface|agriao|rucula|tomate|salada|brocolis|couve|espinafre|cenoura|pepino|repolho)/.test(textoDia);
+  const jaFrango = /frango|peito/.test(textoDia);
+  const jaOvo = /ovo/.test(textoDia);
+  const gProt = Math.min(200, Math.max(120, Math.round(Math.max(faltaProt, 20) * 4)));
+  const colArroz = Math.max(2, Math.min(6, Math.round(Math.max(faltaKcal, 150) / 70)));
+  const batataG = Math.min(250, Math.max(120, Math.round(faltaKcal / 3)));
+  const dicas = [
+    `Faltam ~${Math.round(faltaKcal)} kcal, ~${Math.round(faltaProt)}g prot e ~${Math.round(faltaFibra * 10) / 10}g fibra.`,
+  ];
+  if (!temVerdura) dicas.push('Hoje quase não teve verdura — inclua salada em qualquer opção.');
+  if (faltaProt >= 15) dicas.push('Priorize fechar a proteína; carboidrato é opcional se passar da kcal.');
+
+  let opcoes;
+  if (excedeuKcal > 0) {
+    opcoes = [
+      { titulo: 'Omelete leve', prato: 'Omelete de 3 ovos com espinafre e tomate, sem pão.', por_que: 'Proteína sem estourar mais kcal.' },
+      { titulo: 'Peixe + salada', prato: 'Filé de tilápia (~150g) grelhado + salada grande de alface, agrião e pepino.', por_que: 'Proteína magra e fibra.' },
+      { titulo: 'Atum na lata', prato: '1 lata de atum em água (~140g) + folhas verdes.', por_que: 'Rápido e baixo em kcal.' },
+      { titulo: 'Whey + verdura', prato: '1 scoop de whey + salada completa; sem arroz/farinha.', por_que: 'Fecha proteína sem carb extra.' },
+    ];
+  } else {
+    opcoes = [
+      { titulo: 'Peixe + batata', prato: `Tilápia ou salmão grelhado (~${gProt}g) + batata doce (~${batataG}g) + brócolis no vapor.`, por_que: 'Fecha prot e kcal sem repetir o básico.' },
+      { titulo: 'Carne magra', prato: `Patinho moído magro (~${Math.min(180, gProt)}g) + ${colArroz} colheres de arroz integral + salada.`, por_que: 'Opção de carne vermelha alinhada às faltas.' },
+      { titulo: 'Wrap proteico', prato: `2 wraps integrais com ${Math.round(gProt * 0.7)}g de frango desfiado, cottage e rúcula/tomate.`, por_que: 'Prático e diferente do prato tradicional.' },
+      { titulo: 'Omelete reforçada', prato: `Omelete de ${Math.max(3, Math.min(5, Math.ceil(faltaProt / 6)))} ovos com queijo minas + 1 tapioca grande + salada.`, por_que: 'Se quiser ovos, nesta montagem completa.' },
+      { titulo: 'Shake + acompanhamento', prato: `1 scoop de whey + 1 banana + 1 colher de pasta de amendoim + ${Math.round(gProt * 0.6)}g de peito de frango fatiado com salada.`, por_que: 'Bom quando falta kcal e proteína juntos.' },
+    ];
+    if (jaFrango) opcoes = opcoes.filter(o => !/frango/i.test(o.prato));
+    if (jaOvo) opcoes = opcoes.filter(o => !/omelete|ovos/i.test(o.prato));
+    if (opcoes.length < 3) {
+      opcoes.push({
+        titulo: 'Atum + macarrão',
+        prato: `1 lata de atum + ${Math.max(60, Math.min(100, Math.round(faltaKcal / 8)))}g de macarrão integral + legumes.`,
+        por_que: 'Alternativa prática com carb e prot.',
+      });
+    }
+  }
+  opcoes = opcoes.slice(0, 4);
+  return {
+    resumo: `Hoje: ${Math.round(tot.kcal)}/${mK} kcal · ${Math.round(tot.prot)}/${mP}g prot · ${Math.round(tot.fibra * 10) / 10}/${mF}g fibra. Escolha 1 opção de jantar.`,
+    opcoes,
+    dicas: dicas.slice(0, 3),
+    sugestao_jantar: opcoes[0]?.prato || '',
+  };
+}
+
+function sugestaoDiaEhUtil(data) {
+  const opcoes = Array.isArray(data?.opcoes) ? data.opcoes.filter(o => String(o?.prato || '').trim().length > 8) : [];
+  if (opcoes.length >= 2) return true;
+  const j = String(data?.sugestao_jantar || '');
+  return j.length > 20 && /\d/.test(j);
+}
+
+async function gerarSugestaoDia() {
+  const btn = document.getElementById('btn-sugestao-dia');
+  const box = document.getElementById('sugestao-dia-box');
+  if (btn) { btn.disabled = true; btn.textContent = 'Analisando o dia...'; }
+  const mK = perfilData?.meta_kcal || 2000;
+  const mP = perfilData?.meta_proteina_g || 120;
+  const mF = metaFibraPerfil();
+  const refs = refeicoesDiaAtual || [];
+  try {
+    if (!refs.length) {
+      showToast('⚠️ Registre pelo menos uma refeição antes de pedir a sugestão');
+      return;
+    }
+    const tot = somaMacrosRefeicoes(refs);
+    const local = sugestaoDiaLocal(tot, mK, mP, mF, refs);
+    const refeicoes = refs.map(r => {
+      const m = macrosRefeicao(r);
+      const tipo = TIPOS_REF.find(t => t.id === (r.tipo || 'cafe_manha'))?.nome || r.tipo || 'Refeição';
+      return {
+        tipo,
+        descricao: r.descricao || '',
+        kcal: m.kcal,
+        proteina_g: m.prot,
+        fibra_g: m.fibra,
+        local: r.local_refeicao || '',
+      };
+    });
+    const faltaKcal = Math.max(0, mK - tot.kcal);
+    const faltaProt = Math.max(0, Math.round((mP - tot.prot) * 10) / 10);
+    const faltaFibra = Math.max(0, Math.round((mF - tot.fibra) * 10) / 10);
+    const excedeuKcal = Math.max(0, tot.kcal - mK);
+
+    let data = local;
+    try {
+      const ia = await chamarIA('sugestao_dia', {
+        refeicoes,
+        mK, mP, mF,
+        kcalJ: tot.kcal,
+        protJ: tot.prot,
+        fibraJ: tot.fibra,
+        faltaKcal,
+        faltaProt,
+        faltaFibra,
+        excedeuKcal,
+      });
+      if (sugestaoDiaEhUtil(ia)) {
+        data = ia;
+        if (!Array.isArray(data.opcoes) || data.opcoes.length < 2) {
+          // edge antiga: só 1 prato — completa com opções locais diferentes
+          const base = String(data.sugestao_jantar || '');
+          data = {
+            ...data,
+            opcoes: [
+              { titulo: 'Sugestão da IA', prato: base, por_que: '' },
+              ...local.opcoes.filter(o => o.prato !== base).slice(0, 3),
+            ],
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('IA sugestao_dia falhou, usando local:', e);
+    }
+    renderSugestaoDiaBox(data);
+    showToast('✅ Sugestão do dia pronta!');
+    box?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    console.error(e);
+    showToast('⚠️ Não foi possível gerar a sugestão');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✨ Sugestão do dia'; }
+  }
 }
 
 let refeicaoEditandoId = null;
@@ -6271,6 +6500,15 @@ async function carregarAgua() {
   document.getElementById('agua-meta-txt').textContent = `da meta (${metaL.toFixed(1).replace('.', ',')} L)`;
   document.getElementById('agua-bar').style.width = barPct + '%';
   if (indEl) indEl.innerHTML = htmlAguaIndicador(totalMl, metaMl);
+
+  const headerEl = document.getElementById('agua-dia-header');
+  if (headerEl) {
+    const dataISO = diaAtual?.data || hojeISO();
+    const dt = new Date(dataISO + 'T12:00:00');
+    headerEl.innerHTML = `
+      <div class="day-date">${dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</div>
+      <div class="day-date-sub">${dt.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>`;
+  }
 
   if (entradasEl) {
     entradasEl.innerHTML = '<p style="margin:0;font-size:0.72rem;color:var(--muted);line-height:1.4">Clique em um dia abaixo para ver e editar os registros.</p>';
